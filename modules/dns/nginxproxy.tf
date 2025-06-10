@@ -1,5 +1,5 @@
 module "nginx" {
-    source = "../nginx_config"
+  source = "../nginx_config"
 }
 
 resource "nginxproxymanager_certificate_letsencrypt" "certificate" {

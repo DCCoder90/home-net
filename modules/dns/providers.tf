@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     nginxproxymanager = {
-      source = "Sander0542/nginxproxymanager"
+      source  = "Sander0542/nginxproxymanager"
       version = "1.1.1"
     }
 
@@ -11,7 +11,7 @@ terraform {
     }
 
     technitium = {
-      source = "kevynb/technitium"
+      source  = "kevynb/technitium"
       version = "0.2.0"
     }
   }
