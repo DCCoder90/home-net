@@ -24,7 +24,7 @@ resource "nginxproxymanager_access_list" "internal_access" {
   satisfy_any = true
 }
 
-resource "nginxproxymanager_access_list" "internal_access" {
+resource "nginxproxymanager_access_list" "cloudflare_access" {
   name = "Allow Cloudflare Access Only"
 
   access = [

@@ -1,4 +1,4 @@
-resource "cloudflare_dns_record" "example_dns_record" {
+resource "cloudflare_dns_record" "ipv4_dns_record" {
   count   = var.internal_only ? 0 : var.enable_ipv4 ? 1 : 0
   zone_id = var.zone_id
   comment = "Managed via terraform"
@@ -9,7 +9,7 @@ resource "cloudflare_dns_record" "example_dns_record" {
   type    = "A"
 }
 
-resource "cloudflare_dns_record" "example_dns_record" {
+resource "cloudflare_dns_record" "ipv6_dns_record" {
   count   = var.internal_only ? 0 : var.enable_ipv6 ? 1 : 0
   zone_id = var.zone_id
   comment = "Managed via terraform"

@@ -14,7 +14,7 @@ resource "nginxproxymanager_certificate_letsencrypt" "certificate" {
 }
 
 data "nginxproxymanager_access_list" "access_list" {
-  id = var.internal_only ? nginxproxymanager_access_list.internal_access.id : nginxproxymanager_access_list.cloudflare_access.id
+  id = var.internal_only ? module.nginx.outputs.internal_access_list_id : module.nginx.outputs.cloudflare_access_list_id
 }
 
 resource "nginxproxymanager_proxy_host" "host" {

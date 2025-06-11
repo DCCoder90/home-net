@@ -45,7 +45,7 @@ variable "password_attribute" {
 
 variable "redirect_uris" {
   description = "List of redirect URIs for the OAuth2 provider"
-  type        = list(map(string))
+  type        = list(string)
   default = [
     "https://example.com/callback",
     "http://localhost:3000/callback"
