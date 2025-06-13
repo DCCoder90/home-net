@@ -12,8 +12,11 @@ The `services/` directory contains specific Terraform configurations that deploy
 
 ## Prerequisites
 
-*   Terraform (version compatible with the configurations, e.g., v1.12.2 or later)
-*   Docker installed and running on the target host(s) if using the Docker module.
+*   **Target Environment:** This setup is primarily designed to run on an **Unraid server**.
+*   **Terraform Agent:** A Terraform agent (e.g., HCP Terraform self-hosted agent, GitLab Runner, GitHub Actions self-hosted runner, etc.) must be running on the Unraid server.
+    *   This agent requires **direct access to the Docker socket** (typically `/var/run/docker.sock`) to manage Docker resources. Ensure the user running the agent has the necessary permissions.
+*   **Terraform CLI:** Terraform (version compatible with the configurations, e.g., v1.12.2 or later) installed on the machine where `terraform plan/apply` commands are initiated or on the agent itself.
+*   **Docker:** Docker must be installed and running on the Unraid server.
 
 ## Usage
 
