@@ -1,6 +1,11 @@
 output "name" {
   description = "The name of the created Docker container."
-  value       = docker_container.ubuntu.name
+  value       = docker_container.container.name
+}
+
+output "image_name"{
+  description = "The name of the image used by this Docker container."
+  value       = docker_container.container.image
 }
 
 output "created_docker_volumes" {

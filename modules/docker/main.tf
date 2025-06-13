@@ -7,14 +7,7 @@ terraform {
   }
 }
 
-locals {
-  volumes_to_create = {
-    for idx, vol_config in var.container_volumes : idx => vol_config
-    if vol_config.volume_name != null && coalesce(vol_config.manage_volume_lifecycle, true)
-  }
-}
-
-resource "docker_container" "ubuntu" {
+resource "docker_container" "container" {
   name  = var.container_name
   image = docker_image.ubuntu.image_id
   env = var.environment_vars
@@ -67,14 +60,6 @@ resource "docker_container" "ubuntu" {
 
 resource "docker_image" "ubuntu" {
   name = var.container_image
-}
-
-data "docker_network" "main_host" {
-  name = "br1"
-}
-
-data "docker_network" "secondary_host" {
-  name = "br0"
 }
 
 resource "docker_volume" "managed_volumes" {
