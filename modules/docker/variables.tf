@@ -108,8 +108,14 @@ variable "container_privileged_mode" {
 
 variable "container_network_mode" {
   type        = string
-  description = "Network mode for the container. Defaults to 'bridge'. Common values: 'none', 'bridge', 'host', 'container:<name|id>'. If 'none' or 'host' is selected, DNS settings, port mappings, and advanced network attachments (br0, br1 via `attach_to_br0`/`attach_to_br1` variables) will be ignored. To use these features, ensure this is set to a compatible mode like 'bridge'."
-  default     = "bridge"
+  description = <<-EOT
+    Network mode for the container. Defaults to 'null'. Common values: 'none', 'bridge', 'host', 'container:<name|id>'.
+    - 'bridge': Connects to the default Docker bridge network. Can be combined with `attach_to_br0`/`attach_to_br1`.
+    - 'none': Creates the container without a default network interface. Use `attach_to_br0`/`attach_to_br1` to connect to specific networks only.
+    - 'host': Uses the host's network stack. DNS, port mappings, and `attach_to_br0`/`attach_to_br1` are ignored.
+    DNS and port mappings are generally applied unless `network_mode` is 'host'.
+  EOT
+  default     = null
 }
 
 variable "container_capabilities" {
@@ -118,5 +124,5 @@ variable "container_capabilities" {
     add  = optional(list(string))
     drop = optional(list(string))
   })
-  default = {} 
+  default = {} # Defaults to an empty object, meaning 'add' and 'drop' will be null if not specified.
 }

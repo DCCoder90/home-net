@@ -15,8 +15,8 @@ resource "docker_container" "container" {
   network_mode = var.container_network_mode
 
   dynamic "networks_advanced" {
-    # Only attach to advanced networks if mode is not 'none' or 'host'
-    for_each = var.attach_to_br1 && !contains(["none", "host"], var.container_network_mode) ? [1] : []
+    # Attach to br1 if requested and network mode is not 'host'
+    for_each = var.attach_to_br1 && var.container_network_mode != "host" ? [1] : []
     content {
       name         = data.docker_network.main_host.name
       ipv4_address = var.br1_ipv4_addr 
@@ -24,7 +24,7 @@ resource "docker_container" "container" {
   }
 
   dynamic "networks_advanced" {
-    for_each = var.attach_to_br0 && !contains(["none", "host"], var.container_network_mode) ? [1] : []
+    for_each = var.attach_to_br0 && var.container_network_mode != "host" ? [1] : []
     content {
       name         = data.docker_network.secondary_host.name 
       ipv4_address = var.br0_ipv4_addr                     
@@ -32,8 +32,8 @@ resource "docker_container" "container" {
   }
 
   dynamic "ports" {
-    # Only map ports if network mode is not 'none' or 'host'
-    for_each = !contains(["none", "host"], var.container_network_mode) ? var.container_ports : []
+    # Map ports if network mode is not 'host'
+    for_each = var.container_network_mode != "host" ? var.container_ports : []
     content {
       internal = ports.value.internal
       external = ports.value.external # If null, Docker will assign a random host port
@@ -60,7 +60,7 @@ resource "docker_container" "container" {
 
   user    = var.container_user
   restart = var.container_restart
-  dns     = !contains(["none", "host"], var.container_network_mode) ? var.container_dns_servers : null # Only set DNS if mode is not 'none' or 'host'
+  dns     = var.container_network_mode != "host" ? var.container_dns_servers : null # Only set DNS if mode is not 'host'
   privileged = var.container_privileged_mode
 
   capabilities {
