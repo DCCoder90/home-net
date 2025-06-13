@@ -105,3 +105,9 @@ variable "container_privileged_mode" {
   description = "Run the container in privileged mode. Grants the container almost all the capabilities of the host machine."
   default     = false
 }
+
+variable "container_network_mode" {
+  type        = string
+  description = "Network mode for the container. Defaults to 'bridge'. Common values: 'none', 'bridge', 'host', 'container:<name|id>'. If 'none' or 'host' is selected, DNS settings, port mappings, and advanced network attachments (br0, br1 via `attach_to_br0`/`attach_to_br1` variables) will be ignored. To use these features, ensure this is set to a compatible mode like 'bridge'."
+  default     = "bridge"
+}
