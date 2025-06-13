@@ -1,31 +1,27 @@
 resource "nginxproxymanager_access_list" "internal_access" {
-  name = "Allow Internal Access Only"
+  name = "Internal Only"
 
   access = [
     {
       directive = "allow"
-      address   = "192.168.1.1/24"
+      address   = "192.168.1.0/24"
     },
     {
       directive = "allow"
-      address   = "192.168.2.1/24"
+      address   = "192.168.2.0/24"
     },
     {
       directive = "allow"
-      address   = "192.168.3.1/23"
-    },
-    {
-      directive = "deny"
-      address   = "all"
+      address   = "192.168.4.0/23"
     },
   ]
 
   pass_auth   = false
-  satisfy_any = true
+  satisfy_any = false
 }
 
 resource "nginxproxymanager_access_list" "cloudflare_access" {
-  name = "Allow Cloudflare Access Only"
+  name = "Cloudflare"
 
   access = [
     {
@@ -116,12 +112,8 @@ resource "nginxproxymanager_access_list" "cloudflare_access" {
       directive = "allow"
       address   = "2c0f:f248::/32"
     },
-    {
-      directive = "deny"
-      address   = "all"
-    },
   ]
 
   pass_auth   = false
-  satisfy_any = true
+  satisfy_any = false
 }

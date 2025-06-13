@@ -1,0 +1,231 @@
+version: '3.8'
+
+services:
+  flaresolverr:
+    # DockerHub mirror flaresolverr/flaresolverr:latest
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    environment:
+      - LOG_LEVEL=info
+      - LOG_HTML=false
+      - CAPTCHA_SOLVER=none
+      - TZ=America/Chicago
+    ports:
+      - "8191:8191"
+    restart: unless-stopped 
+    networks:
+      br1_network:      
+        ipv4_address: ${FLARESOLVERR_IP}
+
+  delugevpn:
+    image: binhex/arch-delugevpn:latest
+    container_name: arr-delugevpn
+    environment:
+      - PUID=1000
+      - PGID=100
+      - VPN_ENABLED=yes
+      - VPN_USER=${VPN_USER} 
+      - VPN_PASS=${VPN_PASS} 
+      - VPN_PROV=custom
+      - VPN_CLIENT=openvpn
+      - ENABLE_PRIVOXY=no
+      - STRICT_PORT_FORWARD=yes
+      - ENABLE_SOCKS=no
+      - LAN_NETWORK=${LAN_NETWORK} 
+      - DEBUG=false
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - "80:8112"   # Deluge Web UI
+      - "8118:8118"   # Deluge Thin Client (optional)
+      - "58846:58846" # Deluge Daemon (for LAN access if needed)
+    volumes:
+      - deluge_config:/config
+      - ${VPN_PATH}:/config/openvpn
+      - ${DOWNLOAD_PATH}:/data/downloads
+      - /etc/localtime:/etc/localtime:ro
+    restart: unless-stopped
+    networks:
+      br1_network:      
+        ipv4_address: ${DELUGE_IP} 
+
+  prowlarr:
+    image: linuxserver/prowlarr:latest
+    container_name: arr-prowlarr
+    environment:
+      - PUID=1000
+      - PGID=100
+    volumes:
+      - prowlarr_config:/config
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "80:9696"
+    restart: unless-stopped
+    networks:
+      br1_network:      
+        ipv4_address: ${PROWLARR_IP} 
+
+  sonarr:
+    image: linuxserver/sonarr:latest
+    container_name: arr-sonarr
+    environment:
+      - PUID=1000
+      - PGID=100
+    volumes:
+      - sonarr_config:/config
+      - ${SHOWS_PATH}:/tv
+      - remote_media:/remote
+      - ${DOWNLOAD_PATH}:/downloads
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "80:8989"
+    restart: unless-stopped
+    depends_on:
+      - delugevpn
+      - prowlarr
+    networks:
+      br1_network:      
+        ipv4_address: ${SONARR_IP} 
+
+  radarr:
+    image: linuxserver/radarr:latest
+    container_name: arr-radarr
+    environment:
+      - PUID=1000
+      - PGID=100
+    volumes:
+      - radarr_config:/config
+      - ${MOVIES_PATH}:/movies 
+      - remote_media:/remote
+      - ${DOWNLOAD_PATH}:/downloads
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "80:7878"
+    restart: unless-stopped
+    depends_on:
+      - delugevpn
+      - prowlarr
+    networks:
+      br1_network:      
+        ipv4_address: ${RADARR_IP} 
+
+  lidarr:
+    image: linuxserver/lidarr:latest
+    container_name: arr-lidarr
+    environment:
+      - PUID=1000
+      - PGID=100
+    volumes:
+      - lidarr_config:/config
+      - ${MUSIC_PATH}:/music
+      - remote_media:/remote
+      - ${DOWNLOAD_PATH}:/downloads
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "80:8686"
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    restart: unless-stopped
+    depends_on:
+      - delugevpn
+      - prowlarr
+    networks:
+      br1_network:      
+        ipv4_address: ${LIDARR_IP} 
+
+  requestrr:
+    image: linuxserver/requestrr:latest
+    container_name: arr-requestrr
+    environment:
+      - PUID=1000
+      - PGID=100
+    volumes:
+      - requestrr_config:/config
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "80:4545"
+    restart: unless-stopped
+    depends_on:
+      - sonarr
+      - radarr
+    networks:
+      br1_network:      
+        ipv4_address: ${REQUESTRR_IP} 
+        
+  readarr:
+    image: linuxserver/readarr:develop
+    container_name: arr-readarr
+    environment:
+      - PUID=1000
+      - PGID=100
+    volumes:
+      - readarr_config:/config
+      - ${BOOKS_PATH}:/books
+      - remote_media:/remote
+      - ${DOWNLOAD_PATH}:/downloads
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "80:4545"
+    restart: unless-stopped
+    depends_on:
+      - delugevpn
+      - prowlarr
+    networks:
+      br1_network:      
+        ipv4_address: ${READARR_IP} 
+        
+volumes:
+  remote_media:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${REMOTE_MEDIA_PATH}
+  deluge_config:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ARR_PATH}/deluge-data
+  prowlarr_config:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ARR_PATH}/prowlarr-data
+  sonarr_config:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ARR_PATH}/sonarr-data
+  radarr_config:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ARR_PATH}/radarr-data
+  readarr_config:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ARR_PATH}/readarr-data
+  lidarr_config:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ARR_PATH}/lidarr-data
+  requestrr_config:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${ARR_PATH}/requestrr-data
+
+networks:
+  br1_network:       # Defines the external Unraid network
+    external:
+      name: br1
