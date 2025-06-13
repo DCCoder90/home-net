@@ -16,7 +16,12 @@ terraform {
 
     portainer = {
       source = "portainer/portainer"
-      version = "1.4.3"
+      version = "1.4.2"
+    }
+
+    docker = {
+      source  = "kreuzwerker/docker"
+      version = "3.6.1"
     }
   }
 }

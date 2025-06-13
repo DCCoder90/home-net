@@ -1,26 +1,9 @@
-terraform {
-  cloud { 
-    
-    organization = "DCCoders" 
-
-    workspaces { 
-      name = "home" 
-    } 
-  } 
-
-  required_providers {
-    portainer = {
-      source = "portainer/portainer"
-      version = "1.4.3"
-    }
-  }
-}
-
-resource "portainer_custom_template" "template" {
-  title        = "Arrrrrr"
-  description  = "Piratey stuff"
-  note = "This is by no means complete.  Need to finish it.  Use Arr env from vaultwarden"
-  platform     = 1
-  type         = 2
-  file_content = file("${path.module}/template.yaml")
+module "service_docker" {
+  source = "../../modules/docker"
+  
+  container_name = "Automated_Test"
+  container_image = "ghcr.io/flaresolverr/flaresolverr:latest"
+  attach_to_br0 = true
+  attach_to_br1 = true
+  br1_ipv4_addr = "192.168.5.111"
 }
