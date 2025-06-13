@@ -62,6 +62,11 @@ resource "docker_container" "container" {
   restart = var.container_restart
   dns     = !contains(["none", "host"], var.container_network_mode) ? var.container_dns_servers : null # Only set DNS if mode is not 'none' or 'host'
   privileged = var.container_privileged_mode
+
+  capabilities {
+    add  = var.container_capabilities.add
+    drop = var.container_capabilities.drop
+  }
 }
 
 resource "docker_image" "main" {

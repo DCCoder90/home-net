@@ -111,3 +111,12 @@ variable "container_network_mode" {
   description = "Network mode for the container. Defaults to 'bridge'. Common values: 'none', 'bridge', 'host', 'container:<name|id>'. If 'none' or 'host' is selected, DNS settings, port mappings, and advanced network attachments (br0, br1 via `attach_to_br0`/`attach_to_br1` variables) will be ignored. To use these features, ensure this is set to a compatible mode like 'bridge'."
   default     = "bridge"
 }
+
+variable "container_capabilities" {
+  description = "Linux capabilities to add or drop for the container. Example: { add = [\"NET_ADMIN\"], drop = [\"SYS_ADMIN\"] }"
+  type = object({
+    add  = optional(list(string))
+    drop = optional(list(string))
+  })
+  default = {} 
+}
