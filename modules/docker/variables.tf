@@ -99,3 +99,9 @@ variable "container_dns_servers" {
   description = "List of DNS servers to use for the container."
   default     = ["8.8.8.8", "1.1.1.1"]
 }
+
+variable "container_privileged_mode" {
+  type        = bool
+  description = "Run the container in privileged mode. Grants the container almost all the capabilities of the host machine."
+  default     = false
+}

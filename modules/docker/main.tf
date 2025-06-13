@@ -58,6 +58,7 @@ resource "docker_container" "container" {
   user    = var.container_user
   restart = var.container_restart
   dns     = var.container_dns_servers
+  privileged = var.container_privileged_mode
 }
 
 resource "docker_image" "ubuntu" {
