@@ -11,6 +11,7 @@ resource "docker_container" "container" {
   name  = var.container_name
   image = docker_image.ubuntu.image_id
   env = var.environment_vars
+  attach = false
 
   dynamic "networks_advanced" {
     for_each = var.attach_to_br1 ? [1] : [] 
@@ -56,6 +57,7 @@ resource "docker_container" "container" {
 
   user    = var.container_user
   restart = var.container_restart
+  dns     = var.container_dns_servers
 }
 
 resource "docker_image" "ubuntu" {

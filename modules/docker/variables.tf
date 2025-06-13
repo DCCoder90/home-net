@@ -93,3 +93,9 @@ variable "container_volumes" {
     error_message = "A volume entry must specify either 'host_path' or 'volume_name'."
   }
 }
+
+variable "container_dns_servers" {
+  type        = list(string)
+  description = "List of DNS servers to use for the container."
+  default     = ["8.8.8.8", "1.1.1.1"]
+}
