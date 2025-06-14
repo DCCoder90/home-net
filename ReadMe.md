@@ -1,62 +1,38 @@
-# Terraform Providers Repository
+# Home-Net
 
-This repository contains configurations and documentation for various Terraform providers. Each provider listed below is used to manage specific resources and services. The repository is structured to help users integrate these providers into their Terraform projects.
+This repository contains Terraform configurations for managing various services and infrastructure components within my home network.
 
-## Providers
+## Modules
 
-Below is a list of the Terraform providers referenced in this repository:
+Reusable Terraform modules are located in the `modules/` directory. These modules are designed to be configurable and handle specific types of deployments.
 
-1. [Authentik Provider](https://registry.terraform.io/providers/goauthentik/authentik/latest/docs)  
-   Manage resources for the Authentik identity provider.
+## Services
 
-2. [NGINX Proxy Manager Provider](https://registry.terraform.io/providers/Sander0542/nginxproxymanager/latest)  
-   Manage resources for NGINX Proxy Manager.
+The `services/` directory contains specific Terraform configurations that deploy various applications and services within the home network. These configurations make use of the reusable modules defined in the `modules/` directory. Each subdirectory within `services/` typically represents a distinct service or a group of related services.
 
-3. [Portainer Provider](https://registry.terraform.io/providers/portainer/portainer/latest)  
-   Manage resources for Portainer, a container management platform.
+## Prerequisites
 
-4. [Technitium Provider](https://registry.terraform.io/providers/kevynb/technitium/latest)  
-   Manage resources for Technitium DNS Server.
-
-5. [Cloudflare Provider](https://registry.terraform.io/providers/cloudflare/cloudflare/5.4.0/docs/resources/dns_record)  
-   Manage DNS records and other resources for Cloudflare.
+*   **Target Environment:** This setup is primarily designed to run on an **Unraid server**.
+*   **Terraform Agent:** A Terraform agent (e.g., HCP Terraform self-hosted agent, GitLab Runner, GitHub Actions self-hosted runner, etc.) must be running on the Unraid server.
+    *   This agent requires **direct access to the Docker socket** (typically `/var/run/docker.sock`) to manage Docker resources. Ensure the user running the agent has the necessary permissions.
+*   **Terraform CLI:** Terraform (version compatible with the configurations, e.g., v1.12.2 or later) installed on the machine where `terraform plan/apply` commands are initiated or on the agent itself.
+*   **Docker:** Docker must be installed and running on the Unraid server.
 
 ## Usage
 
-To use any of the providers listed above, include the corresponding provider block in your Terraform configuration file. Below is an example of how to configure a provider:
-
-```hcl
-provider "cloudflare" {
-  email   = "your-email@example.com"
-  api_key = "your-api-key"
-}
-```
-
-Refer to the official documentation linked above for detailed usage instructions for each provider.
-
-### Prerequisites
-Before using this repository, ensure you have the following installed:
-
-- Terraform (latest version recommended)
-- Access credentials for the services you intend to manage (e.g., API keys, tokens, etc.)
-
-### Getting Started
-1. Clone this repository:
-
-```shell
-git clone <repository-url>
-cd <repository-directory>
-```
-
-2. Initialize Terraform:
-
-```shell
-terraform init
-```
-
-3. Customize the configuration files to suit your environment.
-4. Apply the configuration:
-
-```shell
-terraform apply
-```
+1.  **Clone the repository:**
+    ```bash
+    git clone <repository-url>
+    cd home-net
+    ```
+2.  **Configure Backend:**
+    Ensure your Terraform backend (e.g., HCP Terraform, S3) is configured in your root `main.tf` file.
+3.  **Initialize Terraform:**
+    ```bash
+    terraform init
+    ```
+4.  **Review and Apply:**
+    ```bash
+    terraform plan
+    terraform apply
+    ```
