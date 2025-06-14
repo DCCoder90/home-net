@@ -1,12 +1,12 @@
 terraform {
-  cloud { 
-    
-    organization = "DCCoders" 
+  cloud {
 
-    workspaces { 
-      name = "home" 
-    } 
-  }  
+    organization = "DCCoders"
+
+    workspaces {
+      name = "home"
+    }
+  }
 
   required_providers {
     nginxproxymanager = {
@@ -15,7 +15,7 @@ terraform {
     }
 
     portainer = {
-      source = "portainer/portainer"
+      source  = "portainer/portainer"
       version = "1.4.2"
     }
 

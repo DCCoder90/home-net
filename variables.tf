@@ -1,5 +1,5 @@
 variable "nginx_proxy_address" {
-    type = string
+  type = string
 }
 
 variable "nginx_proxy_user" {
