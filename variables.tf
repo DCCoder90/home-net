@@ -29,3 +29,8 @@ variable "technitium_host" {
   type        = string
   description = "Host for technitium"
 }
+
+variable "public_facing_ip" {
+  type        = string
+  description = "My public facing IP address"
+}

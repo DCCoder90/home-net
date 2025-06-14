@@ -85,12 +85,6 @@ variable "domain_name" {
   type        = string
 }
 
-variable "zone_id" {
-  description = "Cloudflare zone ID for the DNS record"
-  type        = string
-  default     = ""
-}
-
 variable "proxied_domain" {
   description = "If true, the DNS record is proxied through Cloudflare"
   type        = bool

@@ -13,6 +13,11 @@ variable "access_list_id" {
   description = ""
 }
 
+variable "public_facing_ip" {
+  type = string
+  description = ""
+}
+
 locals {
   domain_name="test.mallett.family"
   ip_address = "192.168.5.13"
@@ -40,4 +45,5 @@ module "service_dns" {
   service_ipv4 = local.ip_address
   admin_email = var.admin_email
   dns_cloudflare_api_token = var.cloudflare_token
+  external_host_ipv4 = var.public_facing_ip
 }
