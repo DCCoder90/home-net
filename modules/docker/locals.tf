@@ -3,4 +3,14 @@ locals {
     for idx, vol_config in var.container_volumes : idx => vol_config
     if vol_config.volume_name != null && coalesce(vol_config.manage_volume_lifecycle, true)
   }
+
+  effective_network_mode = (
+    var.container_network_mode == "host" ? "host" : (
+      var.attach_to_br1 ? null : (
+        var.attach_to_br0 ? null : (
+          var.container_network_mode
+        )
+      )
+    )
+  )
 }

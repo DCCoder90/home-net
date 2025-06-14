@@ -7,33 +7,60 @@ terraform {
   }
 }
 
+data "docker_network" "main_host" { // For br1
+  provider = docker
+  name     = "br1"
+}
+
+data "docker_network" "secondary_host" { // For br0
+  provider = docker
+  name     = "br0"
+}
+
 resource "docker_container" "container" {
-  name  = var.container_name
-  image = docker_image.main.image_id
-  env = var.environment_vars
-  attach = false
-  network_mode = var.container_network_mode
+  lifecycle {
+    ignore_changes = [
+      # List of attribute names to ignore
+      max_retry_count,
+      dns_opts,
+      dns_search,
+      command,
+      cpu_shares,
+      storage_opts,
+      sysctls,
+      tmpfs,
+      group_add,
+      log_opts,
+      memory,
+      memory_swap
+    ]
+  }
+
+  name              = var.container_name
+  image             = docker_image.main.image_id
+  env               = var.environment_vars
+  attach            = false
+  network_mode      = local.effective_network_mode
+  publish_all_ports = false
 
   dynamic "networks_advanced" {
-    # Attach to br1 if requested and network mode is not 'host'
-    for_each = var.attach_to_br1 && var.container_network_mode != "host" ? [1] : []
+    for_each = var.attach_to_br1 && local.effective_network_mode != "host" ? [1] : []
     content {
       name         = data.docker_network.main_host.name
-      ipv4_address = var.br1_ipv4_addr 
+      ipv4_address = var.br1_ipv4_addr
     }
   }
 
   dynamic "networks_advanced" {
-    for_each = var.attach_to_br0 && var.container_network_mode != "host" ? [1] : []
+    for_each = var.attach_to_br0 && local.effective_network_mode != "host" ? [1] : []
     content {
-      name         = data.docker_network.secondary_host.name 
-      ipv4_address = var.br0_ipv4_addr                     
+      name         = data.docker_network.secondary_host.name
+      ipv4_address = var.br0_ipv4_addr
     }
   }
 
   dynamic "ports" {
-    # Map ports if network mode is not 'host'
-    for_each = var.container_network_mode != "host" ? var.container_ports : []
+    for_each = local.effective_network_mode != "host" ? var.container_ports : []
     content {
       internal = ports.value.internal
       external = ports.value.external # If null, Docker will assign a random host port
@@ -49,8 +76,8 @@ resource "docker_container" "container" {
     content {
       container_path = vol_iterator.value.container_path
       read_only      = vol_iterator.value.read_only
-      host_path      = vol_iterator.value.host_path                                                              # Will be null if volume_name is used
-      volume_name    = vol_iterator.value.volume_name != null ? (
+      host_path      = vol_iterator.value.host_path # Will be null if volume_name is used
+      volume_name = vol_iterator.value.volume_name != null ? (
         coalesce(vol_iterator.value.manage_volume_lifecycle, true) ?
         docker_volume.managed_volumes[vol_iterator.key].name : # References module-created volume
         vol_iterator.value.volume_name                         # Uses pre-existing volume name directly
@@ -58,9 +85,9 @@ resource "docker_container" "container" {
     }
   }
 
-  user    = var.container_user
-  restart = var.container_restart
-  dns     = var.container_network_mode != "host" ? var.container_dns_servers : null # Only set DNS if mode is not 'host'
+  user       = var.container_user
+  restart    = var.container_restart
+  dns        = local.effective_network_mode != "host" ? var.container_dns_servers : null
   privileged = var.container_privileged_mode
 
   capabilities {

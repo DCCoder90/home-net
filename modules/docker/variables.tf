@@ -1,53 +1,53 @@
-variable "container_name"{
-    type = string
-    description = "Name for the container to be created"
+variable "container_name" {
+  type        = string
+  description = "Name for the container to be created"
 }
 
-variable "container_image"{
-    type = string
-    description = "Name and tag of the image to use (ex. ubuntu:latest)"
+variable "container_image" {
+  type        = string
+  description = "Name and tag of the image to use (ex. ubuntu:latest)"
 }
 
-variable "environment_vars"{
-    type=set(string)
-    description = "Environment variables to set in the form of KEY=VALUE"
-    default = null
+variable "environment_vars" {
+  type        = set(string)
+  description = "Environment variables to set in the form of KEY=VALUE"
+  default     = null
 }
 
-variable "attach_to_br1"{
-    type = bool
-    description = "Attach to br1 network?"
-    default = false
+variable "attach_to_br1" {
+  type        = bool
+  description = "Attach to br1 network?"
+  default     = false
 }
 
-variable "attach_to_br0"{
-    type = bool
-    description = "Attach to br0 network?"
-    default = false
+variable "attach_to_br0" {
+  type        = bool
+  description = "Attach to br0 network?"
+  default     = false
 }
 
-variable "br1_ipv4_addr"{
-    type = string
-    description = "IPv4 address to assign on network br1"
-    default = null
+variable "br1_ipv4_addr" {
+  type        = string
+  description = "IPv4 address to assign on network br1"
+  default     = null
 }
 
-variable "br0_ipv4_addr"{
-    type = string
-    description = "IPv4 address to assign on network br0"
-    default = null
+variable "br0_ipv4_addr" {
+  type        = string
+  description = "IPv4 address to assign on network br0"
+  default     = null
 }
 
-variable "container_restart"{
-    type = string
-    description = "The restart policy for the container. Must be one of 'no', 'on-failure', 'always', 'unless-stopped'."
-    default = "unless-stopped"
+variable "container_restart" {
+  type        = string
+  description = "The restart policy for the container. Must be one of 'no', 'on-failure', 'always', 'unless-stopped'."
+  default     = "unless-stopped"
 }
 
 variable "container_user" {
-    type = string
-    default = null
-    description = "User used for run the first process. Format is user or user:group which user and group can be passed literraly or by name."
+  type        = string
+  default     = null
+  description = "User used for run the first process. Format is user or user:group which user and group can be passed literraly or by name."
 }
 
 variable "container_ports" {
@@ -68,17 +68,17 @@ variable "container_volumes" {
     read_only      = optional(bool, false)
 
     # For bind mounts
-    host_path      = optional(string)
+    host_path = optional(string)
 
     # For Docker-managed named volumes
-    volume_name    = optional(string)
+    volume_name             = optional(string)
     manage_volume_lifecycle = optional(bool, true) # If true (default), module creates/manages the named volume. If false, assumes volume_name exists.
     # Options for creating the named volume (used only if volume_name is set AND manage_volume_lifecycle is true)
-    driver         = optional(string)
-    driver_opts    = optional(map(string))
-    labels         = optional(map(string))
+    driver      = optional(string)
+    driver_opts = optional(map(string))
+    labels      = optional(map(string))
   }))
-  default     = []
+  default = []
 
   validation {
     condition = alltrue([
@@ -109,11 +109,15 @@ variable "container_privileged_mode" {
 variable "container_network_mode" {
   type        = string
   description = <<-EOT
-    Network mode for the container. Defaults to 'null'. Common values: 'none', 'bridge', 'host', 'container:<name|id>'.
-    - 'bridge': Connects to the default Docker bridge network. Can be combined with `attach_to_br0`/`attach_to_br1`.
-    - 'none': Creates the container without a default network interface. Use `attach_to_br0`/`attach_to_br1` to connect to specific networks only.
-    - 'host': Uses the host's network stack. DNS, port mappings, and `attach_to_br0`/`attach_to_br1` are ignored.
-    DNS and port mappings are generally applied unless `network_mode` is 'host'.
+    Base network mode for the container. Defaults to 'null'. Common values: 'none', 'bridge', 'host', 'container:<name|id>'.
+    Gateway Priority:
+    - If `attach_to_br1` is true, 'br1' will become the primary network, overriding this mode unless it's 'host'.
+    - Else if `attach_to_br0` is true, 'br0' will become the primary network, overriding this mode unless it's 'host'.
+    Behavior for modes:
+    - 'bridge': (Default if not overridden by br1/br0) Connects to the default Docker bridge.
+    - 'none': If neither br1 nor br0 are attached, creates the container without a network interface. If br1 or br0 are attached, one of them becomes the primary.
+    - 'host': Uses the host's network stack. DNS, port mappings, and `attach_to_br0`/`attach_to_br1` are ignored by the module.
+    DNS and port mappings are applied unless the effective network mode is 'host'.
   EOT
   default     = null
 }

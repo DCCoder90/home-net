@@ -3,7 +3,7 @@ output "name" {
   value       = docker_container.container.name
 }
 
-output "image_name"{
+output "image_name" {
   description = "The name of the image used by this Docker container."
   value       = docker_container.container.image
 }
