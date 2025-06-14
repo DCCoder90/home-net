@@ -1,6 +1,6 @@
 data "authentik_group" "access_group" {
   count = var.access_group == null ? 0 : 1
-  name  = var.access_group_name
+  name  = var.access_group
 }
 
 # Create a policy for the specified group

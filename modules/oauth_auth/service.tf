@@ -22,7 +22,7 @@ resource "authentik_provider_oauth2" "name" {
   client_id             = random_string.example.result
   authorization_flow    = authentik_flow.default-authorization-flow.id
   invalidation_flow     = authentik_flow.default-invalidation-flow.id
-  allowed_redirect_uris = var.redirect_uris
+  //allowed_redirect_uris = var.redirect_uris
 }
 
 resource "authentik_application" "name" {

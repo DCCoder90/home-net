@@ -22,13 +22,13 @@ variable "description" {
 variable "group" {
   description = "Group to assign the application to"
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "access_group" {
   description = "Group to assign access to the application"
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "username_attribute" {
