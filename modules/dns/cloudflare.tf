@@ -22,6 +22,6 @@ resource "cloudflare_dns_record" "ipv6_dns_record" {
   content = var.external_host_ipv6
   name    = var.domain_name
   proxied = var.proxied_domain
-  ttl     = var.ttl
+  ttl     = var.proxied_domain == true ? 1 : var.ttl
   type    = "AAAA"
 }
