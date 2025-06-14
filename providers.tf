@@ -12,3 +12,7 @@ provider "technitium" {
   url   = var.technitium_host
   token = var.technitium_api_token
 }
+
+provider "cloudflare" {
+  api_token = var.cloudflare_api_token
+}

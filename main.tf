@@ -23,6 +23,11 @@ terraform {
       source  = "kevynb/technitium"
       version = "0.2.0"
     }
+
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~> 5"
+    }
   }
 }
 

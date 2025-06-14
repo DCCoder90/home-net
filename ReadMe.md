@@ -2,6 +2,13 @@
 
 This repository contains Terraform configurations for managing various services and infrastructure components within my home network.
 
+Quick note:
+
+Cloudflare API token must have these permissions:
+- Zone:Read
+- DNS:Edit
+
+
 ## Modules
 
 Reusable Terraform modules are located in the `modules/` directory. These modules are designed to be configurable and handle specific types of deployments.
