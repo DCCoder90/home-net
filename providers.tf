@@ -4,10 +4,11 @@ provider "nginxproxymanager" {
   password = var.nginx_proxy_pass
 }
 
-provider "portainer" {
-}
-
-//The Agent is running on the host that has docker, so we'll just connect directly to the socket
 provider "docker" {
   host = "unix:///var/run/docker.sock"
+}
+
+provider "technitium" {
+  url   = var.technitium_host
+  token = var.technitium_api_token
 }

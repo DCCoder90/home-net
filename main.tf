@@ -14,14 +14,14 @@ terraform {
       version = "1.1.1"
     }
 
-    portainer = {
-      source  = "portainer/portainer"
-      version = "1.4.2"
-    }
-
     docker = {
       source  = "kreuzwerker/docker"
       version = "3.6.2"
+    }
+
+    technitium = {
+      source  = "kevynb/technitium"
+      version = "0.2.0"
     }
   }
 }

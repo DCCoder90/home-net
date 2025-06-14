@@ -4,10 +4,27 @@ variable "internal_only" {
   default     = false
 }
 
+variable "access_list_id" {
+  type = string
+  description = "ID of access list in NGINX"
+  default = null
+}
+
 variable "service_port" {
   description = "Port on which the service is running"
   type        = number
   default     = 80
+}
+
+variable "service_ipv4" {
+  description = "IPv4 address of the service"
+  type        = string
+}
+
+variable "forward_scheme" {
+  description = "Scheme of forwarded service"
+  type        = string
+  default = "http"
 }
 
 variable "dns_cloudflare_api_token" {
@@ -20,7 +37,6 @@ variable "dns_cloudflare_api_token" {
 variable "admin_email" {
   description = "Email address for the admin user"
   type        = string
-  default     = ""
 }
 
 variable "external_host_ipv4" {
@@ -72,6 +88,7 @@ variable "domain_name" {
 variable "zone_id" {
   description = "Cloudflare zone ID for the DNS record"
   type        = string
+  default     = ""
 }
 
 variable "proxied_domain" {
