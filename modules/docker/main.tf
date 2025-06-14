@@ -2,9 +2,13 @@ terraform {
   required_providers {
     docker = {
       source  = "kreuzwerker/docker"
-      version = "3.6.1"
+      version = "3.6.2"
     }
   }
+}
+
+resource "docker_image" "main" {
+  name = var.container_image
 }
 
 resource "docker_container" "container" {
@@ -14,6 +18,21 @@ resource "docker_container" "container" {
   attach = false
   network_mode = local.effective_network_mode
   publish_all_ports = false
+  cpu_shares = null
+  dns_opts = null
+  dns_search = null
+  group_add = null
+  max_retry_count = null
+  memory = null
+  memory_swap = null
+  storage_opts = null
+  sysctls = null
+  tmpfs = null
+  working_dir = null
+  user = var.container_user
+  restart = var.container_restart
+  dns     = local.effective_network_mode != "host" ? var.container_dns_servers : null
+  privileged = var.container_privileged_mode
 
   dynamic "networks_advanced" {
     for_each = var.attach_to_br1 && local.effective_network_mode != "host" ? [1] : []
@@ -57,19 +76,10 @@ resource "docker_container" "container" {
     }
   }
 
-  user    = var.container_user
-  restart = var.container_restart
-  dns     = local.effective_network_mode != "host" ? var.container_dns_servers : null
-  privileged = var.container_privileged_mode
-
   capabilities {
     add  = var.container_capabilities.add
     drop = var.container_capabilities.drop
   }
-}
-
-resource "docker_image" "main" {
-  name = var.container_image
 }
 
 resource "docker_volume" "managed_volumes" {
