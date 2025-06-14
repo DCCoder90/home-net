@@ -1,7 +1,3 @@
-module "nginx" {
-  source = "../nginx_config"
-}
-
 resource "nginxproxymanager_certificate_letsencrypt" "certificate" {
   domain_names = [var.domain_name]
 
@@ -10,34 +6,27 @@ resource "nginxproxymanager_certificate_letsencrypt" "certificate" {
 
   dns_challenge            = true
   dns_provider             = "cloudflare"
-  dns_provider_credentials = var.dns_cloudflare_api_token
+  dns_provider_credentials = "dns_cloudflare_api_token=${var.dns_cloudflare_api_token}"
+  propagation_seconds = 10
 }
 
-data "nginxproxymanager_access_list" "access_list" {
-  id = var.internal_only ? module.nginx.outputs.internal_access_list_id : module.nginx.outputs.cloudflare_access_list_id
-}
+//This is just commented out for now, because ultimately I'd rather manage this from here than passing it in the other way
+//data "nginxproxymanager_access_list" "access_list" {
+//  id = var.internal_only ? module.nginx.internal_access_list_id : module.nginx.cloudflare_access_list_id
+//}
 
 resource "nginxproxymanager_proxy_host" "host" {
   domain_names = [var.domain_name]
 
-  forward_scheme = "https"
-  forward_host   = var.domain_name
-  forward_port   = 443
+  forward_scheme = var.forward_scheme
+  forward_host   = var.service_ipv4
+  forward_port   = var.service_port
 
   caching_enabled         = true
   allow_websocket_upgrade = true
   block_exploits          = true
 
-  access_list_id = data.nginxproxymanager_access_list.access_list.id
-
-  locations = [
-    {
-      path           = "/"
-      forward_scheme = "http"
-      forward_host   = var.internal_host_ipv4 != "" ? var.internal_host_ipv4 : var.internal_host_ipv6
-      forward_port   = var.service_port
-    }
-  ]
+  access_list_id = var.access_list_id
 
   certificate_id  = nginxproxymanager_certificate_letsencrypt.certificate.id
   ssl_forced      = true
