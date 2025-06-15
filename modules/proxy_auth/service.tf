@@ -4,6 +4,10 @@ data "authentik_flow" "default-authorization-flow" {
   slug = "default-provider-authorization-implicit-consent"
 }
 
+data "authentik_flow" "default-invalidation-flow" {
+  slug = "default-invalidation-flow"
+}
+
 resource "authentik_provider_proxy" "name" {
   name                          = lower(replace(var.name, " ", "-"))
   internal_host                 = var.internal_host
@@ -12,6 +16,7 @@ resource "authentik_provider_proxy" "name" {
   basic_auth_username_attribute = var.username_attribute
   basic_auth_enabled            = true
   authorization_flow            = data.authentik_flow.default-authorization-flow.id
+  invalidation_flow             = data.authentik_flow.default-invalidation-flow.id
 }
 
 resource "authentik_application" "name" {

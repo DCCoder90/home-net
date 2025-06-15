@@ -28,9 +28,18 @@ terraform {
       source  = "cloudflare/cloudflare"
       version = "~> 5"
     }
+
+    authentik = {
+      source  = "goauthentik/authentik"
+      version = "2025.4.0"
+    }
   }
 }
 
 module "nginx_conf" {
   source = "./modules/nginx_config"
+}
+
+locals {
+  config  = yamldecode(file("${path.module}/config.yaml"))
 }

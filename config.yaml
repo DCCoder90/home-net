@@ -1,0 +1,4 @@
+system:
+services:
+  authentik:
+    admin-user: ""
