@@ -15,14 +15,38 @@ data "authentik_flow" "default-invalidation-flow" {
   slug = "default-invalidation-flow"
 }
 
+data "authentik_flow" "default-provider-authorization-implicit-consent" {
+  slug = "default-provider-authorization-implicit-consent"
+}
+
+data "authentik_property_mapping_provider_scope" "scope-email" {
+  name = "authentik default OAuth Mapping: OpenID 'email'"
+}
+
+data "authentik_property_mapping_provider_scope" "scope-profile" {
+  name = "authentik default OAuth Mapping: OpenID 'profile'"
+}
+
+data "authentik_property_mapping_provider_scope" "scope-openid" {
+  name = "authentik default OAuth Mapping: OpenID 'openid'"
+}
+
 # Create an OAuth2 Provider
 
 resource "authentik_provider_oauth2" "name" {
   name                  = lower(replace(var.name, " ", "-"))
   client_id             = random_string.example.result
-  authorization_flow    = authentik_flow.default-authorization-flow.id
-  invalidation_flow     = authentik_flow.default-invalidation-flow.id
-  //allowed_redirect_uris = var.redirect_uris
+  authorization_flow    = data.authentik_flow.default-authorization-flow.id
+  invalidation_flow     = data.authentik_flow.default-invalidation-flow.id
+
+
+  allowed_redirect_uris = var.allowed_redirect_uris
+
+  property_mappings = [
+    data.authentik_property_mapping_provider_scope.scope-email.id,
+    data.authentik_property_mapping_provider_scope.scope-profile.id,
+    data.authentik_property_mapping_provider_scope.scope-openid.id,
+  ]
 }
 
 resource "authentik_application" "name" {
