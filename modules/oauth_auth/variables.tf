@@ -18,19 +18,22 @@ variable "group" {
 variable "create_access_group" {
   type        = bool
   default     = false
-  description = "If true, create new access group, otherwise use pre-created access group"
+  description = "If true, create new access group(s), otherwise use pre-created access group(s)"
 }
 
 variable "access_group_name" {
-  description = "Group to assign access to the application"
-  type        = string
-  default     = ""
+  description = "Group(s) to assign access to the application. If create_access_group is true, these groups will be created."
+  type        = list(string)
+  default     = [] 
 }
 
 variable "user_to_add_to_access_group" {
-  type        = string
-  description = "User to add to access group"
-  default = ""
+  type        = list(object({
+    username = string
+    groups   = list(string) 
+  }))
+  description = "List of users to add to access groups. Each object must have 'username' and 'groups' (list of group names)."
+  default     = [] 
 }
 
 variable "access_group_roles" {

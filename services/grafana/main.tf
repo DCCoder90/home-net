@@ -17,15 +17,10 @@ module "service_docker" {
     "GF_AUTH_GENERIC_OAUTH_TOKEN_URL=${local.auth_domain}/application/o/token/",
     "GF_AUTH_GENERIC_OAUTH_API_URL=${local.auth_domain}/application/o/userinfo/",
     "GF_AUTH_SIGNOUT_REDIRECT_URL=${local.auth_domain}/application/o/${module.authentication.application_slug}/end-session/",
-    "GF_SERVER_ROOT_URL=/",
+    "GF_SERVER_ROOT_URL=https://${local.domain_name}",
+    "GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH=contains(groups, 'Grafana Admins') && 'Admin' || contains(groups, 'Grafana Editors') && 'Editor' || 'Viewer'"
     ]
 }
-
-/*
-environment:
-    # Optionally map user groups to Grafana roles
-    GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH: "contains(groups, 'Grafana Admins') && 'Admin' || contains(groups, 'Grafana Editors') && 'Editor' || 'Viewer'"
-*/
 
 module "service_dns" {
   source = "../../modules/dns"
@@ -55,6 +50,13 @@ module "authentication" {
   name = local.app_name
   
   create_access_group = true
-  access_group_name = "terraform_${local.app_name}"
-  user_to_add_to_access_group = var.admin_username
+  access_group_name   = ["TF Grafana Admins", "TF Grafana Editors"] 
+  
+  user_to_add_to_access_group = [
+    {
+      username = var.admin_username
+      groups   = ["TF Grafana Admins"]
+    }
+  ]
+
 }
