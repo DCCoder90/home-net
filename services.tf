@@ -1,3 +1,10 @@
+module "authentik"{
+  source = "./modules/authentik"
+
+  admin_email      = var.network_admin_email
+  admin_username   = var.network_admin_username
+}
+
 /*
 module "arr_service" {
   source = "./services/arrr"
