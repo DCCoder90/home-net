@@ -57,6 +57,8 @@ This is run on a self-hosted agent on the Unraid Server.  This is invoked using 
 |AUTHENTIK_INSECURE|env|N|
 |AUTHENTIK_TOKEN|env|Y|
 |AUTHENTIK_URL|env|N|
+|network_admin_username|terraform|N|
+|network_admin_email|terraform|Y|
 
 You may be wondering why some things such as "public facing API" and "network admin email" are set to sensitive.  Well, I want to update this soon to be invoked here by github actions, and honestly I don't want the world knowing those details.  Aside from that, there's no reason for them to be marked sensitive.
 
