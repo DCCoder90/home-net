@@ -2,12 +2,7 @@
 
 This repository contains Terraform configurations for managing various services and infrastructure components within my home network.
 
-Quick note:
-
-Cloudflare API token must have these permissions:
-- Zone:Read
-- DNS:Edit
-
+Should I move this from Terraform to OpenTofu?  Hmmm....
 
 ## Modules
 
@@ -43,3 +38,35 @@ The `services/` directory contains specific Terraform configurations that deploy
     terraform plan
     terraform apply
     ```
+
+
+## How is this run?
+
+This is run on a self-hosted agent on the Unraid Server.  This is invoked using HCP Terraform, the state is managed by HCP Terraform and I have the following variables set:
+
+|Variable Name|Type|Sensitive?|
+|---|---|---|
+|cloudflare_api_token|terraform|Y|
+|network_admin_email|terraform|Y|
+|nginx_proxy_address|terraform|N|
+|nginx_proxy_pass|terraform|Y|
+|nginx_proxy_user|terraform|Y|
+|public_facing_ip|terraform|Y|
+|technitium_api_token|terraform|Y|
+|technitium_host|terraform|N|
+|AUTHENTIK_INSECURE|env|N|
+|AUTHENTIK_TOKEN|env|Y|
+|AUTHENTIK_URL|env|N|
+
+You may be wondering why some things such as "public facing API" and "network admin email" are set to sensitive.  Well, I want to update this soon to be invoked here by github actions, and honestly I don't want the world knowing those details.  Aside from that, there's no reason for them to be marked sensitive.
+
+
+Quick note:
+
+Cloudflare API token must have these permissions:
+- Zone:Read
+- DNS:Edit
+
+## Purpose
+
+I want an easy way to automate and keep track of my local home lab.  It would be nice to also have a way to easily and quickly recreate it in case of a catastrophic failure (flood, house fire, etc etc)

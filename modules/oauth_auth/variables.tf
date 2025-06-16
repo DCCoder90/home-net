@@ -1,13 +1,3 @@
-variable "internal_host" {
-  description = "If true, the application is only accessible internally"
-  type        = bool
-}
-
-variable "external_host" {
-  description = "If true, the application is only accessible internally"
-  type        = bool
-}
-
 variable "name" {
   description = "Name of the application"
   type        = string
@@ -22,32 +12,43 @@ variable "description" {
 variable "group" {
   description = "Group to assign the application to"
   type        = string
-  default     = ""
+  default     = null
 }
 
-variable "access_group" {
-  description = "Group to assign access to the application"
-  type        = string
-  default     = ""
+variable "create_access_group" {
+  type        = bool
+  default     = false
+  description = "If true, create new access group(s), otherwise use pre-created access group(s)"
 }
 
-variable "username_attribute" {
-  description = "The attribute to use for the username in basic auth"
-  type        = string
-  default     = "username"
-}
-
-variable "password_attribute" {
-  description = "The attribute to use for the password in basic auth"
-  type        = string
-  default     = "password"
-}
-
-variable "redirect_uris" {
-  description = "List of redirect URIs for the OAuth2 provider"
+variable "access_group_name" {
+  description = "Group(s) to assign access to the application. If create_access_group is true, these groups will be created."
   type        = list(string)
+  default     = [] 
+}
+
+variable "user_to_add_to_access_group" {
+  type        = list(object({
+    username = string
+    groups   = list(string) 
+  }))
+  description = "List of users to add to access groups. Each object must have 'username' and 'groups' (list of group names)."
+  default     = [] 
+}
+
+variable "access_group_roles" {
+  type        = list(string)
+  description = "Roles to add to access group (if create_access_group = true)"
+  default     = []
+}
+
+variable "allowed_redirect_uris" {
+  description = "List of redirect URIs for the OAuth2 provider"
+  type        = list(map(string))
   default = [
-    "https://example.com/callback",
-    "http://localhost:3000/callback"
+    {
+      matching_mode = "strict",
+      url           = "http://localhost",
+    }
   ]
 }

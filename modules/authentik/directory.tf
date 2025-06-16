@@ -1,6 +1,6 @@
-resource "authentik_user" "dccoder" {
-  username = "DCCoder"
-  email    = var.dccoder_email
+resource "authentik_user" "admin_user" {
+  username = var.admin_username
+  email    = var.admin_email
 }
 
 resource "authentik_user" "name" {
@@ -13,6 +13,6 @@ resource "authentik_user" "name" {
 
 resource "authentik_group" "group" {
   name         = "tf_admins"
-  users        = [authentik_user.dccoder.id]
+  users        = [authentik_user.admin_user.id]
   is_superuser = true
 }

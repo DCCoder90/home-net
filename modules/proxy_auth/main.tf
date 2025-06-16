@@ -6,3 +6,10 @@ terraform {
     }
   }
 }
+
+resource "authentik_outpost" "outpost" {
+  name = "tf_${var.name}_outpost"
+  protocol_providers = [
+    authentik_provider_proxy.name.id
+  ]
+}

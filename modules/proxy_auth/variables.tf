@@ -1,11 +1,11 @@
 variable "internal_host" {
-  description = "If true, the application is only accessible internally"
-  type        = bool
+  description = "The IP and port used to connect the the application"
+  type        = string
 }
 
 variable "external_host" {
-  description = "If true, the application is only accessible internally"
-  type        = bool
+  description = "The domain name used to access the application, (includes HTTPS)"
+  type        = string
 }
 
 variable "name" {
@@ -25,10 +25,34 @@ variable "group" {
   default     = ""
 }
 
-variable "access_group" {
+variable "create_access_group" {
+  type        = bool
+  default     = false
+  description = "If true, create new access group, otherwise use pre-created access group"
+}
+
+variable "access_group_name" {
   description = "Group to assign access to the application"
   type        = string
   default     = ""
+}
+
+variable "user_to_add_to_access_group" {
+  type        = string
+  description = "User to add to access group"
+  default = ""
+}
+
+variable "access_group_roles" {
+  type        = list(string)
+  description = "Roles to add to access group (if create_access_group = true)"
+  default     = []
+}
+
+variable "access_group_attributes" {
+  type        = string
+  description = "JSON format expected. Use jsonencode() to pass objects. "
+  default     = "{}"
 }
 
 variable "username_attribute" {

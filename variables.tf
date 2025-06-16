@@ -34,3 +34,8 @@ variable "public_facing_ip" {
   type        = string
   description = "My public facing IP address"
 }
+
+variable "network_admin_username" {
+  type        = string
+  description = "Admin username"
+}

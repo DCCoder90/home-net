@@ -1,6 +1,9 @@
-variable "dccoder_email" {
-  description = "My email address"
-  default     = ""
+variable "admin_email" {
+  description = "Admin email address"
+}
+
+variable "admin_username" {
+  description = "Admin username"
 }
 
 variable "users" {
