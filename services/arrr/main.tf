@@ -1,36 +1,8 @@
-variable "cloudflare_token" {
-  type = string
-  description = "Cloudflare API token"
-}
-
-variable "admin_email" {
-  type = string
-  description = "Network admin email address"
-}
-
-variable "access_list_id" {
-  type = string
-  description = ""
-}
-
-variable "public_facing_ip" {
-  type = string
-  description = ""
-}
-
-locals {
-  domain_name="test.mallett.family"
-  ip_address = "192.168.5.13"
-  username = ""
-  password = ""
-  authentik_ip = ""
-}
-
 module "service_docker" {
   source = "../../modules/docker"
   
   container_name = "AAutomated_Test"
-  container_image = "linuxserver/prowlarr:2.0.0-nightly"
+  container_image = "linuxserver/prowlarr:1.37.0"
   attach_to_br0 = false
   attach_to_br1 = true
   br1_ipv4_addr = local.ip_address
@@ -40,7 +12,7 @@ module "service_dns" {
   source = "../../modules/dns"
   
   internal_only = true
-  service_port = 9696
+  service_port = 9000//local.service_port  - If using proxy_auth it needs to be the port to authentik
   zone_name = "mallett.family"
   domain_name = local.domain_name
   access_list_id = var.access_list_id
@@ -56,14 +28,14 @@ module "service_dns" {
 module "authentication" {
   source = "../../modules/proxy_auth"
   
-  internal_host = local.ip_address
+  internal_host = "http://${local.ip_address}:${local.service_port}"
   external_host = local.domain_name
   name = "prowlarr"
   username_attribute = "prowlarr_username"
   password_attribute = "prowlarr_password"
   create_access_group = true
   access_group_name = "terraform_prowlarr"
-  user_to_add_to_access_group = "MyAwesomeUser!"
+  user_to_add_to_access_group = var.admin_username
   access_group_attributes = jsonencode(
     {
       prowlarr_username: local.username,
