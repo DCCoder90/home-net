@@ -13,10 +13,10 @@ module "service_docker" {
     "GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET=${module.authentication.client_secret}",
     "GF_AUTH_GENERIC_OAUTH_SCOPES=openid profile email",
     "GF_AUTH_OAUTH_AUTO_LOGIN=true",
-    "GF_AUTH_GENERIC_OAUTH_AUTH_URL=${local.auth_domain}/${local.app_name}/o/authorize/",
-    "GF_AUTH_GENERIC_OAUTH_TOKEN_URL=${local.auth_domain}/${local.app_name}/o/token/",
-    "GF_AUTH_GENERIC_OAUTH_API_URL=${local.auth_domain}/${local.app_name}/o/userinfo/",
-    "GF_AUTH_SIGNOUT_REDIRECT_URL=${local.auth_domain}/${local.app_name}/o/${local.app_name}/end-session/",
+    "GF_AUTH_GENERIC_OAUTH_AUTH_URL=${local.auth_domain}/application/o/authorize/",
+    "GF_AUTH_GENERIC_OAUTH_TOKEN_URL=${local.auth_domain}/application/o/token/",
+    "GF_AUTH_GENERIC_OAUTH_API_URL=${local.auth_domain}/application/o/userinfo/",
+    "GF_AUTH_SIGNOUT_REDIRECT_URL=${local.auth_domain}/application/o/${module.authentication.application_slug}/end-session/",
     "GF_SERVER_ROOT_URL=/",
     ]
 }
