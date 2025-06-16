@@ -8,7 +8,7 @@ module "arr_service" {
   access_list_id   = module.nginx_conf.internal_access_list_id
   public_facing_ip = var.public_facing_ip
 }
-*/
+
 
 module "grafana_service" {
   source = "./services/grafana"
@@ -19,3 +19,4 @@ module "grafana_service" {
   access_list_id   = module.nginx_conf.internal_access_list_id
   public_facing_ip = var.public_facing_ip
 }
+*/
