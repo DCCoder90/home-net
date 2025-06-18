@@ -41,8 +41,8 @@ module "authentication" {
   user_to_add_to_access_group = var.admin_username
   access_group_attributes = jsonencode(
     {
-      "${each.value.service_name}_username": local.username,
-      "${each.value.service_name}_password": local.password
+      "${each.value.service_name}_username": each.value.username,
+      "${each.value.service_name}_password": each.value.password
     }
   )
 }
