@@ -31,3 +31,53 @@ jobs:
         run: |
           echo "Terraform Cloud Run ID: ${{ steps.create-run.outputs.run_id }}"
           echo "Terraform Cloud Run URL: ${{ steps.create-run.outputs.run_link }}"
+
+      - uses: hashicorp/tfc-workflows-github/actions/plan-output@v1.3.2
+        id: plan-output
+        with:
+          plan: ${{ steps.run.outputs.plan_id }}
+
+      - uses: actions/github-script@v6
+        if: github.event_name == 'pull_request'
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // 1. Retrieve existing bot comments for the PR
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            })
+            const botComment = comments.find(comment => {
+              return comment.user.type === 'Bot' && comment.body.includes('HCP Terraform Plan Output')
+            })
+            const output = `#### HCP Terraform Plan Output
+               \`\`\`\n
+               Plan: ${{ steps.plan-output.outputs.add }} to add, ${{ steps.plan-output.outputs.change }} to change, ${{ steps.plan-output.outputs.destroy }} to destroy.
+               \`\`\`
+               [HCP Terraform Plan](${{ steps.run.outputs.run_link }})
+               `
+            // 3. If we have a comment, update it, otherwise create a new one
+            if (botComment) {
+              github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: output
+              })
+            } else {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: output
+              })
+            }
+
+      - id: terraform-cloud-check-run-status
+        if: ${{ steps.run.outputs.run_status != 'planned_and_finished'}}
+        run: |
+          echo "HCP Terraform Run Failed or Requires Further Attention"
+          echo "Run Status: '${{ steps.run.outputs.run_status }}'"
+          echo "${{ steps.run.outputs.run_link }}"
+          exit 1
