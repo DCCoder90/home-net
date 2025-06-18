@@ -22,10 +22,22 @@ jobs:
     permissions:
       contents: read
       pull-requests: write 
-
+    env:
+        TF_WORKSPACE: ${{ secrets.TF_WORKSPACE }}
+        CONFIG_DIRECTORY: "./"
+        
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+
+      - name: Upload Configuration
+        uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.3.2
+        id: upload-configuration
+        with:
+          workspace: ${{ env.TF_WORKSPACE }}
+          directory: ${{ env.CONFIG_DIRECTORY }}
+          token: ${{ secrets.TF_API_TOKEN  }}
+          organization: ${{ secrets.TF_ORGANIZATION }} 
 
       - name: Trigger Terraform Cloud Apply Plan
         uses: hashicorp/tfc-workflows-github/actions/create-run@v1.3.2
