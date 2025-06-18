@@ -30,4 +30,4 @@ jobs:
       - name: Check Terraform Cloud Run Status
         run: |
           echo "Terraform Cloud Run ID: ${{ steps.create-run.outputs.run_id }}"
-          echo "Terraform Cloud Run URL: ${{ steps.create-run.outputs.run_url }}"
+          echo "Terraform Cloud Run URL: ${{ steps.create-run.outputs.run_link }}"
