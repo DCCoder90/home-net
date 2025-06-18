@@ -1,5 +1,5 @@
 module "service_docker" {
-    for_each = local.services
+    for_each = var.services
   source = "../../modules/docker"
   
   container_name = each.value.service_name
@@ -12,7 +12,7 @@ module "service_docker" {
 
 module "service_dns" {
   source = "../../modules/dns"
-  for_each = local.services
+  for_each = var.services
   
   internal_only = true
   service_port = local.authentik_port
@@ -30,7 +30,7 @@ module "service_dns" {
 
 module "authentication" {
   source = "../../modules/proxy_auth"
-  for_each = local.services
+  for_each = var.services
   
   internal_host = "http://${each.value.ip_address}:${each.value.service_port}"
   external_host = each.value.domain_name

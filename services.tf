@@ -6,6 +6,7 @@ module "arr_services" {
   cloudflare_token = var.cloudflare_api_token
   access_list_id   = module.nginx_conf.internal_access_list_id
   public_facing_ip = var.public_facing_ip
+  services = local.config.stacks.arr_services
 }
 
 /*

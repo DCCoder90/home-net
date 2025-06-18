@@ -1,4 +1,67 @@
 system:
+stacks:
+  arr_services:
+    prowlarr:
+      service_name: "prowlarr"
+      service_port: 9696
+      image_name: "linuxserver/prowlarr:1.37.0"
+      username: "default_username"
+      password: "ProwlarrPassword1!"
+      domain_name: "prowlarr.dcapi.app"
+      ip_address: "192.168.5.13"
+      env:
+        - "PUID=1000"
+        - "PGID=1000"
+        - "TZ=America/Chicago"
+    sonarr:
+      service_name: "sonarr"
+      service_port: 8989
+      image_name: "linuxserver/sonarr:4.0.14.2939-ls281"
+      username: "default_username"
+      password: "SonarrPassword1!"
+      domain_name: "sonarr.dcapi.app"
+      ip_address: ""
+      env:
+        - "PUID=1000"
+        - "PGID=1000"
+        - "TZ=America/Chicago"
+    radarr:
+      service_name: "radarr"
+      service_port: 7878
+      image_name: "linuxserver/radarr:5.26.2"
+      username: "default_username"
+      password: "RadarrPassword1!"
+      domain_name: "radarr.dcapi.app"
+      ip_address: ""
+      env:
+        - "PUID=1000"
+        - "PGID=1000"
+        - "TZ=America/Chicago"
+    lidarr: #Need to fix
+      service_name: "lidarr" 
+      service_port: 8686
+      image_name: "linuxserver/lidarr:1.0.2.1495-ls108"
+      username: "default_username"
+      password: "LidarrPassword1!"
+      domain_name: "lidarr.dcapi.app"
+      ip_address: ""
+      env:
+        - "PUID=1000"
+        - "PGID=1000"
+        - "TZ=America/Chicago"
+    readarr: #Need to fix
+      service_name: "readarr"
+      service_port: 8787
+      image_name: "linuxserver/readarr:1.0.2.1495-ls108"
+      username: "default_username"
+      password: "ReadarrPassword1!"
+      domain_name: "readarr.dcapi.app"
+      ip_address: ""
+      env:
+        - "PUID=1000"
+        - "PGID=1000"
+        - "TZ=America/Chicago"
+    
 services:
   authentik:
     admin-user: ""
