@@ -7,6 +7,7 @@ module "service_docker" {
   attach_to_br0 = false
   attach_to_br1 = true
   br1_ipv4_addr = each.value.ip_address
+  environment_vars = each.value.env
 }
 
 module "service_dns" {
