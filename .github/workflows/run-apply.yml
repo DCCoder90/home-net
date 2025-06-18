@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - main 
+    paths-ignore:
+      - .github/workflows/run-apply.yml
+      - .github/workflows/run-plan.yml
+      - ReadMe.md
+      - .gitignore
   workflow_dispatch: #
     inputs:
       tfc_run_id:
