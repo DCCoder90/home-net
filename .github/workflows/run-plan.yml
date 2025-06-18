@@ -1,0 +1,33 @@
+name: Terraform Plan
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  terraform_plan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Trigger Terraform Cloud Plan
+        uses: hashicorp/tfc-workflows-github/actions/create-run@v1.3.2
+        id: create-run
+        with:
+          token: ${{ secrets.TF_API_TOKEN  }}
+          hostname: app.terraform.io 
+          organization: ${{ secrets.TF_ORGANIZATION }} 
+          workspace: ${{ secrets.TF_WORKSPACE }} 
+          message: "Triggered by PR push: ${{ github.event.pull_request.head.ref }}"
+          plan_only: true
+
+      - name: Check Terraform Cloud Run Status
+        run: |
+          echo "Terraform Cloud Run ID: ${{ steps.create-run.outputs.run_id }}"
+          echo "Terraform Cloud Run URL: ${{ steps.create-run.outputs.run_url }}"
