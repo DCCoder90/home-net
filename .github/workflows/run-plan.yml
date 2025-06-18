@@ -27,15 +27,12 @@ jobs:
           message: "Triggered by PR push: ${{ github.event.pull_request.head.ref }}"
           plan_only: true
 
-      - name: Check Terraform Cloud Run Status
-        run: |
-          echo "Terraform Cloud Run ID: ${{ steps.create-run.outputs.run_id }}"
-          echo "Terraform Cloud Run URL: ${{ steps.create-run.outputs.run_link }}"
-
       - uses: hashicorp/tfc-workflows-github/actions/plan-output@v1.3.2
         id: plan-output
         with:
-          plan: ${{ steps.run.outputs.plan_id }}
+          plan: ${{ steps.create-run.outputs.plan_id }}
+          token: ${{ secrets.TF_API_TOKEN  }}
+          organization: ${{ secrets.TF_ORGANIZATION }} 
 
       - uses: actions/github-script@v6
         if: github.event_name == 'pull_request'
@@ -55,7 +52,7 @@ jobs:
                \`\`\`\n
                Plan: ${{ steps.plan-output.outputs.add }} to add, ${{ steps.plan-output.outputs.change }} to change, ${{ steps.plan-output.outputs.destroy }} to destroy.
                \`\`\`
-               [HCP Terraform Plan](${{ steps.run.outputs.run_link }})
+               [HCP Terraform Plan](${{ steps.create-run.outputs.run_link }})
                `
             // 3. If we have a comment, update it, otherwise create a new one
             if (botComment) {
@@ -75,9 +72,9 @@ jobs:
             }
 
       - id: terraform-cloud-check-run-status
-        if: ${{ steps.run.outputs.run_status != 'planned_and_finished'}}
+        if: ${{ steps.create-run.outputs.run_status != 'planned_and_finished'}}
         run: |
           echo "HCP Terraform Run Failed or Requires Further Attention"
-          echo "Run Status: '${{ steps.run.outputs.run_status }}'"
-          echo "${{ steps.run.outputs.run_link }}"
+          echo "Run Status: '${{ steps.create-run.outputs.run_status }}'"
+          echo "${{ steps.create-run.outputs.run_link }}"
           exit 1
