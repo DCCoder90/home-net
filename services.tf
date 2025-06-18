@@ -1,5 +1,4 @@
-/*
-module "arr_service" {
+module "arr_services" {
   source = "./services/arrr"
 
   admin_email      = var.network_admin_email
@@ -9,6 +8,7 @@ module "arr_service" {
   public_facing_ip = var.public_facing_ip
 }
 
+/*
 
 module "grafana_service" {
   source = "./services/grafana"
