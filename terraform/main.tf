@@ -41,7 +41,7 @@ module "nginx_conf" {
 }
 
 locals {
-  system = yamldecode(file("${path.module}/config/system.yaml"))
-  stacks = yamldecode(file("${path.module}/config/stacks.yaml"))
-  services = yamldecode(file("${path.module}/config/services.yaml"))
+  system = yamldecode(file("${path.module}/../config/system.yaml"))
+  stacks = yamldecode(file("${path.module}/../config/stacks.yaml"))
+  services = yamldecode(file("${path.module}/../config/services.yaml"))
 }
