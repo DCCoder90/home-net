@@ -1,5 +1,3 @@
-system:
-stacks:
   arr_services:
     prowlarr:
       service_name: "prowlarr"
@@ -61,7 +59,3 @@ stacks:
         - "PUID=1000"
         - "PGID=1000"
         - "TZ=America/Chicago"
-    
-services:
-  authentik:
-    admin-user: ""
