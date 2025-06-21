@@ -1,0 +1,8 @@
+all:
+  hosts:
+    unraid:
+      ansible_host: 192.168.1.41
+      ansible_user: root
+      # This tells Ansible to look for the ANSIBLE_SSH_PASS environment
+      # variable for the password, which is more secure than storing it in plain text.
+      ansible_ssh_pass: "{{ lookup('env', 'ANSIBLE_SSH_PASS') }}"
