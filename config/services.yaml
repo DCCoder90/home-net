@@ -29,6 +29,9 @@ deluge-vpn:
       - "NET_ADMIN"
   mounts:
     - "/etc/localtime:/etc/localtime:ro"
+    - "/mnt/user/Arr/deluge-data:/config"
+    - "/mnt/user/Downloads:/data/downloads"
+    - "/mnt/user/appdata/binhex-delugevpn/openvpn:/config/openvpn"
 requestrr:
   service_name: "requestrr"
   service_port: 4545
