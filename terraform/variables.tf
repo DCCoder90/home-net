@@ -39,3 +39,15 @@ variable "network_admin_username" {
   type        = string
   description = "Admin username"
 }
+
+variable "vpn_user" {
+  type        = string
+  description = "The username for the VPN connection."
+  sensitive   = true
+}
+
+variable "vpn_pass" {
+  type        = string
+  description = "The password for the VPN connection."
+  sensitive   = true
+}

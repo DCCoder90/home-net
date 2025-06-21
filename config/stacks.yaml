@@ -5,6 +5,8 @@
       - "TZ=America/Chicago"
     mounts:
       - "/etc/localtime:/etc/localtime:ro"
+      - "/mnt/user/Media:/media"
+      - "/mnt/user/Downloads:/downloads"
     services:
       prowlarr:
         service_name: "prowlarr"
@@ -15,7 +17,7 @@
         domain_name: "prowlarr.dcapi.app"
         ip_address: "192.168.5.22"
         mounts:
-          - "/var/run/docker.sock:/var/run/docker.sock"
+          - "/mnt/user/Arr/prowlarr-data:/config"
       sonarr:
         service_name: "sonarr"
         service_port: 8989
@@ -24,6 +26,8 @@
         password: "SonarrPassword1!"
         domain_name: "sonarr.dcapi.app"
         ip_address: "192.168.5.23"
+        mounts:
+          - "/mnt/user/Arr/sonarr-data:/config"
       radarr:
         service_name: "radarr"
         service_port: 7878
@@ -32,6 +36,8 @@
         password: "RadarrPassword1!"
         domain_name: "radarr.dcapi.app"
         ip_address: "192.168.5.24"
+        mounts:
+          - "/mnt/user/Arr/radarr-data:/config"
       lidarr: 
         service_name: "lidarr" 
         service_port: 8686
@@ -40,6 +46,8 @@
         password: "LidarrPassword1!"
         domain_name: "lidarr.dcapi.app"
         ip_address: "192.168.5.25"
+        mounts:
+          - "/mnt/user/Arr/lidarr-data:/config"
       readarr:
         service_name: "readarr"
         service_port: 8787
@@ -48,3 +56,5 @@
         password: "ReadarrPassword1!"
         domain_name: "readarr.dcapi.app"
         ip_address: "192.168.5.26"
+        mounts:
+          - "/mnt/user/Arr/readarr-data:/config"

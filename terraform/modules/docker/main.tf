@@ -54,7 +54,7 @@ resource "docker_container" "container" {
   }
 
   dynamic "mounts" {
-    for_each = var.mounts
+    for_each = toset(coalesce(var.mounts, []))
     iterator = mount_iterator
 
     content {
@@ -86,6 +86,15 @@ resource "docker_container" "container" {
     content {
       add  = var.container_capabilities.add
       drop = var.container_capabilities.drop
+    }
+  }
+
+  dynamic "labels" {
+    for_each = local.all_labels
+
+    content {
+      label = labels.value.label
+      value = labels.value.value
     }
   }
 }

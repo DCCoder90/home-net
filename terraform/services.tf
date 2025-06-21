@@ -25,6 +25,18 @@ module "flaresolverr_service" {
 }
 
 /*
+These env variables have to be set:
+TF_VAR_VPN_USER
+TF_VAR_VPN_PASS
+*/
+module "delugevpn_service" {
+  source   = "./services/deluge-vpn"
+  service = local.services.deluge-vpn
+  vpn_pass = var.vpn_pass
+  vpn_user = var.vpn_user
+}
+
+/*
 module "grafana_service" {
   source = "./services/grafana"
 

@@ -2,6 +2,8 @@ module "service_docker" {
   for_each = var.stack.services
   source   = "../docker"
 
+  icon = each.value.icon
+  web_ui = "http://${each.value.ip_address}:${each.value.service_port}"
   container_name   = each.value.service_name
   container_image  = each.value.image_name
   attach_to_br0    = false
