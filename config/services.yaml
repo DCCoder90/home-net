@@ -40,3 +40,15 @@ requestrr:
   mounts:
     - "/mnt/user/Arr/requestrr-data:/config"
     - "/etc/localtime:/etc/localtime:ro"
+homepage:
+  service_name: "homepage"
+  service_port: 3000
+  icon: "https://raw.githubusercontent.com/gethomepage/homepage/dev/public/android-chrome-192x192.png"
+  image_name: "ghcr.io/gethomepage/homepage:latest"
+  ip_address: "192.168.5.27"
+  domain_name: "home.dcapi.app"
+  mounts:
+    - "/mnt/cache/appdata/homepage/:/app/config"
+    - "/var/run/docker.sock:/var/run/docker.sock"
+  env:
+    - "HOMEPAGE_ALLOWED_HOSTS=home.dcapi.app"

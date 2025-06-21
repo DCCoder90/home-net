@@ -1,0 +1,138 @@
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/configs/services/
+
+- Networking:
+    - UnraidOS:
+        href: http://192.168.1.41/Dashboard
+        description: Host OS
+        icon: mdi-server
+        widget:
+            type: tailscale
+            fields: ["last_seen","expires"]
+            deviceid: naan16qY2811CNTRL
+            key: tskey-api-k2vSzDnzf811CNTRL-pTuRmSdU8XdYbK6ZsZTbWdV7LM5554sN
+    - Authentik:
+        href: https://auth.dcapi.app/
+        description: Authentication
+        widget:
+            type: authentik
+            url: https://auth.dcapi.app
+            key: wjRPPnrpVF3RRtGgbkLHWG1FVUr5ipTggIotFHXWTEjChiqGJXgmOMJ1KHnR
+        icon: authentik.png
+        container: authentik
+    - PiHole1:
+        href: http://192.168.4.11/admin/login
+        description: WIFI Monitor
+        icon: mdi-raspberry-pi
+        widget:
+            type: pihole
+            url: http://192.168.4.11
+            version: 6 # required if running v6 or higher, defaults to 5
+            key: 2iqYxCsGYPJLFCwmt+K/qm07X/mkm8iD0Rm2aaF4/uI=
+        container: pihole1
+    - PiHole2:
+        href: http://192.168.4.12/admin/login
+        description: WIFI Monitor
+        icon: mdi-raspberry-pi
+        widget:
+            type: pihole
+            url: http://192.168.4.12
+            version: 6 # required if running v6 or higher, defaults to 5
+            key: PU7QOuKqCs/bETIQD60jwvxco9u+h8jVR77UoD6EeeI=
+        container: pihole2
+    - Technitium:
+        href: http://192.168.4.13:5380/
+        description: DNS Server
+        icon: mdi-dns
+        widget:
+            type: technitium
+            url: http://192.168.4.13:5380
+            key: d19c12fd27420d31422e2db09e131fe42fb39241c955b78719b4dbf419bc72c2
+            range: LastHour
+        container: technitium_dns
+    - NetAlertX:
+        href: http://192.168.1.45:20211/
+        description: DNS Server
+        icon: mdi-alert-box
+        widget:
+            type: netalertx
+            url: http://192.168.1.45:20211
+            key: t_9LlAg5D7ALDZEZO5qvy3
+            fields: ["total", "connected", "new_devices"]
+        container: netalertx
+    - Nginx Proxy:
+        href: http://192.168.4.2:81/nginx/proxy
+        description: Proxy Manager
+        icon: mdi-arrow-decision
+        container: Nginx-Proxy-Manager-Official
+    - VPN:
+        description: VPN Endpoint
+        icon: mdi-vpn
+        widget:
+            type: tailscale
+            fields: ["last_seen","expires"]
+            deviceid: niiMVUxiPN11CNTRL
+            key: tskey-api-k2vSzDnzf811CNTRL-pTuRmSdU8XdYbK6ZsZTbWdV7LM5554sN
+        container: OpenVPN-Client
+- Media:
+    - Plex:
+        icon: plex.png
+        href: https://plex.tv
+        widget:
+            type: plex
+            url: http://192.168.5.45:32400
+            key: XMdD9zL5sZkCLNJLBSSA
+        container: plex
+    - Jellyfin:
+        icon: jellyfin.png
+        href: https://media.mallett.family
+        widget:
+            type: jellyfin
+            url: https://media.mallett.family
+            key: a1cf6dd5c55a4c3f9a7f646259da74d7
+            enableBlocks: true # optional, defaults to false
+            enableNowPlaying: true # optional, defaults to true
+            enableUser: true # optional, defaults to false
+            showEpisodeNumber: true # optional, defaults to false
+            expandOneStreamToTwoRows: false # optional, defaults to true
+        container: jellyfin
+
+- Arrrr:
+    - Radarr:
+        icon: radarr.png
+        href: https://radarr.dcapi.app
+        widget:
+            type: radarr
+            fields: ["wanted", "queued"]
+            url: http://192.168.5.24:7878
+            key: befe920a6983429d82aa90ae133769f9
+            enableQueue: false
+        container: arr-radarr
+    - Sonarr:
+        icon: sonarr.png
+        href: https://sonarr.dcapi.app
+        widget:
+            type: sonarr
+            fields: ["wanted", "queued"]
+            url: http://192.168.5.23:8989
+            key: 2524bedc39a0479fa9f44a0ee33750de
+            enableQueue: false
+        container: arr-sonarr
+    - Prowlarr:
+        icon: prowlarr.png
+        href: https://prowlarr.dcapi.app
+        widget:
+            type: prowlarr
+            url: http://192.168.5.22:9696
+            key: 0d68a14968084ba79af213c82dc7fdac
+        container: arr-prowlarr
+    - Deluge:
+        icon: deluge.png
+        href: http://192.168.5.21:8112
+        widget:
+            type: deluge
+            url: http://192.168.5.21:8112
+            password: deluge 
+            enableLeechProgress: false
+        container: arr-delugevpn
