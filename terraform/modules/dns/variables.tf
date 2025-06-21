@@ -37,6 +37,7 @@ variable "dns_cloudflare_api_token" {
 variable "admin_email" {
   description = "Email address for the admin user"
   type        = string
+  sensitive = true
 }
 
 variable "external_host_ipv4" {

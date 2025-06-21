@@ -12,6 +12,25 @@ variable "environment_vars" {
   type        = set(string)
   description = "Environment variables to set in the form of KEY=VALUE"
   default     = null
+  sensitive   = true
+}
+
+variable "icon"{
+  type = string
+  default = null
+}
+
+variable "web_ui"{
+  type = string
+  default = null
+}
+
+variable "labels"{
+  type = set(object({
+    label = string
+    value = string
+  }))
+  default = null
 }
 
 variable "attach_to_br1" {
@@ -129,4 +148,10 @@ variable "container_capabilities" {
     drop = optional(list(string))
   })
   default = {} # Defaults to an empty object, meaning 'add' and 'drop' will be null if not specified.
+}
+
+variable "mounts"{
+  description = "Specification for mounts to be added to containers created as part of the service."
+  type = list(string)
+  default = []
 }

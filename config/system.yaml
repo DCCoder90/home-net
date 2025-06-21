@@ -1,0 +1,7 @@
+authentik:
+  ip_address: "192.168.4.55"
+  port: 9000
+proxy_ip: "192.168.4.2"
+zones:
+  dcapi: "dcapi.app"
+  mallett: "mallett.family"

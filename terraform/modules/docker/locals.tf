@@ -13,4 +13,16 @@ locals {
       )
     )
   )
+
+  all_labels = toset(concat(
+    tolist(coalesce(var.labels, [])),
+    var.icon != null ? [{
+      label = "net.unraid.docker.icon",
+      value = var.icon
+      }] : [],
+    var.web_ui != null ? [{
+      label = "net.unraid.docker.webui",
+      value = var.web_ui
+      }] : []
+  ))
 }

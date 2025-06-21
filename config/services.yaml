@@ -1,0 +1,42 @@
+authentik:
+  admin-user: ""
+flaresolverr:
+  service_name: "flaresolverr"
+  ip_address: "192.168.5.27"
+  image_name: "flaresolverr/flaresolverr:v3.3.25"
+  env:
+    - "TZ=America/Chicago"
+deluge-vpn:
+  icon: "https://vectorified.com/images/deluge-icon-3.jpg"
+  service_name: "deluge-vpn"
+  ip_address: "192.168.5.28"
+  image_name: "binhex/arch-delugevpn:2.2"
+  service_port: 8112
+  env:
+    - "TZ=America/Chicago"
+    - "ENABLE_SOCKS=no"
+    - "STRICT_PORT_FORWARD=yes"
+    - "DEBUG=false"
+    - "ENABLE_PRIVOXY=no"
+    - "PGID=100"
+    - "PUID=1000"
+    - "VPN_ENABLED=yes"
+    - "VPN_PROV=custom"
+    - "VPN_CLIENT=openvpn"
+    - "LAN_NETWORK=192.168.1.0/24"
+  capabilities:
+    add:
+      - "NET_ADMIN"
+  mounts:
+    - "/etc/localtime:/etc/localtime:ro"
+    - "/mnt/user/Arr/deluge-data:/config"
+    - "/mnt/user/Downloads:/data/downloads"
+    - "/mnt/user/appdata/binhex-delugevpn/openvpn:/config/openvpn"
+requestrr:
+  service_name: "requestrr"
+  service_port: 4545
+  image_name: "linuxserver/requestrr:2.1.2"
+  ip_address: "192.168.5.27"
+  mounts:
+    - "/mnt/user/Arr/requestrr-data:/config"
+    - "/etc/localtime:/etc/localtime:ro"
