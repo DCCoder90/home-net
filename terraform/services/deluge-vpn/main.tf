@@ -13,4 +13,5 @@ module "delugevpn_service" {
     "VPN_PASS=${var.vpn_pass}"
   ])
   mounts           = var.service.mounts
+  container_capabilities = var.service.capabilities
 }
