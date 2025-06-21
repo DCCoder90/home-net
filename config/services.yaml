@@ -26,7 +26,7 @@ deluge-vpn:
     - "LAN_NETWORK=192.168.1.0/24"
   capabilities:
     add:
-      - "NET_ADMIN"
+      - "CAP_NET_ADMIN"
   mounts:
     - "/etc/localtime:/etc/localtime:ro"
     - "/mnt/user/Arr/deluge-data:/config"
