@@ -33,8 +33,6 @@ variable "stack" {
       icon         = optional(string)
       service_name = string
       image_name   = string
-      username     = optional(string, "")
-      password     = optional(string, "")
       domain_name  = string
       service_port = number
       ip_address   = string

@@ -120,3 +120,20 @@ Due to an issue with the Authentik Terraform provider (#12), a manual step is re
 4.  Edit the provider and assign it to the correct **Proxy Outpost**.
 
 The credentials for the service can be found by navigating to the corresponding group in Authentik (e.g., `tf_prowlarr`) and viewing its attributes.
+
+## 🔧 Post-Provisioning with Ansible
+
+Ansible is used for configuration management on services after they have been created.
+
+### How It Works
+
+This project uses a **dynamic inventory** script that queries the Terraform state file to get a list of all managed hosts and their IP addresses.
+
+### Usage
+
+1.  Ensure you have run `terraform apply` to provision the infrastructure.
+2.  Navigate to the Ansible directory: `cd ansible/`
+3.  Run any playbook. To test connectivity to all hosts, you can run the ping test:
+    ```bash
+    ansible-playbook playbooks/ping_test.yml
+    ```

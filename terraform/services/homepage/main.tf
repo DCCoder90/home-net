@@ -11,6 +11,7 @@ module "delugevpn_service" {
   environment_vars = var.service.env
   mounts           = var.service.mounts
   container_capabilities = var.service.capabilities
+  start_container = false //Setting this to false as we'll start it once everything is configured with ansible
 }
 
 module "service_dns" {

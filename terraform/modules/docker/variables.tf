@@ -15,6 +15,12 @@ variable "environment_vars" {
   sensitive   = true
 }
 
+variable "start_container" {
+  type = bool
+  default = true
+  description = "Start container on creation"
+}
+
 variable "icon"{
   type = string
   default = null

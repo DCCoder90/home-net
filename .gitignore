@@ -1,4 +1,10 @@
+# Configuration
+.env
+
+# Terraform
 .terraform
 .terraform.lock.hcl
-.env
 terraform.tfvars.json
+
+# Ansible
+*.retry
