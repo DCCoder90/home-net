@@ -29,6 +29,7 @@ variable "stack" {
     mounts   = optional(list(string))
     volumes  = optional(list(string))
     services = map(object({
+      internal     = optional(bool, false)
       icon         = optional(string)
       service_name = string
       image_name   = string
