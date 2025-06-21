@@ -1,0 +1,21 @@
+---
+- name: Create a file if a specific Docker container exists
+  hosts: unraid
+  gather_facts: false
+
+  vars:
+    container_to_check: "homepage"
+    path_to_create_file: "/mnt/user/ansible_created_file_for_{{ container_to_check }}.txt"
+
+  tasks:
+    - name: "Check if container '{{ container_to_check }}' exists"
+      community.docker.docker_container_info:
+        name: "{{ container_to_check }}"
+      register: container_info
+
+    - name: "Create file because container '{{ container_to_check }}' was found"
+      ansible.builtin.file:
+        path: "{{ path_to_create_file }}"
+        state: touch
+        mode: '0644'
+      when: container_info.exists
