@@ -40,7 +40,7 @@ jobs:
           hostname: app.terraform.io 
           organization: ${{ secrets.TF_ORGANIZATION }} 
           workspace: ${{ secrets.TF_WORKSPACE }} 
-          message: "Triggered by PR push: ${{ github.event.pull_request.head.ref }}"
+          message: "PR: ${{ github.event.pull_request.title }} | Commit: ${{ github.event.head_commit.message }}"
           plan_only: true
 
       - uses: hashicorp/tfc-workflows-github/actions/plan-output@v1.3.2
