@@ -31,6 +31,14 @@ module "service_dns" {
 
 //Note: This will still require manually navigating to the service and setting up the credentials on the first run
 
+resource "random_password" "service_password" {
+  for_each = var.stack.services
+
+  length           = 24
+  special          = true
+  override_special = "!#$%&*()-_=+[]{}<>:?"
+}
+
 module "authentication" {
   source   = "../proxy_auth"
   for_each = var.stack.services
@@ -45,8 +53,8 @@ module "authentication" {
   user_to_add_to_access_group = var.admin_username
   access_group_attributes = jsonencode(
     {
-      "${each.value.service_name}_username" : each.value.username,
-      "${each.value.service_name}_password" : each.value.password
+      "${each.value.service_name}_username" : "admin",
+      "${each.value.service_name}_password" : random_password.service_password[each.key].result
     }
   )
 }
