@@ -17,7 +17,7 @@ module "service_dns" {
   source   = "../dns"
   for_each = var.stack.services
 
-  internal_only            = true
+  internal_only            = each.value.internal
   service_port             = var.authentik_port
   zone_name                = var.zone_name
   domain_name              = each.value.domain_name
