@@ -48,7 +48,7 @@
         internal: true
         service_name: "lidarr" 
         service_port: 8686
-        image_name: "linuxserver/lidarr:1.0.2.1495-ls108"
+        image_name: "linuxserver/lidarr:2.13.0-develop"
         username: "default_username"
         password: "LidarrPassword1!"
         domain_name: "lidarr.dcapi.app"
@@ -59,7 +59,7 @@
         internal: true
         service_name: "readarr"
         service_port: 8787
-        image_name: "linuxserver/readarr:1.0.2.1495-ls108"
+        image_name: "linuxserver/readarr:0.4.17-develop"
         username: "default_username"
         password: "ReadarrPassword1!"
         domain_name: "readarr.dcapi.app"
