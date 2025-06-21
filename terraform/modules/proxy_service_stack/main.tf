@@ -1,5 +1,5 @@
 module "service_docker" {
-  for_each = var.services
+  for_each = var.stack.services
   source   = "../docker"
 
   container_name   = each.value.service_name
@@ -7,12 +7,13 @@ module "service_docker" {
   attach_to_br0    = false
   attach_to_br1    = true
   br1_ipv4_addr    = each.value.ip_address
-  environment_vars = each.value.env
+  environment_vars = concat(coalesce(var.stack.env, []), coalesce(each.value.env, []))
+  mounts           = concat(coalesce(var.stack.mounts, []), coalesce(each.value.mounts, []))
 }
 
 module "service_dns" {
   source   = "../dns"
-  for_each = var.services
+  for_each = var.stack.services
 
   internal_only            = true
   service_port             = var.authentik_port
@@ -30,7 +31,7 @@ module "service_dns" {
 
 module "authentication" {
   source   = "../proxy_auth"
-  for_each = var.services
+  for_each = var.stack.services
 
   internal_host               = "http://${each.value.ip_address}:${each.value.service_port}"
   external_host               = each.value.domain_name

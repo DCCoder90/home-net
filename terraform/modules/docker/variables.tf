@@ -130,3 +130,9 @@ variable "container_capabilities" {
   })
   default = {} # Defaults to an empty object, meaning 'add' and 'drop' will be null if not specified.
 }
+
+variable "mounts"{
+  description = "Specification for mounts to be added to containers created as part of the service."
+  type = list(string)
+  default = []
+}

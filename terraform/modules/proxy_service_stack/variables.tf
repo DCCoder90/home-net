@@ -23,17 +23,23 @@ variable "public_facing_ip" {
   description = ""
 }
 
-variable "services" {
-  type = map(object({
-    service_name = string
-    image_name   = string
-    username     = string
-    password     = string
-    domain_name  = string
-    service_port = number
-    ip_address   = string
-    env          = list(string)
-  }))
+variable "stack" {
+  type = object({
+    env      = optional(list(string))
+    mounts   = optional(list(string))
+    volumes  = optional(list(string))
+    services = map(object({
+      service_name = string
+      image_name   = string
+      username     = optional(string, "")
+      password     = optional(string, "")
+      domain_name  = string
+      service_port = number
+      ip_address   = string
+      env          = optional(list(string))
+      mounts       = optional(list(string))
+    }))
+  })
   description = "Map of services to be deployed with their configurations"
 }
 

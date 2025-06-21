@@ -53,6 +53,18 @@ resource "docker_container" "container" {
     }
   }
 
+  dynamic "mounts" {
+    for_each = var.mounts
+    iterator = mount_iterator
+
+    content {
+      target    = split(":", mount_iterator.value)[1] 
+      source    =  split(":", mount_iterator.value)[0] 
+      read_only = strcontains(mount_iterator.value, ":ro") ? true : false
+      type      = "bind"
+    }
+  }
+
   dynamic "volumes" {
     for_each = var.container_volumes
     iterator = vol_iterator

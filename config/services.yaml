@@ -1,2 +1,8 @@
 authentik:
   admin-user: ""
+flaresolverr:
+  service_name: "flaresolverr"
+  ip_address: "192.168.5.27"
+  image_name: "flaresolverr/flaresolverr:v3.3.25"
+  env:
+    - "TZ=America/Chicago"
