@@ -34,4 +34,5 @@ module "delugevpn_service" {
 module "karakeep_stack" {
   source = "./modules/docker-stack"
   stack  = local.stacks.karakeep
+  system = local.system
 }
