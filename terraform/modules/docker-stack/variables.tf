@@ -21,9 +21,9 @@ variable "stack" {
       auth = optional(object({
         enabled = optional(bool, false),
         proxy = optional(bool, false),
+        group   = optional(string, "Uncategorized"),
         oauth = optional(object({
           enabled = optional(bool, false),
-          group   = optional(string, "Uncategorized"),
           keys    = optional(map(string), {}),
           scopes  = optional(list(string)),
           redirect_uris = optional(list(string))

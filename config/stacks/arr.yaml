@@ -22,6 +22,7 @@
         auth:
           enabled: true
           proxy: true
+          group: "Arr"
         icon: "https://static-00.iconduck.com/assets.00/prowlarr-icon-512x512-v9ekdjxx.png"
         service_name: "prowlarr"
         image_name: "linuxserver/prowlarr:1.37.0"
@@ -41,6 +42,7 @@
         auth:
           enabled: true
           proxy: true
+          group: "Arr"
         icon: "https://static-00.iconduck.com/assets.00/sonarr-icon-1024x1024-wkay604k.png"
         service_name: "sonarr"
         image_name: "linuxserver/sonarr:4.0.14.2939-ls281"
@@ -60,6 +62,7 @@
         auth:
           enabled: true
           proxy: true
+          group: "Arr"
         icon: "https://static-00.iconduck.com/assets.00/radarr-icon-462x512-bydv4e4f.png"
         service_name: "radarr"
         image_name: "linuxserver/radarr:5.26.2"
@@ -79,6 +82,7 @@
         auth:
           enabled: true
           proxy: true
+          group: "Arr"
         service_name: "lidarr" 
         image_name: "linuxserver/lidarr:2.13.0-develop"
         mounts:
@@ -96,6 +100,7 @@
         auth:
           enabled: true
           proxy: true
+          group: "Arr"
         service_name: "readarr"
         image_name: "linuxserver/readarr:0.4.17-develop"
         mounts:
