@@ -23,7 +23,10 @@ variable "stack" {
         proxy = optional(bool, false),
         oauth = optional(object({
           enabled = optional(bool, false),
-          keys    = optional(map(string), {})
+          group   = optional(string, "Uncategorized"),
+          keys    = optional(map(string), {}),
+          scopes  = optional(list(string)),
+          redirect_uris = optional(list(string))
         }), {})
       }))
       network = optional(object({
@@ -33,6 +36,7 @@ variable "stack" {
         networks     = optional(list(string))
       }))
       service_name = string
+      description = optional(string, "")
       image_name   = string
       username     = optional(string, "")
       password     = optional(string, "")

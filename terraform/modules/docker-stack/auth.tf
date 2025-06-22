@@ -38,16 +38,23 @@ module "oauth_authentication" {
       for k, v in var.stack.services : k => v if lookup(lookup(v, "auth", {}), "enabled", false) == true && lookup(lookup(lookup(v, "auth", {}), "oauth", {}), "enabled", false) == true
   }
 
-  group = "" //UI only
-  description = "" //UI only
+  group = each.value.auth.oauth.group
+  description = each.value.description
   name                        = each.value.service_name
   create_access_group         = true
   access_group_name           = "tf_${each.value.service_name}"   //Update to allow for using custom groups rather than just generated
   user_to_add_to_access_group = var.system.network_admin_username //Update to allow for a list of users
-  allowed_redirect_uris = [
-    {
-      matching_mode = "strict",
-      url           = "http://${each.value.network.ip_address}:${each.value.network.service_port}",
-    }
-  ]
+  allowed_redirect_uris = concat(
+      [ 
+        { 
+          matching_mode = "strict", 
+          url = "https://${each.value.dns.domain_name}" }
+      ],
+      [ 
+        for uri_path in coalesce(each.value.auth.oauth.redirect_uris, []) : {
+          matching_mode = "strict",
+          url           = "https://${each.value.dns.domain_name}/${uri_path}"
+        }
+      ]
+    )
 }

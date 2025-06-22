@@ -25,12 +25,20 @@ karakeep:
           enabled: true
           oauth: 
             enabled: true
+            group: "Productivity"
             keys:
               OAUTH_CLIENT_ID: "client_id"
               OAUTH_CLIENT_SECRET: "client_secret"
               OAUTH_WELLKNOWN_URL: "well_known_url"
+            redirect_uris:
+              - "api/auth/callback/custom"
+            scopes:
+              - "openid"
+              - "email"
+              - "profile"
         icon: "https://static-00.iconduck.com/assets.00/prowlarr-icon-512x512-v9ekdjxx.png"
         service_name: "karakeep"
+        description: "Karakeep is an open source \"Bookmark Everything\" app that uses AI for automatically tagging the content you throw at it. The app is built with self-hosting as a first class citizen."
         image_name: "ghcr.io/karakeep-app/karakeep:0.25.0"
         env:
           - "MEILI_ADDR=http://meilisearch:7700"
