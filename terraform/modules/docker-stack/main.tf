@@ -26,7 +26,7 @@ module "service_container" {
   attach_to_br1          = contains(coalesce(each.value.network.networks, []), "br1")
   br0_ipv4_addr          = contains(coalesce(each.value.network.networks, []), "br0") ? each.value.network.ip_address : null
   br1_ipv4_addr          = contains(coalesce(each.value.network.networks, []), "br1") ? each.value.network.ip_address : null
-  environment_vars       = toset(concat(coalesce(var.stack.env, []), local.processed_envs[each.key], coalesce(var.stack.env, [])))
+  environment_vars       = toset(concat(coalesce(var.stack.env, []), local.processed_envs[each.key], coalesce(var.stack.env, []), coalesce(local.oauth_envs[each.key], [])))
   mounts                 = concat(coalesce(var.stack.mounts, []), coalesce(each.value.mounts, []))
   container_capabilities = each.value.capabilities
 
@@ -36,3 +36,10 @@ module "service_container" {
     for net_name in coalesce(each.value.network.networks, []) : module.custom_network[0].networks[net_name].id if net_name != "br0" && net_name != "br1"
   ] : []
 }
+
+
+
+
+
+
+

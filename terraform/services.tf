@@ -1,7 +1,8 @@
-module "arr_services" {
+module "stacks" {
+  for_each = local.stacks
   source = "./modules/docker-stack"
 
-  stack  = local.stacks.arr_services
+  stack  = each.value
   system = local.system
 }
 
@@ -21,10 +22,4 @@ module "delugevpn_service" {
   service = local.services.deluge-vpn
   vpn_pass = var.vpn_pass
   vpn_user = var.vpn_user
-}
-
-module "karakeep_stack" {
-  source = "./modules/docker-stack"
-  stack  = local.stacks.karakeep
-  system = local.system
 }

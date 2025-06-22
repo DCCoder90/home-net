@@ -1,24 +1,25 @@
 resource "authentik_group" "access_groups" {
-  for_each = var.create_access_group ? toset(var.access_group_name) : toset([])
+  for_each = var.create_access_group ? toset([var.access_group_name]) : toset([])
 
   name         = each.key
   # is_superuser = false # Default, can be made a variable if needed
   # attributes   = {}  # Default, can be made a variable if needed
 
   users = [
-    for user_config in var.user_to_add_to_access_group :
-    data.authentik_user.users_to_bind[user_config.username].id if contains(user_config.groups, each.key)
+    data.authentik_user.users_to_bind.id
+    //for user_config in var.user_to_add_to_access_group :
+    //data.authentik_user.users_to_bind[user_config.username].id if contains(user_config.groups, each.key)
   ]
 }
 
 
 data "authentik_user" "users_to_bind" {
-  for_each = { for user_config in var.user_to_add_to_access_group : user_config.username => user_config }
-  username = each.key
+  //for_each = { for user_config in var.user_to_add_to_access_group : user_config.username => user_config }
+  username = var.user_to_add_to_access_group
 }
 
 data "authentik_group" "preexisting_groups_to_bind" {
-  for_each = !var.create_access_group && length(var.access_group_name) > 0 ? toset(var.access_group_name) : toset([])
+  for_each = !var.create_access_group && length(var.access_group_name) > 0 ? toset([var.access_group_name]) : toset([])
   name     = each.key
 }
 

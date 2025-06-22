@@ -1,8 +1,8 @@
 
 resource "random_password" "service_password" {
   for_each = {
-      for k, v in var.stack.services : k => v if lookup(v, "auth").enabled == true && lookup(v, "auth").proxy == true
-    }
+      for k, v in var.stack.services : k => v if lookup(lookup(v, "auth", {}), "enabled", false) == true && lookup(lookup(v, "auth", {}), "proxy", false) == true
+  }
 
   length           = 24
   special          = true
@@ -10,11 +10,11 @@ resource "random_password" "service_password" {
 }
 
 
-module "authentication" {
+module "proxy_authentication" {
   source   = "../proxy_auth"
   for_each = {
-      for k, v in var.stack.services : k => v if lookup(v, "auth").enabled == true && lookup(v, "auth").proxy == true
-    }
+      for k, v in var.stack.services : k => v if lookup(lookup(v, "auth", {}), "enabled", false) == true && lookup(lookup(v, "auth", {}), "proxy", false) == true
+  }
 
   internal_host               = "http://${each.value.network.ip_address}:${each.value.network.service_port}"
   external_host               = each.value.dns.domain_name
@@ -30,4 +30,24 @@ module "authentication" {
       "${each.value.service_name}_password" : random_password.service_password[each.key].result
     }
   )
+}
+
+module "oauth_authentication" {
+  source   = "../oauth_auth"
+  for_each = {
+      for k, v in var.stack.services : k => v if lookup(lookup(v, "auth", {}), "enabled", false) == true && lookup(lookup(lookup(v, "auth", {}), "oauth", {}), "enabled", false) == true
+  }
+
+  group = "" //UI only
+  description = "" //UI only
+  name                        = each.value.service_name
+  create_access_group         = true
+  access_group_name           = "tf_${each.value.service_name}"   //Update to allow for using custom groups rather than just generated
+  user_to_add_to_access_group = var.system.network_admin_username //Update to allow for a list of users
+  allowed_redirect_uris = [
+    {
+      matching_mode = "strict",
+      url           = "http://${each.value.network.ip_address}:${each.value.network.service_port}",
+    }
+  ]
 }

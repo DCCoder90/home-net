@@ -22,7 +22,13 @@ karakeep:
             - "karakeep"
             - "br1"
         auth:
-          enabled: false
+          enabled: true
+          oauth: 
+            enabled: true
+            keys:
+              OAUTH_CLIENT_ID: "client_id"
+              OAUTH_CLIENT_SECRET: "client_secret"
+              OAUTH_WELLKNOWN_URL: "well_known_url"
         icon: "https://static-00.iconduck.com/assets.00/prowlarr-icon-512x512-v9ekdjxx.png"
         service_name: "karakeep"
         image_name: "ghcr.io/karakeep-app/karakeep:0.25.0"
@@ -34,9 +40,6 @@ karakeep:
           - "DISABLE_SIGNUPS=false"
           - "DISABLE_PASSWORD_AUTH=true"
           - "OAUTH_PROVIDER_NAME=Authentik"
-          - "OAUTH_WELLKNOWN_URL="
-          - "OAUTH_CLIENT_SECRET="
-          - "OAUTH_CLIENT_ID="
           - "OAUTH_SCOPE=openid email profile"
           - "OAUTH_TIMEOUT=3500"
           - "DATA_DIR=/data"

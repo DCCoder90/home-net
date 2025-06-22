@@ -31,5 +31,24 @@ locals {
     ]
   }
 
+  oauth_envs = {
+    for service_key, service_config in var.stack.services : service_key => (
+      lookup(lookup(service_config, "auth", {}), "oauth", { enabled = false }).enabled ? [
+        for env_name, output_key in lookup(lookup(service_config, "auth", {}), "oauth", { keys = {} }).keys :
+        format(
+          "%s=%s",
+          env_name,
+          # This map translates the key from your YAML (e.g., "client_id")
+          # to the corresponding attribute of the created Authentik resource.
+          {
+            "client_id" : module.oauth_authentication[service_key].client_id,
+            "client_secret" : module.oauth_authentication[service_key].client_secret,
+            "well_known_url" : module.oauth_authentication[service_key].provider_info_url
+          }[output_key] # Use the value from the YAML keys map to look up the correct output
+        )
+      ] : []
+    )
+  }
+
   npm_access_lists_by_name = { for al in data.nginxproxymanager_access_lists.access_lists.access_lists : al.name => al.id }
 }

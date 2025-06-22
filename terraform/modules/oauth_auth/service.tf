@@ -56,3 +56,7 @@ resource "authentik_application" "name" {
   slug              = lower(replace(var.name, " ", "-"))
   protocol_provider = authentik_provider_oauth2.name.id
 }
+
+data "authentik_provider_oauth2_config" "oauth_config"{
+  name = authentik_provider_oauth2.name.name
+}

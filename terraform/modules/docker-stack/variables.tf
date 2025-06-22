@@ -20,11 +20,12 @@ variable "stack" {
       })
       auth = optional(object({
         enabled = optional(bool, false),
-        proxy = optional(bool, false)
-      }), {
-        enabled = false,
-        proxy = false
-      })
+        proxy = optional(bool, false),
+        oauth = optional(object({
+          enabled = optional(bool, false),
+          keys    = optional(map(string), {})
+        }), {})
+      }))
       network = optional(object({
         internal = optional(bool, false)
         service_port = optional(number)
