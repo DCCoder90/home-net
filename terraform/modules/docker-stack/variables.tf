@@ -42,6 +42,7 @@ variable "stack" {
       password     = optional(string, "")
       env          = optional(list(string))
       mounts       = optional(list(string))
+      commands     = optional(list(string))
       capabilities = optional(object({
         add  = optional(list(string))
         drop = optional(list(string))
