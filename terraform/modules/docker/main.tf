@@ -26,6 +26,7 @@ resource "docker_container" "container" {
   restart      = var.container_restart
   dns          = local.effective_network_mode != "host" ? var.container_dns_servers : null
   privileged   = var.container_privileged_mode
+  command      = var.commands
 
   dynamic "networks_advanced" {
     for_each = var.attach_to_br1 && local.effective_network_mode != "host" ? [1] : []
