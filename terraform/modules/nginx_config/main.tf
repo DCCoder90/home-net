@@ -24,6 +24,20 @@ resource "nginxproxymanager_access_list" "cloudflare_access" {
   name = "Cloudflare"
 
   access = [
+    //Home network subnets
+    {
+      directive = "allow"
+      address   = "192.168.1.0/24"
+    },
+    {
+      directive = "allow"
+      address   = "192.168.2.0/24"
+    },
+    {
+      directive = "allow"
+      address   = "192.168.4.0/23"
+    },
+    //Cloudflare subnets
     {
       directive = "allow"
       address   = "103.21.244.0/22"
