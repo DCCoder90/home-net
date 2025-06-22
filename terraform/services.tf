@@ -1,16 +1,9 @@
-module "arr_services" {
-  source = "./modules/proxy_service_stack"
+module "stacks" {
+  for_each = local.stacks
+  source = "./modules/docker-stack"
 
-  admin_email      = var.network_admin_email
-  admin_username   = var.network_admin_username
-  cloudflare_token = var.cloudflare_api_token
-  access_list_id   = module.nginx_conf.internal_access_list_id
-  public_facing_ip = var.public_facing_ip
-  stack            = local.stacks.arr_services
-  zone_name        = local.system.zones.mallett
-  proxy_ip         = local.system.proxy_ip
-  authentik_ip     = local.system.authentik.ip_address
-  authentik_port   = local.system.authentik.port
+  stack  = each.value
+  system = local.system
 }
 
 module "flaresolverr_service" {
@@ -24,26 +17,9 @@ module "flaresolverr_service" {
   environment_vars = local.services.flaresolverr.env
 }
 
-/*
-These env variables have to be set:
-TF_VAR_VPN_USER
-TF_VAR_VPN_PASS
-*/
 module "delugevpn_service" {
   source   = "./services/deluge-vpn"
   service = local.services.deluge-vpn
   vpn_pass = var.vpn_pass
   vpn_user = var.vpn_user
 }
-
-/*
-module "grafana_service" {
-  source = "./services/grafana"
-
-  admin_email      = var.network_admin_email
-  admin_username   = var.network_admin_username
-  cloudflare_token = var.cloudflare_api_token
-  access_list_id   = module.nginx_conf.internal_access_list_id
-  public_facing_ip = var.public_facing_ip
-}
-*/

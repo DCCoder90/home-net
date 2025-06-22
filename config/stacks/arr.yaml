@@ -1,0 +1,102 @@
+  arr_services:
+    zone_name: "dcapi.app"
+    env:
+      - "PUID=1000"
+      - "PGID=100"
+      - "TZ=America/Chicago"
+    mounts:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "/mnt/user/Media:/media"
+      - "/mnt/user/Downloads:/downloads"
+    services:
+      prowlarr:
+        dns:
+          enabled: true
+          domain_name: "prowlarr.dcapi.app"
+        network:
+          internal: true
+          service_port: 9696
+          ip_address: "192.168.5.22"
+          networks:
+            - "br1"
+        auth:
+          enabled: true
+          proxy: true
+        icon: "https://static-00.iconduck.com/assets.00/prowlarr-icon-512x512-v9ekdjxx.png"
+        service_name: "prowlarr"
+        image_name: "linuxserver/prowlarr:1.37.0"
+        domain_name: "prowlarr.dcapi.app"
+        mounts:
+          - "/mnt/user/Arr/prowlarr-data:/config"
+      sonarr:
+        dns:
+          enabled: true
+          domain_name: "sonarr.dcapi.app"
+        network:
+          internal: true
+          service_port: 8989
+          ip_address: "192.168.5.23"
+          networks:
+            - "br1"
+        auth:
+          enabled: true
+          proxy: true
+        icon: "https://static-00.iconduck.com/assets.00/sonarr-icon-1024x1024-wkay604k.png"
+        service_name: "sonarr"
+        image_name: "linuxserver/sonarr:4.0.14.2939-ls281"
+        domain_name: "sonarr.dcapi.app"
+        mounts:
+          - "/mnt/user/Arr/sonarr-data:/config"
+      radarr:
+        dns:
+          enabled: true
+          domain_name: "radarr.dcapi.app"
+        network:
+          internal: true
+          service_port: 7878
+          ip_address: "192.168.5.24"
+          networks:
+            - "br1"
+        auth:
+          enabled: true
+          proxy: true
+        icon: "https://static-00.iconduck.com/assets.00/radarr-icon-462x512-bydv4e4f.png"
+        service_name: "radarr"
+        image_name: "linuxserver/radarr:5.26.2"
+        domain_name: "radarr.dcapi.app"
+        mounts:
+          - "/mnt/user/Arr/radarr-data:/config"
+      lidarr: 
+        dns:
+          enabled: true
+          domain_name: "lidarr.dcapi.app"
+        network:
+          internal: true
+          service_port: 8686
+          ip_address: "192.168.5.25"
+          networks:
+            - "br1"
+        auth:
+          enabled: true
+          proxy: true
+        service_name: "lidarr" 
+        image_name: "linuxserver/lidarr:2.13.0-develop"
+        mounts:
+          - "/mnt/user/Arr/lidarr-data:/config"
+      readarr:
+        dns:
+          enabled: true
+          domain_name: "readarr.dcapi.app"
+        network:
+          internal: true
+          service_port: 8787
+          ip_address: "192.168.5.26"
+          networks:
+            - "br1"
+        auth:
+          enabled: true
+          proxy: true
+        service_name: "readarr"
+        image_name: "linuxserver/readarr:0.4.17-develop"
+        mounts:
+          - "/mnt/user/Arr/readarr-data:/config"

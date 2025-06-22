@@ -1,0 +1,89 @@
+karakeep:
+  zone_name: "mallett.family"
+  env:
+  mounts:
+  generated_secrets:
+    - "NEXTAUTH_SECRET"
+    - "MEILI_MASTER_KEY"
+  networks:
+    karakeep:
+      internal: true
+      driver: "overlay"
+  services:
+    karakeep:
+        dns:
+          enabled: true
+          domain_name: "keep.mallett.family"
+        network:
+          internal: false
+          service_port: 9696
+          ip_address: "192.168.5.241"
+          networks:
+            - "karakeep"
+            - "br1"
+        auth:
+          enabled: true
+          oauth: 
+            enabled: true
+            group: "Productivity"
+            keys:
+              OAUTH_CLIENT_ID: "client_id"
+              OAUTH_CLIENT_SECRET: "client_secret"
+              OAUTH_WELLKNOWN_URL: "well_known_url"
+            redirect_uris:
+              - "api/auth/callback/custom"
+            scopes:
+              - "openid"
+              - "email"
+              - "profile"
+        icon: "https://static-00.iconduck.com/assets.00/prowlarr-icon-512x512-v9ekdjxx.png"
+        service_name: "karakeep"
+        description: "Karakeep is an open source \"Bookmark Everything\" app that uses AI for automatically tagging the content you throw at it. The app is built with self-hosting as a first class citizen."
+        image_name: "ghcr.io/karakeep-app/karakeep:0.25.0"
+        env:
+          - "MEILI_ADDR=http://meilisearch:7700"
+          - "BROWSER_WEB_URL=http://chrome:9222"
+          - "NEXTAUTH_SECRET=${NEXTAUTH_SECRET}"
+          - "NEXTAUTH_URL=http://karakeep:3000"
+          - "DISABLE_SIGNUPS=false"
+          - "DISABLE_PASSWORD_AUTH=true"
+          - "OAUTH_PROVIDER_NAME=Authentik"
+          - "OAUTH_SCOPE=openid email profile"
+          - "OAUTH_TIMEOUT=3500"
+          - "DATA_DIR=/data"
+
+    meillisearch:
+        dns: 
+          enabled: false
+        network:
+          internal: true
+          networks:
+            - "karakeep"
+        auth:
+          enabled: false
+        icon: "https://static-00.iconduck.com/assets.00/prowlarr-icon-512x512-v9ekdjxx.png"
+        service_name: "meillisearch"
+        image_name: "getmeili/meilisearch:v1.13.3"
+        mounts:
+          - "/mnt/user/DataStore/meili/data:/meili_data"
+        networks:
+          - "karakeep-internal"
+        env:
+          - "MEILI_NO_ANALYTICS=true"
+          - "NEXTAUTH_SECRET=${NEXTAUTH_SECRET}"
+          - "NEXTAUTH_URL=http://karakeep:3000"
+          - "MEILI_MASTER_KEY=${MEILI_MASTER_KEY}"
+    chrome:
+        dns:  
+          enabled: false
+        network:
+          internal: true
+          networks:
+            - "karakeep"
+        auth:
+          enabled: false
+        icon: "https://static-00.iconduck.com/assets.00/prowlarr-icon-512x512-v9ekdjxx.png"
+        service_name: "chrome"
+        image_name: "gcr.io/zenika-hub/alpine-chrome:123"
+        networks:
+          - "karakeep-internal"

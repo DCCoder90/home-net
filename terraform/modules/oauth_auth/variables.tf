@@ -22,18 +22,15 @@ variable "create_access_group" {
 }
 
 variable "access_group_name" {
-  description = "Group(s) to assign access to the application. If create_access_group is true, these groups will be created."
-  type        = list(string)
-  default     = [] 
+  description = "Group to assign access to the application"
+  type        = string
+  default     = ""
 }
 
 variable "user_to_add_to_access_group" {
-  type        = list(object({
-    username = string
-    groups   = list(string) 
-  }))
-  description = "List of users to add to access groups. Each object must have 'username' and 'groups' (list of group names)."
-  default     = [] 
+  type        = string
+  description = "User to add to access group"
+  default = ""
 }
 
 variable "access_group_roles" {

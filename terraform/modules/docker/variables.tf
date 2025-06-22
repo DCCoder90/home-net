@@ -15,6 +15,12 @@ variable "environment_vars" {
   sensitive   = true
 }
 
+variable "networks" {
+  type = list(string)
+  description = "List of networks to attach to"
+  default = []
+}
+
 variable "icon"{
   type = string
   default = null
