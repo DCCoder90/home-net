@@ -16,6 +16,8 @@ module "proxy_authentication" {
       for k, v in var.stack.services : k => v if lookup(lookup(v, "auth", {}), "enabled", false) == true && lookup(lookup(v, "auth", {}), "proxy", false) == true
   }
 
+  group = each.value.auth.group
+  description = each.value.description
   internal_host               = "http://${each.value.network.ip_address}:${each.value.network.service_port}"
   external_host               = each.value.dns.domain_name
   name                        = each.value.service_name
@@ -38,7 +40,7 @@ module "oauth_authentication" {
       for k, v in var.stack.services : k => v if lookup(lookup(v, "auth", {}), "enabled", false) == true && lookup(lookup(lookup(v, "auth", {}), "oauth", {}), "enabled", false) == true
   }
 
-  group = each.value.auth.oauth.group
+  group = each.value.auth.group
   description = each.value.description
   name                        = each.value.service_name
   create_access_group         = true

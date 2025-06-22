@@ -23,9 +23,9 @@ karakeep:
             - "br1"
         auth:
           enabled: true
+          group: "Productivity"
           oauth: 
             enabled: true
-            group: "Productivity"
             keys:
               OAUTH_CLIENT_ID: "client_id"
               OAUTH_CLIENT_SECRET: "client_secret"
