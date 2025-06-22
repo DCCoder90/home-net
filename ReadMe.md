@@ -17,6 +17,7 @@ This repository automates the deployment and configuration of my home lab. The p
 *   **Dynamic Configuration**: Service definitions are externalized to YAML files (`stacks.yaml`, `services.yaml`), allowing for easy modification.
 *   **Automated Proxy & DNS**: Nginx Proxy Manager is used to automatically create proxy hosts and manage SSL certificates for services.
 *   **Centralized Authentication**: Services are integrated with Authentik for single sign-on (SSO) and access control.
+*   **Post-Provisioning Configuration**: Ansible is used for configuration management tasks on running services after they have been provisioned by Terraform.
 
 
 ## 🏗️ Architecture Overview
@@ -111,12 +112,23 @@ Static secrets, such as API tokens and passwords, are stored as **sensitive vari
 
 ### Dynamic Secrets
 For services deployed by the `proxy_service_stack` module, credentials are not stored statically. Instead:
-1.  A strong, random password is generated for each service during the `terraform apply` process using the `random` provider.
-2.  These generated credentials (`username: admin`, `password: <random>`) are stored as attributes on the service-specific group created within Authentik.
+1.  **Generated Secrets**: For services requiring arbitrary secrets (like API keys or JWT signing keys), you can define a list of secret names in the stack's YAML file under `generated_secrets`. Terraform will generate a unique, high-entropy value for each and inject it into the container's environment variables.
+2.  **OAuth Credentials**: For services using OAuth, the `docker-stack` module automatically creates an OAuth2 provider in Authentik. The resulting `client_id` and `client_secret` are then injected as environment variables into the container.
 
-This ensures that each service has a unique, high-entropy password that is managed entirely by Terraform.
+This ensures that secrets are managed dynamically and securely, with minimal manual intervention.
 
 ## ⚠️ Operational Notes
+
+### Ansible for Post-Provisioning
+
+This project uses Ansible to perform configuration tasks after Terraform has provisioned the infrastructure. It uses a static inventory file located at `ansible/inventory/inventory.yml` to connect to the Unraid server.
+
+To run a playbook, first set the required environment variable for the password, then execute the playbook:
+```bash
+export ANSIBLE_SSH_PASS="your_unraid_password"
+cd ansible/
+ansible-playbook playbooks/your_playbook.yml
+```
 
 ### Manual Step for Authentik Proxy Providers
 
