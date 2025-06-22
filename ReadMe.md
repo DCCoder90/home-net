@@ -78,7 +78,7 @@ This repository follows a strict Pull Request-based workflow to ensure changes a
 This project is configured primarily through YAML files located in the `config/` directory. For detailed instructions on how to structure these files, please refer to the documentation in the `docs/` directory:
 
 *   **Stack Configuration Guide**: [stack-config.md](docs/stack-config.md)
-*   **Service Configuration Guide**: [service-config.md)
+*   **Service Configuration Guide**: [service-config.md)(docs/service-config.md)
 
 
 ## 🔐 Secrets Management
