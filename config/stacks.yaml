@@ -56,3 +56,29 @@
         ip_address: "192.168.5.26"
         mounts:
           - "/mnt/user/Arr/readarr-data:/config"
+karakeep:
+  env:
+  mounts:
+  services:
+    karakeep:
+        internal: false
+        icon: "https://static-00.iconduck.com/assets.00/prowlarr-icon-512x512-v9ekdjxx.png"
+        service_name: "karakeep"
+        service_port: 9696
+        image_name: "ghcr.io/karakeep-app/karakeep:release"
+        domain_name: "keep.mallett.family"
+        ip_address: "192.168.5.241"
+        mounts:
+          - "/mnt/user/Arr/prowlarr-data:/config"
+    meillisearch:
+        internal: true
+        icon: "https://static-00.iconduck.com/assets.00/prowlarr-icon-512x512-v9ekdjxx.png"
+        service_name: "meillisearch"
+        image_name: "getmeili/meilisearch:v1.13.3"
+        mounts:
+          - "/mnt/user/Arr/prowlarr-data:/config"
+    chrome:
+        internal: true
+        icon: "https://static-00.iconduck.com/assets.00/prowlarr-icon-512x512-v9ekdjxx.png"
+        service_name: "chrome"
+        image_name: "gcr.io/zenika-hub/alpine-chrome:123"
