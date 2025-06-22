@@ -8,7 +8,7 @@ karakeep:
   networks:
     karakeep:
       internal: true
-      driver: "overlay"
+      driver: "bridge"
   services:
     karakeep:
         dns:
