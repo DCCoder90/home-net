@@ -21,6 +21,8 @@ karakeep:
           networks:
             - "karakeep"
             - "br1"
+        auth:
+          enabled: false
         icon: "https://static-00.iconduck.com/assets.00/prowlarr-icon-512x512-v9ekdjxx.png"
         service_name: "karakeep"
         image_name: "ghcr.io/karakeep-app/karakeep:0.25.0"
@@ -46,6 +48,8 @@ karakeep:
           internal: true
           networks:
             - "karakeep"
+        auth:
+          enabled: false
         icon: "https://static-00.iconduck.com/assets.00/prowlarr-icon-512x512-v9ekdjxx.png"
         service_name: "meillisearch"
         image_name: "getmeili/meilisearch:v1.13.3"
@@ -65,6 +69,8 @@ karakeep:
           internal: true
           networks:
             - "karakeep"
+        auth:
+          enabled: false
         icon: "https://static-00.iconduck.com/assets.00/prowlarr-icon-512x512-v9ekdjxx.png"
         service_name: "chrome"
         image_name: "gcr.io/zenika-hub/alpine-chrome:123"

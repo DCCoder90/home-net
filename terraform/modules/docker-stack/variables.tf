@@ -18,6 +18,13 @@ variable "stack" {
         internal = optional(bool, true),
         domain_name = optional(string)
       })
+      auth = optional(object({
+        enabled = optional(bool, false),
+        proxy = optional(bool, false)
+      }), {
+        enabled = false,
+        proxy = false
+      })
       network = optional(object({
         internal = optional(bool, false)
         service_port = optional(number)
@@ -41,6 +48,12 @@ variable "stack" {
 
 variable "system"{
   type = object({
+      authentik              = object({
+        ip_address             = string
+        port                   = number
+      })
+      proxy_ip               = string
+      admin_username         = string
       nginx_proxy_address    = string
       nginx_proxy_user       = string
       nginx_proxy_pass       = string

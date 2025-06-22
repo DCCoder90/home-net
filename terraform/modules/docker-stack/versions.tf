@@ -5,7 +5,7 @@ terraform {
     }
     nginxproxymanager = {
       source  = "Sander0542/nginxproxymanager"
-      version = "1.1.1"
+      version = "1.2.0"
     }
   }
 }

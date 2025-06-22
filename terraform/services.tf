@@ -1,16 +1,8 @@
 module "arr_services" {
-  source = "./modules/proxy_service_stack"
+  source = "./modules/docker-stack"
 
-  admin_email      = var.network_admin_email
-  admin_username   = var.network_admin_username
-  cloudflare_token = var.cloudflare_api_token
-  access_list_id   = module.nginx_conf.internal_access_list_id
-  public_facing_ip = var.public_facing_ip
-  stack            = local.stacks.arr_services
-  zone_name        = local.system.zones.mallett
-  proxy_ip         = local.system.proxy_ip
-  authentik_ip     = local.system.authentik.ip_address
-  authentik_port   = local.system.authentik.port
+  stack  = local.stacks.arr_services
+  system = local.system
 }
 
 module "flaresolverr_service" {

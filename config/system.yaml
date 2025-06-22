@@ -5,3 +5,4 @@ proxy_ip: "192.168.4.2"
 zones:
   dcapi: "dcapi.app"
   mallett: "mallett.family"
+admin_username: "DCCoder"
