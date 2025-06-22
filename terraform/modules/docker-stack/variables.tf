@@ -52,24 +52,7 @@ variable "stack" {
   description = "Map of services to be deployed with their configurations"
 }
 
-variable "system"{
-  type = object({
-      authentik              = object({
-        ip_address             = string
-        port                   = number
-      })
-      proxy_ip               = string
-      admin_username         = string
-      nginx_proxy_address    = string
-      nginx_proxy_user       = string
-      nginx_proxy_pass       = string
-      cloudflare_api_token   = string
-      network_admin_email    = string
-      technitium_api_token   = string
-      technitium_host        = string
-      public_facing_ip       = string
-      network_admin_username = string
-      vpn_user               = string
-      vpn_pass               = string
-  })
+variable "system" {
+  type        = any
+  description = "A dynamic object containing system-wide configuration variables. Its attributes are accessed via lookup() for flexibility."
 }
