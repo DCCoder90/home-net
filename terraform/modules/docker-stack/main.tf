@@ -30,6 +30,7 @@ module "service_container" {
   environment_vars       = toset(concat(coalesce(var.stack.env, []), local.processed_envs[each.key], coalesce(var.stack.env, []), coalesce(local.oauth_envs[each.key], [])))
   mounts                 = concat(coalesce(var.stack.mounts, []), coalesce(each.value.mounts, []))
   container_capabilities = each.value.capabilities
+  commands               = each.value.commands
 
   # Attach the container to custom networks defined in the stack, but only if the service
   # explicitly lists that network in its own configuration.

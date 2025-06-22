@@ -31,6 +31,11 @@ variable "web_ui"{
   default = null
 }
 
+variable "commands"{
+  type = list(string)
+  default = null
+}
+
 variable "labels"{
   type = set(object({
     label = string
