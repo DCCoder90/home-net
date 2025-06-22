@@ -36,7 +36,7 @@ karakeep:
               - "openid"
               - "email"
               - "profile"
-        icon: "https://static-00.iconduck.com/assets.00/prowlarr-icon-512x512-v9ekdjxx.png"
+        icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/karakeep.png"
         service_name: "karakeep"
         description: "Karakeep is an open source \"Bookmark Everything\" app that uses AI for automatically tagging the content you throw at it. The app is built with self-hosting as a first class citizen."
         image_name: "ghcr.io/karakeep-app/karakeep:0.25.0"
@@ -51,7 +51,8 @@ karakeep:
           - "OAUTH_SCOPE=openid email profile"
           - "OAUTH_TIMEOUT=3500"
           - "DATA_DIR=/data"
-
+        mounts:
+          - "/mnt/user/DataStore/karakeep/data:/data"
     meillisearch:
         dns: 
           enabled: false
@@ -61,7 +62,7 @@ karakeep:
             - "karakeep"
         auth:
           enabled: false
-        icon: "https://static-00.iconduck.com/assets.00/prowlarr-icon-512x512-v9ekdjxx.png"
+        icon: "https://static-00.iconduck.com/assets.00/search-icon-512x512-dlh8ei42.png"
         service_name: "meillisearch"
         image_name: "getmeili/meilisearch:v1.13.3"
         mounts:
@@ -82,7 +83,7 @@ karakeep:
             - "karakeep"
         auth:
           enabled: false
-        icon: "https://static-00.iconduck.com/assets.00/prowlarr-icon-512x512-v9ekdjxx.png"
+        icon: "https://static-00.iconduck.com/assets.00/chrome-icon-512x512-5ln6wbyk.png"
         service_name: "chrome"
         image_name: "gcr.io/zenika-hub/alpine-chrome:123"
         networks:

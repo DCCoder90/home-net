@@ -128,3 +128,10 @@ Due to an issue with the Authentik Terraform provider (#12), a manual step is re
 4.  Edit the provider and assign it to the correct **Proxy Outpost**.
 
 The credentials for the service can be found by navigating to the corresponding group in Authentik (e.g., `tf_prowlarr`) and viewing its attributes.
+
+### Icons
+
+The following are good sources for icons:
+
+- https://dashboardicons.com
+- https://iconduck.com
