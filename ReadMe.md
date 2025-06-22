@@ -72,6 +72,14 @@ This repository follows a strict Pull Request-based workflow to ensure changes a
 5.  **Merge**: Once the plan is approved, merge the Pull Request into `main`.
 6.  **Apply Changes**: The `run-apply.yml` action must be triggered manually from the GitHub Actions UI to apply the changes to production. This is a deliberate safety measure.
 
+## ⚙️ Configuration
+
+This project is configured primarily through YAML files located in the `config/` directory. For detailed instructions on how to structure these files, please refer to the documentation in the `docs/` directory:
+
+*   **Stack Configuration Guide**: [stack-config.md](docs/stack-config.md)
+*   **Service Configuration Guide**: [service-config.md)
+
+
 ## 🔐 Secrets Management
 
 Secrets are managed securely without ever being committed to the repository.
