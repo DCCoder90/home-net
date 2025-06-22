@@ -5,6 +5,7 @@ resource "random_password" "generated" {
   special = true
 }
 
+
 module "custom_network" {
   count    = length(local.creatable_networks) > 0 ? 1 : 0
   source   = "../../modules/docker-network"
