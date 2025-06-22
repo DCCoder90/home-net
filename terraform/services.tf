@@ -30,3 +30,8 @@ module "delugevpn_service" {
   vpn_pass = var.vpn_pass
   vpn_user = var.vpn_user
 }
+
+module "karakeep_stack" {
+  source = "./modules/docker-stack"
+  stack  = local.stacks.karakeep
+}

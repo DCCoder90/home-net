@@ -1,0 +1,58 @@
+karakeep:
+  env:
+  mounts:
+  generated_secrets:
+    - "NEXTAUTH_SECRET"
+    - "MEILI_MASTER_KEY"
+  networks:
+    karakeep:
+      internal: true
+      driver: "overlay"
+  services:
+    karakeep:
+        internal: false
+        icon: "https://static-00.iconduck.com/assets.00/prowlarr-icon-512x512-v9ekdjxx.png"
+        service_name: "karakeep"
+        service_port: 9696
+        image_name: "ghcr.io/karakeep-app/karakeep:0.25.0"
+        domain_name: "keep.mallett.family"
+        ip_address: "192.168.5.241"
+        networks:
+          - "karakeep-internal"
+          - "br1"
+        env:
+          - "MEILI_ADDR=http://meilisearch:7700"
+          - "BROWSER_WEB_URL=http://chrome:9222"
+          - "NEXTAUTH_SECRET=${NEXTAUTH_SECRET}"
+          - "NEXTAUTH_URL=http://karakeep:3000"
+          - "DISABLE_SIGNUPS="
+          - "DISABLE_PASSWORD_AUTH="
+          - "OAUTH_PROVIDER_NAME=Authentik"
+          - "OAUTH_WELLKNOWN_URL="
+          - "OAUTH_CLIENT_SECRET="
+          - "OAUTH_CLIENT_ID="
+          - "OAUTH_SCOPE=openid email profile"
+          - "OAUTH_TIMEOUT=3500"
+          - "DATA_DIR=/data"
+
+    meillisearch:
+        internal: true
+        icon: "https://static-00.iconduck.com/assets.00/prowlarr-icon-512x512-v9ekdjxx.png"
+        service_name: "meillisearch"
+        image_name: "getmeili/meilisearch:v1.13.3"
+        mounts:
+          - "/mnt/user/DataStore/meili/data:/meili_data"
+        networks:
+          - "karakeep-internal"
+        env:
+          - "MEILI_NO_ANALYTICS=true"
+          - "NEXTAUTH_SECRET=${NEXTAUTH_SECRET}"
+          - "NEXTAUTH_URL=http://karakeep:3000"
+          - "MEILI_MASTER_KEY=${MEILI_MASTER_KEY}"
+    chrome:
+        internal: true
+        icon: "https://static-00.iconduck.com/assets.00/prowlarr-icon-512x512-v9ekdjxx.png"
+        service_name: "chrome"
+        image_name: "gcr.io/zenika-hub/alpine-chrome:123"
+        networks:
+          - "karakeep-internal"

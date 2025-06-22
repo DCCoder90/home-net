@@ -42,6 +42,12 @@ module "nginx_conf" {
 
 locals {
   system = yamldecode(file("${path.module}/../config/system.yaml"))
-  stacks = yamldecode(file("${path.module}/../config/stacks.yaml"))
-  services = yamldecode(file("${path.module}/../config/services.yaml"))
+  stacks = merge([
+    for f in fileset("${path.module}/../config/stacks", "*.yaml") :
+    yamldecode(file("${path.module}/../config/stacks/${f}"))
+  ]...)
+  services = merge([
+    for f in fileset("${path.module}/../config/services", "*.yaml") :
+    yamldecode(file("${path.module}/../config/services/${f}"))
+  ]...)
 }

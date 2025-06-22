@@ -18,6 +18,8 @@
         ip_address: "192.168.5.22"
         mounts:
           - "/mnt/user/Arr/prowlarr-data:/config"
+        networks:
+          - "br1"
       sonarr:
         internal: true
         icon: "https://static-00.iconduck.com/assets.00/sonarr-icon-1024x1024-wkay604k.png"
@@ -28,6 +30,8 @@
         ip_address: "192.168.5.23"
         mounts:
           - "/mnt/user/Arr/sonarr-data:/config"
+        networks:
+          - "br1"
       radarr:
         internal: true
         icon: "https://static-00.iconduck.com/assets.00/radarr-icon-462x512-bydv4e4f.png"
@@ -38,6 +42,8 @@
         ip_address: "192.168.5.24"
         mounts:
           - "/mnt/user/Arr/radarr-data:/config"
+        networks:
+          - "br1"
       lidarr: 
         internal: true
         service_name: "lidarr" 
@@ -47,6 +53,8 @@
         ip_address: "192.168.5.25"
         mounts:
           - "/mnt/user/Arr/lidarr-data:/config"
+        networks:
+          - "br1"
       readarr:
         internal: true
         service_name: "readarr"
@@ -56,29 +64,5 @@
         ip_address: "192.168.5.26"
         mounts:
           - "/mnt/user/Arr/readarr-data:/config"
-karakeep:
-  env:
-  mounts:
-  services:
-    karakeep:
-        internal: false
-        icon: "https://static-00.iconduck.com/assets.00/prowlarr-icon-512x512-v9ekdjxx.png"
-        service_name: "karakeep"
-        service_port: 9696
-        image_name: "ghcr.io/karakeep-app/karakeep:release"
-        domain_name: "keep.mallett.family"
-        ip_address: "192.168.5.241"
-        mounts:
-          - "/mnt/user/Arr/prowlarr-data:/config"
-    meillisearch:
-        internal: true
-        icon: "https://static-00.iconduck.com/assets.00/prowlarr-icon-512x512-v9ekdjxx.png"
-        service_name: "meillisearch"
-        image_name: "getmeili/meilisearch:v1.13.3"
-        mounts:
-          - "/mnt/user/Arr/prowlarr-data:/config"
-    chrome:
-        internal: true
-        icon: "https://static-00.iconduck.com/assets.00/prowlarr-icon-512x512-v9ekdjxx.png"
-        service_name: "chrome"
-        image_name: "gcr.io/zenika-hub/alpine-chrome:123"
+        networks:
+          - "br1"

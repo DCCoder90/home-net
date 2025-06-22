@@ -43,6 +43,14 @@ resource "docker_container" "container" {
     }
   }
 
+  dynamic "networks_advanced" {
+    for_each = toset(var.networks)
+    iterator = net
+    content {
+      name = net.value
+    }
+  }
+
   dynamic "ports" {
     for_each = local.effective_network_mode != "host" ? var.container_ports : []
     content {
