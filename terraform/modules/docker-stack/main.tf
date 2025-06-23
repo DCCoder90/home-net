@@ -38,10 +38,3 @@ module "service_container" {
     for net_name in coalesce(each.value.network.networks, []) : module.custom_network[0].networks[net_name].id if net_name != "br0" && net_name != "br1"
   ] : []
 }
-
-
-
-
-
-
-

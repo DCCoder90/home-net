@@ -33,12 +33,20 @@ data "authentik_property_mapping_provider_scope" "scope-openid" {
 
 # Create an OAuth2 Provider
 
+# To get the the ID and other info about a certificate
+
+data "authentik_certificate_key_pair" "generated" {
+  name = "authentik Self-signed Certificate"
+}
+
+# Then use `data.authentik_certificate_key_pair.generated.id`
+
 resource "authentik_provider_oauth2" "name" {
   name                  = lower(replace(var.name, " ", "-"))
   client_id             = random_string.example.result
   authorization_flow    = data.authentik_flow.default-authorization-flow.id
   invalidation_flow     = data.authentik_flow.default-invalidation-flow.id
-
+  signing_key = data.authentik_certificate_key_pair.generated.id
 
   allowed_redirect_uris = var.allowed_redirect_uris
 

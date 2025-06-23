@@ -24,31 +24,15 @@ resource "docker_container" "container" {
   network_mode = local.effective_network_mode
   user         = var.container_user
   restart      = var.container_restart
-  dns          = local.effective_network_mode != "host" ? var.container_dns_servers : null
+  dns          = var.container_dns_servers
   privileged   = var.container_privileged_mode
   command      = var.commands
 
   dynamic "networks_advanced" {
-    for_each = var.attach_to_br1 && local.effective_network_mode != "host" ? [1] : []
+    for_each = local.advanced_network_attachments
     content {
-      name         = data.docker_network.main_host.id
-      ipv4_address = var.br1_ipv4_addr
-    }
-  }
-
-  dynamic "networks_advanced" {
-    for_each = var.attach_to_br0 && local.effective_network_mode != "host" ? [1] : []
-    content {
-      name         = data.docker_network.secondary_host.id
-      ipv4_address = var.br0_ipv4_addr
-    }
-  }
-
-  dynamic "networks_advanced" {
-    for_each = toset(var.networks)
-    iterator = net
-    content {
-      name = net.value
+      name         = networks_advanced.value.name
+      ipv4_address = networks_advanced.value.ipv4_address
     }
   }
 
