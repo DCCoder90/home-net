@@ -28,4 +28,24 @@ locals {
       value = var.web_ui
       }] : []
   ))
+
+  networks_to_attach = merge(
+    var.attach_to_br1 ? {
+      "br1" = {
+        name         = data.docker_network.main_host.name
+        ipv4_address = var.br1_ipv4_addr
+      }
+    } : {},
+    var.attach_to_br0 ? {
+      "br0" = {
+        name         = data.docker_network.secondary_host.name
+        ipv4_address = var.br0_ipv4_addr
+      }
+    } : {},
+    { for net in var.networks : net => { name = net, ipv4_address = null } }
+  )
+
+  advanced_network_attachments = local.effective_network_mode == "host" ? {} : {
+    for k, v in local.networks_to_attach : k => v if k != local.effective_network_mode
+  }
 }
