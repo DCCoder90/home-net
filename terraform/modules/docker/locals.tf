@@ -5,11 +5,15 @@ locals {
   }
 
   effective_network_mode = (
-    var.container_network_mode == "host" ? "host" : (
-      var.attach_to_br1 ? null : (
-        var.attach_to_br0 ? null : (
-          var.container_network_mode
-        )
+    var.container_network_mode == "host" ? "host" : 
+    var.attach_to_br1 ? "br1" : 
+    var.attach_to_br0 ? "br0" : 
+    ( 
+      var.container_network_mode == null ? ( 
+        length(var.networks) > 0 ? element(var.networks, 0) : 
+        "bridge" # Fallback to "bridge" if no custom networks are specified
+      ) :
+      var.container_network_mode # Fallback to the provided container_network_mode if it's not null
       )
     )
   )
