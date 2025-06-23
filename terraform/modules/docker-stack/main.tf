@@ -23,6 +23,7 @@ module "service_container" {
   )
   container_name         = each.value.service_name
   container_image        = each.value.image_name
+  container_network_mode = each.value.network_mode
   attach_to_br0          = contains(coalesce(each.value.network.networks, []), "br0")
   attach_to_br1          = contains(coalesce(each.value.network.networks, []), "br1")
   br0_ipv4_addr          = contains(coalesce(each.value.network.networks, []), "br0") ? each.value.network.ip_address : null

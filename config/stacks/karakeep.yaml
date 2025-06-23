@@ -85,6 +85,7 @@ karakeep:
           enabled: false
         icon: "https://static-00.iconduck.com/assets.00/chrome-icon-512x512-5ln6wbyk.png"
         service_name: "chrome"
+        network_mode: "bridge"
         image_name: "gcr.io/zenika-hub/alpine-chrome:123"
         commands:
           - "--no-sandbox"

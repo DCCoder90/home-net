@@ -36,6 +36,7 @@ variable "stack" {
         networks     = optional(list(string))
       }))
       service_name = string
+      network_mode = optional(string)
       description = optional(string, "")
       image_name   = string
       username     = optional(string, "")
