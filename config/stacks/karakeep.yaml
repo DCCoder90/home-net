@@ -16,7 +16,7 @@ karakeep:
           domain_name: "keep.mallett.family"
         network:
           internal: false
-          service_port: 9696
+          service_port: 3000
           ip_address: "192.168.5.241"
           networks:
             - "karakeep"
