@@ -1,9 +1,9 @@
 locals {
   # Networks that this module should actually create.
-  # Filter out br0 and br1 as they are pre-existing host networks.
+  # Filter out pre-existing host networks.
   creatable_networks = {
     for name, config in coalesce(var.stack.networks, {}) : name => config
-    if name != "br0" && name != "br1"
+    if !contains(var.system.existing_networks, name)
   }
 
   # A map of generated secrets, with the secret name as the key.

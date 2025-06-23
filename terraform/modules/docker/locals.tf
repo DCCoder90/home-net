@@ -18,19 +18,7 @@ locals {
 
   # Merge order ensures that br1/br0 configs with static IPs override any generic entry.
   all_networks_map = merge(
-    { for net in var.networks : net => { name = net, ipv4_address = null } },
-    var.attach_to_br1 ? {
-      "br1" = {
-        name         = data.docker_network.main_host.name
-        ipv4_address = var.br1_ipv4_addr
-      }
-    } : {},
-    var.attach_to_br0 ? {
-      "br0" = {
-        name         = data.docker_network.secondary_host.name
-        ipv4_address = var.br0_ipv4_addr
-      }
-    } : {}
+    { for net in var.networks : net => { name = net, ipv4_address = null } }
   )
 
   # `network_mode` should be the first network from the list that does NOT have a static IP.

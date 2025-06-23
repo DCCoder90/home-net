@@ -44,30 +44,6 @@ variable "labels"{
   default = null
 }
 
-variable "attach_to_br1" {
-  type        = bool
-  description = "Attach to br1 network?"
-  default     = false
-}
-
-variable "attach_to_br0" {
-  type        = bool
-  description = "Attach to br0 network?"
-  default     = false
-}
-
-variable "br1_ipv4_addr" {
-  type        = string
-  description = "IPv4 address to assign on network br1"
-  default     = null
-}
-
-variable "br0_ipv4_addr" {
-  type        = string
-  description = "IPv4 address to assign on network br0"
-  default     = null
-}
-
 variable "container_restart" {
   type        = string
   description = "The restart policy for the container. Must be one of 'no', 'on-failure', 'always', 'unless-stopped'."
