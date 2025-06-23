@@ -21,10 +21,10 @@ resource "docker_container" "container" {
   name         = var.container_name
   image        = docker_image.main.image_id
   env          = var.environment_vars
-  network_mode = local.effective_network_mode
+  network_mode = var.container_network_mode
   user         = var.container_user
   restart      = var.container_restart
-  dns          = local.effective_network_mode != "host" ? var.container_dns_servers : null
+  dns          = var.container_dns_servers
   privileged   = var.container_privileged_mode
   command      = var.commands
 
