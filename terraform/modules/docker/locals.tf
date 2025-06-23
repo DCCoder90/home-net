@@ -16,7 +16,6 @@ locals {
       var.container_network_mode # Fallback to the provided container_network_mode if it's not null
       )
     )
-  )
 
   all_labels = toset(concat(
     tolist(coalesce(var.labels, [])),
