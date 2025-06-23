@@ -9,7 +9,7 @@ on:
       - .github/workflows/run-plan.yml
       - ReadMe.md
       - .gitignore
-  workflow_dispatch: #
+  workflow_dispatch:
     inputs:
       tfc_run_id:
         description: 'Optional: Terraform Cloud Run ID to apply. If left empty, a new run will be created.'
@@ -60,7 +60,6 @@ jobs:
       - name: Run Plan
         uses: hashicorp/tfc-workflows-github/actions/apply-run@v1.3.2
         id: apply
-        continue-on-error: true
         with:
             hostname: app.terraform.io
             token: ${{ secrets.TF_API_TOKEN }} 

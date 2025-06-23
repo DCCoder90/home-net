@@ -1,58 +1,48 @@
 ## ⚙️ Standalone Service Definitions
 
-Standalone service definition files define individual services or global configuration parameters that are directly consumed by specific Terraform modules. These are distinct from the more structured "Stack Configuration Files" and are typically used for services that don't fit into a multi-service stack pattern.
+Standalone service definition files provide a flexible way to define individual services or global configuration parameters that are consumed directly by modules in the root `services.tf` file. This is distinct from the more structured "Stack Configuration Files" and is used for services that have unique requirements or don't fit into a multi-service stack.
 
 ### File Location
 
-All standalone service definition files must be placed in the `config/services/` directory. Each file should have a `.yaml` extension. Terraform will merge all top-level keys from all `.yaml` files found in this directory into a single `local.services` object.
+All standalone service definition files must be placed in the `config/services/` directory. Each file should have a `.yaml` or `.yml` extension. Terraform will merge all top-level keys from all files found in this directory into a single `local.services` object.
+
 
 ### Structure
 
-Each service definition file should define a top-level key that represents a unique identifier for the service or configuration. Under this key, you define the specific parameters for that service.
+The structure of each top-level key in these files is **not standardized**. It is determined entirely by the specific Terraform module that consumes it. 
+
+Below are examples of different structures found in this project.
+
+### Example 1: A Standalone Docker Service (`deluge-vpn`)
+
+This service is consumed by the `delugevpn_service` module in `services.tf`, which is a wrapper around the generic `docker` module.
 
 ```yaml
-your_service_identifier: # e.g., flaresolverr, deluge-vpn
-  # Required: The canonical name of the service (used for Docker container name, etc.)
-  service_name: "MyStandaloneService"
-  # Required: The Docker image name and tag
-  image_name: "myrepo/my-standalone-service:latest"
-  # Required: The static IP address assigned to the container on its primary bridge network (e.g., br1)
-  ip_address: "192.168.5.X"
-  # Optional: The port the service listens on inside the container (used for web_ui, etc.)
-  service_port: 8080
-  # Optional: List of environment variables in "KEY=VALUE" format
+deluge-vpn:
+  service_name: "deluge-vpn"
+  image_name: "binhex/arch-delugevpn:2.2"
+  ip_address: "192.168.5.20"
   env:
-    - "TZ=America/Chicago"
-    - "SOME_VAR=some_value"
-  # Optional: List of bind mounts in "host_path:container_path[:ro]" format
+    - "VPN_ENABLED=yes"
+    - "VPN_PROV=custom"
+    # ... other env vars
   mounts:
-    - "/mnt/user/data:/data"
     - "/etc/localtime:/etc/localtime:ro"
-  # Optional: Linux capabilities to add to the container
   capabilities:
     add:
       - "NET_ADMIN"
-      - "SYS_PTRACE"
-    drop:
-      - "MKNOD"
-      - "SETUID"
-  # Optional: URL to an icon for the service (e.g., for Unraid UI)
-  icon: "https://example.com/icon.png"
-  # Optional: URL for the service's web UI (if not automatically derived)
-  web_ui: "http://my-service.local:8080"
-  # Other optional parameters that can be passed to the underlying 'docker' module:
-  # container_restart: "unless-stopped" # Default: "unless-stopped"
-  # container_user: "1000:100" # Default: null
-  # container_ports: [] # List of objects {internal=number, external=optional(number), ...}
-  # container_volumes: [] # List of objects for Docker-managed volumes
-  # container_dns_servers: ["8.8.8.8"] # Default: ["8.8.8.8", "1.1.1.1"]
-  # container_privileged_mode: false # Default: false
-  # container_network_mode: "bridge" # Default: null
-
-# Example of a non-Docker configuration:
-authentik:
-  admin-user: "your_authentik_admin_username"
 ```
+
+### Example 2: A Global Configuration Object (`authentik`)
+
+This key does not define a deployable service. Instead, it holds configuration parameters for the Authentik provider and other modules that need to interact with your Authentik instance.
+
+```yaml
+authentik:
+  admin-user: "akadmin"
+```
+
+This structure provides a flexible way to define individual services or global parameters that are directly integrated into your Terraform deployment.
 
 ### Field Meanings and Usage
 

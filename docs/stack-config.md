@@ -54,6 +54,8 @@ your_stack_name:
         - "/path/on/host:/path/in/container"
       # Optional: Service-specific Docker volumes
       volumes: [] # List of volume objects (see docker module variables for structure)
+      # Optional: List of commands to run in the container.
+      commands: ["--some-flag", "value"]
       # Optional: Linux capabilities to add/drop for the container
       capabilities:
         add: ["NET_ADMIN"]
@@ -76,26 +78,20 @@ your_stack_name:
         enabled: true
         # Optional: Is this DNS record/proxy internal-only? Default: true
         internal: false
-        # Optional: The domain name for this service (e.g., "service.yourdomain.com")
-        domain_name: "service.yourdomain.com"
-        # Optional: Nginx Proxy Manager Access List ID for this service
-        # If not set, defaults to "Internal Only" for internal services, "CloudFlare Only" for external.
-        access_list_id: "your_custom_access_list_id"
+        domain_name: "service.yourdomain.com" # Required if dns.enabled is true
       # Optional: Authentication configuration for the service
       auth:
         # Optional: Enable authentication for this service. Default: false
         enabled: true
         # Optional: Enable proxy authentication (e.g., Authentik forward auth). Default: false
         proxy: true
+        # Optional: The Authentik group to associate with the application. Default: "Uncategorized"
+        group: "My App Group"
         # Optional: OAuth configuration for the service
         oauth:
           # Optional: Enable OAuth authentication. Default: false
           enabled: true
-          # Optional: Authentik group for this application. Default: "Uncategorized"
-          group: "My App Group"
           # Optional: Map of environment variable names to Authentik OAuth output keys.
-          # The key is the desired environment variable name (e.g., "OAUTH_CLIENT_ID").
-          # The value is the Authentik OAuth provider output attribute name (e.g., "client_id", "client_secret", "provider_info_url").
           keys:
             OAUTH_CLIENT_ID: "client_id"
             OAUTH_CLIENT_SECRET: "client_secret"
@@ -119,6 +115,7 @@ your_stack_name:
 
 *   **`env` (Stack/Service Level)**: A list of `KEY=VALUE` strings for environment variables. Service-level `env` is merged with stack-level `env`. Values like `${SECRET_NAME}` will be replaced by dynamically generated secrets.
 *   **`mounts` (Stack/Service Level)**: A list of bind mount strings in `host_path:container_path[:ro]`. Service-level `mounts` are merged with stack-level `mounts`.
+*   **`commands` (Service Level)**: A list of strings representing the command to run in the container, overriding the image's default command.
 *   **`volumes` (Stack/Service Level)**: A list of Docker volume configurations.
 *   **`generated_secrets`**: A list of string names (e.g., `"API_KEY"`) for secrets that Terraform should generate using `openssl rand -base64 36` (or similar) and inject into environment variables.
 *   **`zone_name`**: The DNS zone (e.g., `yourdomain.com`) under which service domains will be created.
@@ -132,10 +129,12 @@ your_stack_name:
     *   **`network.networks`**: A list of Docker networks to attach the container to. This can include `br0`, `br1`, or custom networks defined in `stack.networks`.
     *   **`dns.enabled`**: If `true`, Terraform will create a DNS record and an Nginx Proxy Manager host for this service.
     *   **`dns.domain_name`**: The full domain name for the service (e.g., `sonarr.yourdomain.com`).
+    *   **`dns.access_list_id`**: This field is **not set directly**. The module automatically assigns the "Internal Only" access list for internal services and the "CloudFlare Only" access list for external services.
     *   **`auth.enabled`**: If `true`, authentication is configured for this service.
     *   **`auth.proxy`**: If `true`, Nginx Proxy Manager will forward authentication requests to Authentik. The `service_port` for the DNS record will automatically point to Authentik's port.
+    *   **`auth.group`**: The name of the group in Authentik to associate with the created application.
     *   **`auth.oauth.enabled`**: If `true`, an Authentik OAuth2 provider and application are created for this service.
-    *   **`auth.oauth.group`**: The Authentik group to associate with the OAuth application.
-    *   **`auth.oauth.keys`**: Maps desired environment variable names (e.g., `OAUTH_CLIENT_ID`) to Authentik OAuth provider output attributes (e.g., `client_id`, `client_secret`, `provider_info_url`).
-    *   **`auth.oauth.scopes`**: OAuth scopes to request from Authentik.
-    *   **`auth.oauth.redirect_uris`**: Additional relative paths (e.g., `/oauth/callback`) that will be appended to the service's domain name to form valid OAuth redirect URIs.
+    *   **`auth.oauth.keys`**: Maps desired environment variable names (e.g., `OAUTH_CLIENT_ID`) to Authentik OAuth provider output attributes. Common values are `client_id`, `client_secret`, and `provider_info_url`.
+    *   **`auth.oauth.scopes`**: A list of OAuth scopes to request from Authentik (e.g., `openid`, `profile`, `email`).
+
+    *   **`auth.oauth.redirect_uris`**: A list of additional relative paths (e.g., `/oauth/callback`) that will be appended to the service's domain name to form the complete, valid OAuth redirect URIs required by Authentik.
