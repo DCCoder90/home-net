@@ -29,7 +29,7 @@ resource "nginxproxymanager_proxy_host" "host" {
   access_list_id = var.access_list_id
 
   certificate_id  = nginxproxymanager_certificate_letsencrypt.certificate.id
-  ssl_forced      = true
+  ssl_forced      = false
   hsts_enabled    = false
   hsts_subdomains = false
   http2_support   = true
