@@ -16,16 +16,8 @@ module "service_container" {
   container_image        = var.service.image_name
   container_network_mode = var.service.network_mode
   environment_vars = toset(
-    concat(coalesce(var.stack.env, []),
-      local.processed_envs[var.service.service_name],
-      coalesce(var.stack.env, []),
+    concat(coalesce(var.service.env, []),
       coalesce(local.oauth_envs[var.service.service_name], []),
-      concat(
-        coalesce(var.stack.env, []),
-        local.processed_envs[service_name],
-        coalesce(var.stack.env, []),
-        coalesce(local.oauth_envs[service_name], [])
-      )
   ))
   mounts                 = var.service.mounts
   container_capabilities = var.service.capabilities

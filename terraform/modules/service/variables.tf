@@ -38,6 +38,7 @@ variable "service" {
         ipv4_address = optional(string)
       })), [])
     }))
+    env = optional(list(string))
   })
 
   description = "Map of services to be deployed with their configurations"
@@ -52,4 +53,10 @@ variable "zone_name" {
   type        = string
   description = "The DNS zone name to use for the service's domain name."
   default     = null
+}
+
+variable "generated_secrets" {
+  type        = map(string)
+  description = "A map of generated secrets to be used in the service configuration.  Secret name as key."
+  default     = {}
 }

@@ -1,9 +1,3 @@
-output "generated_secrets" {
-  description = "A map of the dynamically generated secrets for the stack."
-  value       = local.generated_secrets
-  sensitive   = true
-}
-
 output "client_id" {
   description = "The OAuth client ID for the service, if OAuth is enabled."
   value       = { for k, m in module.oauth_authentication : k => m.client_id }

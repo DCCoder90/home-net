@@ -18,6 +18,7 @@ module "service" {
 
   service = each.value
   system = var.system
+  generated_secrets = local.generated_secrets
 }
 
 locals {

@@ -1,4 +1,3 @@
-
 resource "random_password" "service_password" {
   count = var.service.auth.proxy && var.service.auth.enabled ? 1 : 0
 
@@ -12,9 +11,13 @@ module "proxy_authentication" {
   source = "../proxy_auth"
   count  = var.service.auth.proxy && var.service.auth.enabled ? 1 : 0
 
-  group                       = var.service.auth.group
-  description                 = var.service.description
-  internal_host               = "http://${var.service.network.ip_address}:${var.service.network.service_port}"
+  group       = var.service.auth.group
+  description = var.service.description
+  internal_host = "http://${try(
+    [for n in var.service.network.networks : n.ip_address if n.name == "br1"][0],
+    [for n in var.service.network.networks : n.ip_address if n.name == "br0"][0],
+    var.service.network.networks[0].ip_address
+  )}:${var.service.network.service_port}"
   external_host               = var.service.dns.domain_name
   name                        = var.service.service_name
   username_attribute          = "${var.service.service_name}_username"
