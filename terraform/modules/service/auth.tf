@@ -34,7 +34,7 @@ module "oauth_authentication" {
   source = "../oauth_auth"
   count  = var.service.auth.enabled && var.service.auth.oauth.enabled ? 1 : 0
 
-  group                       = var.serviceauth.group
+  group                       = var.service.auth.group
   description                 = var.service.description
   name                        = var.service.service_name
   create_access_group         = true

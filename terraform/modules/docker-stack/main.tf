@@ -29,8 +29,7 @@ locals {
       env          = concat(
         coalesce(var.stack.env, []),
         local.processed_envs[service_name],
-        coalesce(var.stack.env, []),
-        coalesce(local.oauth_envs[service_name], [])
+        coalesce(var.stack.env, [])
       )
       mounts       = var.stack.mounts
       capabilities = service.capabilities

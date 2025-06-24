@@ -2,8 +2,8 @@ locals {
   # Networks that this module should actually create.
   # Filter out pre-existing host networks.
   creatable_networks = {
-    for name, config in coalesce(var.stack.networks, {}) : name => config
-    if !contains(var.system.existing_networks, name)
+    for network in coalesce(var.service.network.networks, []) : network.name => network.name
+    if !contains(var.system.existing_networks, network.name)
   }
 
   # A map of generated secrets, with the secret name as the key.
@@ -32,7 +32,7 @@ locals {
   }
 
   oauth_envs = {
-    for service_key, service_config in var.stack.services : service_key => (
+    for service_key, service_config in var.service : service_key => (
       lookup(lookup(service_config, "auth", {}), "oauth", { enabled = false }).enabled ? [
         for env_name, output_key in lookup(lookup(service_config, "auth", {}), "oauth", { keys = {} }).keys :
         format(

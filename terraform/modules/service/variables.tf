@@ -6,6 +6,7 @@ variable "service" {
     network_mode = optional(string)
     description  = optional(string, "")
     image_name   = string
+    mounts       = optional(list(string))
     username     = optional(string, "")
     password     = optional(string, "")
     commands     = optional(list(string))
