@@ -59,7 +59,7 @@ karakeep:
         network:
           internal: true
           networks:
-            - "karakeep"
+            - name: "karakeep"
         auth:
           enabled: false
         icon: "https://static-00.iconduck.com/assets.00/search-icon-512x512-dlh8ei42.png"
@@ -80,7 +80,7 @@ karakeep:
         network:
           internal: true
           networks:
-            - "karakeep"
+            - name: "karakeep"
         auth:
           enabled: false
         icon: "https://static-00.iconduck.com/assets.00/chrome-icon-512x512-5ln6wbyk.png"
