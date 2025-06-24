@@ -40,6 +40,7 @@ variable "stack" {
       service_name = string
       network_mode = optional(string)
       description  = optional(string, "")
+      env          = optional(list(string))
       image_name   = string
       username     = optional(string, "")
       password     = optional(string, "")
