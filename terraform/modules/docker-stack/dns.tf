@@ -10,7 +10,8 @@ module "service_dns" {
   service_port             = each.value.auth.proxy ? var.system.authentik.port : each.value.network.service_port
   zone_name                = var.stack.zone_name
   domain_name              = each.value.dns.domain_name
-  //Really don't like having the ACLs hardcoded here...
+  
+  # Really don't like having the ACLs hardcoded here...
   access_list_id           = each.value.network.internal ? local.npm_access_lists_by_name["Internal Only"] : local.npm_access_lists_by_name["Cloudflare"]
   internal_host_ipv4       = var.system.proxy_ip
   service_ipv4             = each.value.auth.proxy ? var.system.authentik.ip_address : local.service_ip_addresses[each.key]
