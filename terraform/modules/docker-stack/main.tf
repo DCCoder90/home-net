@@ -17,10 +17,7 @@ module "service_container" {
   source   = "../../modules/docker"
 
   icon = each.value.icon
-  web_ui = (
-    each.value.network != null && each.value.network.ip_address != null && each.value.network.service_port != null ?
-    "http://${each.value.network.ip_address}:${each.value.network.service_port}" : null
-  )
+  web_ui = try(each.value.network.service_port, null) != null && local.service_ip_addresses[each.key] != null ? "http://${local.service_ip_addresses[each.key]}:${each.value.network.service_port}" : null
   container_name         = each.value.service_name
   container_image        = each.value.image_name
   container_network_mode = each.value.network_mode

@@ -18,7 +18,7 @@ module "proxy_authentication" {
 
   group                       = each.value.auth.group
   description                 = each.value.description
-  internal_host               = "http://${each.value.network.ip_address}:${each.value.network.service_port}"
+  internal_host               = "http://${local.service_ip_addresses[each.key]}:${each.value.network.service_port}"
   external_host               = each.value.dns.domain_name
   name                        = each.value.service_name
   username_attribute          = "${each.value.service_name}_username"

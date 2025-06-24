@@ -1,4 +1,13 @@
 locals {
+  service_ip_addresses = {
+    for service_key, service_config in var.stack.services : service_key => try(
+      [for n in try(service_config.network.networks, []) : n.ipv4_address if n.name == "br1" && n.ipv4_address != null][0],
+      [for n in try(service_config.network.networks, []) : n.ipv4_address if n.name == "br0" && n.ipv4_address != null][0],
+      [for n in try(service_config.network.networks, []) : n.ipv4_address if n.ipv4_address != null][0],
+      null
+    )
+  }
+
   # Networks that this module should actually create.
   # Filter out pre-existing host networks.
   creatable_networks = {
