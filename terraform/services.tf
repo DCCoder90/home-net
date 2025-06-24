@@ -11,7 +11,7 @@ module "flaresolverr_service" {
 
   container_name   = local.services.flaresolverr.service_name
   container_image  = local.services.flaresolverr.image_name
-  networks = local.services.flaresolverr.networks
+  networks         = local.services.flaresolverr.network.networks
   environment_vars = local.services.flaresolverr.env
 }
 

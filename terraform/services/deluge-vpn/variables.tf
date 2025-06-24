@@ -18,7 +18,7 @@ variable "service" {
     image_name   = string
     username     = optional(string, "")
     password     = optional(string, "")
-    service_port = number
+    service_port = optional(number)
     ip_address   = string
     env          = optional(list(string))
     mounts       = optional(list(string))
