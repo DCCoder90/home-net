@@ -28,7 +28,6 @@ module "service_container" {
 
   # Attach the container to custom networks defined in the stack, but only if the service
   # explicitly lists that network in its own configuration.
-  networks = length(local.creatable_networks) > 0 ? [
-    for net in coalesce(each.value.network.networks, []) : module.custom_network[0].networks[net.name].id
-  ] : []
+  # The docker module expects a list of objects with `name` and `ipv4_address`.
+  networks = coalesce(each.value.network.networks, [])
 }
