@@ -12,20 +12,25 @@ variable "vpn_pass" {
 
 variable "service" {
   type = object({
-    icon         = optional(string)
-    volumes      = optional(list(string))
     service_name = string
     image_name   = string
-    username     = optional(string, "")
-    password     = optional(string, "")
-    service_port = optional(number)
-    ip_address   = string
-    env          = optional(list(string))
+    icon         = optional(string)
+    volumes      = optional(list(string))
+    network = object({
+      internal     = bool
+      service_port = number
+      networks = list(object({
+        name       = string
+        ip_address = string
+      }))
+    })
+    env = list(string)
     mounts       = optional(list(string))
     capabilities = optional(object({
       add  = optional(list(string))
       drop = optional(list(string))
     }), {})
   })
-  description = "Service and config"
+
+  description = "Service configuration"
 }
