@@ -1,10 +1,10 @@
 data "nginxproxymanager_access_lists" "access_lists" {}
 
 module "service_dns" {
-  source   = "../dns"
+  source = "../dns"
   for_each = {
-      for k, v in var.stack.services : k => v if lookup(v, "dns").enabled == true
-    }
+    for k, v in var.stack.services : k => v if lookup(v, "dns").enabled == true
+  }
 
   internal_only            = each.value.network.internal
   service_port             = each.value.auth.proxy ? var.system.authentik.port : each.value.network.service_port

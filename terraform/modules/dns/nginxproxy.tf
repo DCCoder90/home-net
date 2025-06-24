@@ -7,7 +7,7 @@ resource "nginxproxymanager_certificate_letsencrypt" "certificate" {
   dns_challenge            = true
   dns_provider             = "cloudflare"
   dns_provider_credentials = "dns_cloudflare_api_token=${var.dns_cloudflare_api_token}"
-  propagation_seconds = 10
+  propagation_seconds      = 10
 }
 
 //This is just commented out for now, because ultimately I'd rather manage this from here than passing it in the other way

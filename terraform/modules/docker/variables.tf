@@ -17,29 +17,29 @@ variable "environment_vars" {
 
 variable "networks" {
   type = list(object({
-    name          = string
-    ipv4_address  = optional(string,"") # Optional static IP address for the network
+    name         = string
+    ipv4_address = optional(string, "") # Optional static IP address for the network
   }))
   description = "List of networks to attach to"
-  default = []
+  default     = []
 }
 
-variable "icon"{
-  type = string
+variable "icon" {
+  type    = string
   default = null
 }
 
-variable "web_ui"{
-  type = string
+variable "web_ui" {
+  type    = string
   default = null
 }
 
-variable "commands"{
-  type = list(string)
+variable "commands" {
+  type    = list(string)
   default = null
 }
 
-variable "labels"{
+variable "labels" {
   type = set(object({
     label = string
     value = string
@@ -140,8 +140,8 @@ variable "container_capabilities" {
   default = {} # Defaults to an empty object, meaning 'add' and 'drop' will be null if not specified.
 }
 
-variable "mounts"{
+variable "mounts" {
   description = "Specification for mounts to be added to containers created as part of the service."
-  type = list(string)
-  default = []
+  type        = list(string)
+  default     = []
 }

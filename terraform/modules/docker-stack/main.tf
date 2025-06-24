@@ -16,8 +16,8 @@ module "service_container" {
   for_each = var.stack.services
   source   = "../../modules/docker"
 
-  icon                   = each.value.icon
-  web_ui                 = (
+  icon = each.value.icon
+  web_ui = (
     each.value.network != null && each.value.network.ip_address != null && each.value.network.service_port != null ?
     "http://${each.value.network.ip_address}:${each.value.network.service_port}" : null
   )

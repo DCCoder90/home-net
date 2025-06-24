@@ -4,7 +4,7 @@ locals {
     if vol_config.volume_name != null && coalesce(vol_config.manage_volume_lifecycle, true)
   }
 
-    all_labels = toset(concat(
+  all_labels = toset(concat(
     tolist(coalesce(var.labels, [])),
     var.icon != null ? [{
       label = "net.unraid.docker.icon",

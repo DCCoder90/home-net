@@ -40,7 +40,7 @@ variable "access_group_name" {
 variable "user_to_add_to_access_group" {
   type        = string
   description = "User to add to access group"
-  default = ""
+  default     = ""
 }
 
 variable "access_group_roles" {
