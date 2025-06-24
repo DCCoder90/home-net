@@ -14,7 +14,9 @@ module "service_dns" {
   # Really don't like having the ACLs hardcoded here...
   access_list_id           = each.value.network.internal ? local.npm_access_lists_by_name["Internal Only"] : local.npm_access_lists_by_name["Cloudflare"]
   internal_host_ipv4       = var.system.proxy_ip
-  service_ipv4             = each.value.auth.proxy ? var.system.authentik.ip_address : local.service_ip_addresses[each.key]
+  # If not using proxy auth, point to the service's static IP. If no static IP,
+  # fall back to the service name, which NPM can use as a hostname.
+  service_ipv4             = each.value.auth.proxy ? var.system.authentik.ip_address : coalesce(local.service_ip_addresses[each.key], each.value.service_name)
   admin_email              = var.system.network_admin_email
   dns_cloudflare_api_token = var.system.cloudflare_api_token
   external_host_ipv4       = var.system.public_facing_ip

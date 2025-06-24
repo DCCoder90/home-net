@@ -18,7 +18,9 @@ module "proxy_authentication" {
 
   group                       = each.value.auth.group
   description                 = each.value.description
-  internal_host               = "http://${local.service_ip_addresses[each.key]}:${each.value.network.service_port}"
+  # If a static IP is defined, use it. Otherwise, fall back to the service name,
+  # which is resolvable within a Docker network.
+  internal_host               = "http://${coalesce(local.service_ip_addresses[each.key], each.value.service_name)}:${each.value.network.service_port}"
   external_host               = each.value.dns.domain_name
   name                        = each.value.service_name
   username_attribute          = "${each.value.service_name}_username"
