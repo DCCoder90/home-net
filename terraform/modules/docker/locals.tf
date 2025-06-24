@@ -18,7 +18,7 @@ locals {
 
   # Merge order ensures that br1/br0 configs with static IPs override any generic entry.
   all_networks_map = merge(
-    { for net in var.networks : net => { name = net, ipv4_address = null } }
+    { for net in var.networks : net.name => { name = net.name, ipv4_address = null } }
   )
 
   # `network_mode` should be the first network from the list that does NOT have a static IP.

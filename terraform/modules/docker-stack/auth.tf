@@ -1,4 +1,3 @@
-
 resource "random_password" "service_password" {
   for_each = {
     for k, v in var.stack.services : k => v if lookup(lookup(v, "auth", {}), "enabled", false) == true && lookup(lookup(v, "auth", {}), "proxy", false) == true
@@ -18,7 +17,11 @@ module "proxy_authentication" {
 
   group                       = each.value.auth.group
   description                 = each.value.description
-  internal_host               = "http://${each.value.network.ip_address}:${each.value.network.service_port}"
+  internal_host               = "http://${try(
+  [for n in each.value.network.networks : n.ip_address if n.name == "br1"][0],
+  [for n in each.value.network.networks : n.ip_address if n.name == "br0"][0],
+  each.value.network.networks[0].ip_address
+)}:${each.value.network.service_port}"
   external_host               = each.value.dns.domain_name
   name                        = each.value.service_name
   username_attribute          = "${each.value.service_name}_username"
