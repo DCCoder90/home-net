@@ -11,9 +11,7 @@ module "flaresolverr_service" {
 
   container_name   = local.services.flaresolverr.service_name
   container_image  = local.services.flaresolverr.image_name
-  attach_to_br0    = false
-  attach_to_br1    = true
-  br1_ipv4_addr    = local.services.flaresolverr.ip_address
+  networks = local.services.flaresolverr.networks
   environment_vars = local.services.flaresolverr.env
 }
 
