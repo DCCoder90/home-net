@@ -16,10 +16,9 @@ locals {
     }] : []
   ))
 
-  # Merge order ensures that br1/br0 configs with static IPs override any generic entry.
-  all_networks_map = merge(
-    { for net in var.networks : net => { name = net, ipv4_address = null } }
-  )
+  # Create a map of networks, keyed by network name, for easy lookups.
+  # This resolves the "Invalid object key" error by using `net.name` (a string) as the key.
+  all_networks_map = { for net in var.networks : net.name => net }
 
   # `network_mode` should be the first network from the list that does NOT have a static IP.
   potential_primary_networks = [
