@@ -13,15 +13,17 @@ variable "stack" {
     services = map(object({
       service_name = string
       image_name   = string
-      icon    = optional(string, "https://static-00.iconduck.com/assets.00/container-optimized-os-icon-512x512-9od9q084.png")
+      icon         = optional(string, "https://static-00.iconduck.com/assets.00/container-optimized-os-icon-512x512-9od9q084.png")
       network_mode = optional(string)
       description  = optional(string, "")
       commands     = optional(list(string))
+      mounts       = optional(list(string))
+      env          = optional(list(string))
+      volumes      = optional(list(string))
       capabilities = optional(object({
         add  = optional(list(string))
         drop = optional(list(string))
       }), {})
-      volumes = optional(list(string))
       dns = object({
         enabled     = optional(bool, false),
         internal    = optional(bool, true),
