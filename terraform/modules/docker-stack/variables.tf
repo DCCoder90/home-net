@@ -35,7 +35,7 @@ variable "stack" {
         networks = optional(list(object({
           name         = string
           ipv4_address = optional(string)
-        }), []))
+        }), {}))
       }))
     }))
     service_name = string
@@ -44,8 +44,6 @@ variable "stack" {
     image_name   = string
     username     = optional(string, "")
     password     = optional(string, "")
-    env          = optional(list(string))
-    mounts       = optional(list(string))
     commands     = optional(list(string))
     capabilities = optional(object({
       add  = optional(list(string))
