@@ -1,0 +1,1 @@
+I'll come back and fix this doc up later, but essentially this module should be the single source for creation of services.  The docker-stack module is going to be updated to just call this as many times as it needs.
