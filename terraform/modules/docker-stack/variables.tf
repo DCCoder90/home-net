@@ -37,18 +37,18 @@ variable "stack" {
           ipv4_address = optional(string)
         })), [])
       }))
+      service_name = string
+      network_mode = optional(string)
+      description  = optional(string, "")
+      image_name   = string
+      username     = optional(string, "")
+      password     = optional(string, "")
+      commands     = optional(list(string))
+      capabilities = optional(object({
+        add  = optional(list(string))
+        drop = optional(list(string))
+      }), {})
     }))
-    service_name = string
-    network_mode = optional(string)
-    description  = optional(string, "")
-    image_name   = string
-    username     = optional(string, "")
-    password     = optional(string, "")
-    commands     = optional(list(string))
-    capabilities = optional(object({
-      add  = optional(list(string))
-      drop = optional(list(string))
-    }), {})
   })
 
   description = "Map of services to be deployed with their configurations"
