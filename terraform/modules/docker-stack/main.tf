@@ -18,6 +18,7 @@ module "service" {
 
   service = each.value
   system = var.system
+  ignore_auth = true
   generated_secrets = local.generated_secrets
 }
 
@@ -26,7 +27,7 @@ locals {
     for service_name, service in var.stack.services : service_name => {
       service_name = service_name
       image_name   = service.image_name
-      networks     = service.networks
+      networks     = service.network.networks
       env          = concat(
         coalesce(var.stack.env, []),
         local.processed_envs[service_name],

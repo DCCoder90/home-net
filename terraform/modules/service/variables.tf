@@ -55,6 +55,12 @@ variable "zone_name" {
   default     = null
 }
 
+variable "ignore_auth"{
+  type = bool
+  description = "If true, skip authentication setup for the service."
+  default = false
+}
+
 variable "generated_secrets" {
   type        = map(string)
   description = "A map of generated secrets to be used in the service configuration.  Secret name as key."
