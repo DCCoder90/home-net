@@ -11,7 +11,16 @@ variable "stack" {
       options  = optional(map(string), {})
     })))
     services = map(object({
+      service_name = string
+      image_name   = string
       icon    = optional(string, "https://static-00.iconduck.com/assets.00/container-optimized-os-icon-512x512-9od9q084.png")
+      network_mode = optional(string)
+      description  = optional(string, "")
+      commands     = optional(list(string))
+      capabilities = optional(object({
+        add  = optional(list(string))
+        drop = optional(list(string))
+      }), {})
       volumes = optional(list(string))
       dns = object({
         enabled     = optional(bool, false),
@@ -38,17 +47,6 @@ variable "stack" {
         })), [])
       }))
     }))
-    service_name = string
-    network_mode = optional(string)
-    description  = optional(string, "")
-    image_name   = string
-    username     = optional(string, "")
-    password     = optional(string, "")
-    commands     = optional(list(string))
-    capabilities = optional(object({
-      add  = optional(list(string))
-      drop = optional(list(string))
-    }), {})
   })
 
   description = "Map of services to be deployed with their configurations"
