@@ -1,6 +1,11 @@
 flaresolverr:
   service_name: "flaresolverr"
-  ip_address: "192.168.5.27"
   image_name: "flaresolverr/flaresolverr:v3.3.25"
+  network:
+    internal: true
+    service_port: 8112
+    networks:
+      - name: "br1"
+        ip_address: "192.168.5.27"
   env:
     - "TZ=America/Chicago"

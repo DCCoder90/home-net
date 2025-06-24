@@ -1,8 +1,12 @@
 requestrr:
   service_name: "requestrr"
-  service_port: 4545
   image_name: "linuxserver/requestrr:2.1.2"
-  ip_address: "192.168.5.27"
+  network:
+    internal: true
+    service_port: 4545
+    networks:
+      - name: "br1"
+        ip_address: "192.168.5.27"
   mounts:
     - "/mnt/user/Arr/requestrr-data:/config"
     - "/etc/localtime:/etc/localtime:ro"
