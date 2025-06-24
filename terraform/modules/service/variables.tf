@@ -46,3 +46,9 @@ variable "system" {
   type        = any
   description = "A dynamic object containing system-wide configuration variables. Its attributes are accessed via lookup() for flexibility."
 }
+
+variable "zone_name" {
+  type        = string
+  description = "The DNS zone name to use for the service's domain name."
+  default     = null
+}

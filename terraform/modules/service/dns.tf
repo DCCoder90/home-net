@@ -6,7 +6,7 @@ module "service_dns" {
 
   internal_only            = var.service.network.internal
   service_port             = var.service.auth.proxy ? var.system.authentik.port : var.service.network.service_port
-  zone_name                = var.stack.zone_name
+  zone_name                = var.zone_name
   domain_name              = var.service.dns.domain_name
   access_list_id           = var.service.network.internal ? local.npm_access_lists_by_name["Internal Only"] : local.npm_access_lists_by_name["Cloudflare"]
   internal_host_ipv4       = var.system.proxy_ip

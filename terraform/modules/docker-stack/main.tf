@@ -13,9 +13,27 @@ module "custom_network" {
 }
 
 module "service" {
-  for_each = var.stack.services
+  for_each = local.build_service
   source   = "../../modules/service"
 
   service = each.value
   system = var.system
+}
+
+locals {
+  build_service = {
+    for service_name, service in var.stack.services : service_name => {
+      service_name = service_name
+      image_name   = service.image_name
+      networks     = service.networks
+      env          = concat(
+        coalesce(var.stack.env, []),
+        local.processed_envs[service_name],
+        coalesce(var.stack.env, []),
+        coalesce(local.oauth_envs[service_name], [])
+      )
+      mounts       = var.stack.mounts
+      capabilities = service.capabilities
+    }
+  }
 }
