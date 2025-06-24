@@ -17,10 +17,10 @@ karakeep:
         network:
           internal: false
           service_port: 3000
-          ip_address: "192.168.5.241"
           networks:
-            - "karakeep"
-            - "br1"
+            - name: "karakeep"
+            - name: "br1"
+              ip_address: "192.168.5.241"
         auth:
           enabled: true
           group: "Productivity"

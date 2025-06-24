@@ -31,8 +31,8 @@ resource "docker_container" "container" {
   dynamic "networks_advanced" {
     for_each = local.advanced_network_attachments
     content {
-      name         = networks_advanced.value.name
-      ipv4_address = networks_advanced.value.ipv4_address
+      name         = each.value.name
+      ipv4_address = each.value.ipv4_address
     }
   }
 

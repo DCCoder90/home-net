@@ -45,11 +45,11 @@ locals {
 
   # Define the networks for the `networks_advanced` block
   advanced_network_attachments = (
-    # networks_advanced is not compatible with 'host' or 'none' mode
+    # If the effective network mode is 'host' or 'none', we don't need advanced networks.
     local.effective_network_mode == "host" || local.effective_network_mode == "none" ? {} :
     {
       for k, v in local.all_networks_map : k => v
-      if k != local.effective_network_mode
+      if k != local.effective_network_mode && v.ipv4_address != null
     }
   )
 }
