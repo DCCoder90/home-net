@@ -4,11 +4,10 @@ karakeep:
   mounts:
   generated_secrets:
     - "NEXTAUTH_SECRET"
-    - "MEILI_MASTER_KEY"
+    #- "MEILI_MASTER_KEY"
   networks:
     karakeep:
       internal: true
-      driver: "bridge"
   services:
     karakeep:
         dns:
@@ -41,7 +40,7 @@ karakeep:
         description: "Karakeep is an open source \"Bookmark Everything\" app that uses AI for automatically tagging the content you throw at it. The app is built with self-hosting as a first class citizen."
         image_name: "ghcr.io/karakeep-app/karakeep:0.25.0"
         env:
-          - "MEILI_ADDR=http://meilisearch:7700"
+          - "MEILI_ADDR=http://meillisearch:7700"
           - "BROWSER_WEB_URL=http://chrome:9222"
           - "NEXTAUTH_SECRET=${NEXTAUTH_SECRET}"
           - "NEXTAUTH_URL=https://keep.mallett.family"
@@ -73,7 +72,7 @@ karakeep:
           - "MEILI_NO_ANALYTICS=true"
           - "NEXTAUTH_SECRET=${NEXTAUTH_SECRET}"
           - "NEXTAUTH_URL=http://karakeep:3000"
-          - "MEILI_MASTER_KEY=${MEILI_MASTER_KEY}"
+          #- "MEILI_MASTER_KEY=${MEILI_MASTER_KEY}"
     chrome:
         dns:  
           enabled: false
@@ -81,6 +80,7 @@ karakeep:
           internal: true
           networks:
             - name: "karakeep"
+            - name: "bridge"
         auth:
           enabled: false
         icon: "https://static-00.iconduck.com/assets.00/chrome-icon-512x512-5ln6wbyk.png"
