@@ -45,7 +45,7 @@ variable "stack" {
         service_port = optional(number)
         networks = optional(list(object({
           name         = string
-          ipv4_address = optional(string)
+          ip_address = optional(string)
         })), [])
       }))
     }))

@@ -22,7 +22,7 @@ locals {
 
   # `network_mode` should be the first network from the list that does NOT have a static IP.
   potential_primary_networks = [
-    for k, v in local.all_networks_map : k if v.ipv4_address == null
+    for k, v in local.all_networks_map : k if v.ip_address == null
   ]
 
   # Define the effective network mode.
@@ -48,7 +48,6 @@ locals {
     local.effective_network_mode == "host" || local.effective_network_mode == "none" ? {} :
     {
       for k, v in local.all_networks_map : k => v
-      if k != local.effective_network_mode && v.ipv4_address != null
     }
   )
 }

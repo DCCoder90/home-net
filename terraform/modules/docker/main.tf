@@ -32,7 +32,7 @@ resource "docker_container" "container" {
     for_each = local.advanced_network_attachments
     content {
       name         = networks_advanced.value.name
-      ipv4_address = networks_advanced.value.ipv4_address
+      ipv4_address = networks_advanced.value.ip_address
     }
   }
 
