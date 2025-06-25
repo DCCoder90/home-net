@@ -1,12 +1,12 @@
 media-servers:
   zone_name: "mallett.family"
   env:
-    - "/etc/localtime:/etc/localtime:ro"
-    - "/mnt/user/Media:/media"
     - "TZ=America/Chicago"
     - "NVIDIA_DRIVER_CAPABILITIES=all"
     - "NVIDIA_VISIBLE_DEVICES=GPU-465cc8f0-4775-edd3-5402-87cca1022307"
   mounts:
+    - "/etc/localtime:/etc/localtime:ro"
+    - "/mnt/user/Media:/media"
   generated_secrets:
   networks:
   services:
@@ -18,7 +18,7 @@ media-servers:
           internal: false
           service_port: 8096
           networks:
-            - name: "br1"
+            - name: "br1" 
               ip_address: "192.168.5.46"
         auth:
           enabled: true
@@ -43,4 +43,4 @@ media-servers:
           - "PUID=0"
           - "PGID=0"
         mounts:
-          - "/mnt/user/appdata/binhex-jellyfin:/config"
+          - "/mnt/user/appdata/jellyfin:/config"
