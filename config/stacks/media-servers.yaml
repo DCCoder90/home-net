@@ -1,0 +1,46 @@
+media-servers:
+  zone_name: "mallett.family"
+  env:
+    - "/etc/localtime:/etc/localtime:ro"
+    - "/mnt/user/Media:/media"
+    - "TZ=America/Chicago"
+    - "NVIDIA_DRIVER_CAPABILITIES=all"
+    - "NVIDIA_VISIBLE_DEVICES=GPU-465cc8f0-4775-edd3-5402-87cca1022307"
+  mounts:
+  generated_secrets:
+  networks:
+  services:
+    jellyfin:
+        dns:
+          enabled: true
+          domain_name: "media.mallett.family"
+        network:
+          internal: false
+          service_port: 8096
+          networks:
+            - name: "br1"
+              ip_address: "192.168.5.46"
+        auth:
+          enabled: true
+          group: "Media"
+          oauth: 
+            enabled: true
+            keys:
+              OAUTH_CLIENT_ID: "client_id"
+              OAUTH_CLIENT_SECRET: "client_secret"
+              OAUTH_WELLKNOWN_URL: "well_known_url"
+            redirect_uris:
+              - "sso/OID/redirect/Authentik"
+            scopes:
+              - "openid"
+              - "email"
+              - "profile"
+        icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/jellyfin.png"
+        service_name: "jellyfin"
+        description: "Jellyfin is a Free Software Media System that puts you in control of managing and streaming your media."
+        image_name: "linuxserver/jellyfin:10.10.7"
+        env:
+          - "PUID=0"
+          - "PGID=0"
+        mounts:
+          - "/mnt/user/appdata/binhex-jellyfin:/config"
