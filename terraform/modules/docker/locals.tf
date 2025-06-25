@@ -4,7 +4,7 @@ locals {
     if vol_config.volume_name != null && coalesce(vol_config.manage_volume_lifecycle, true)
   }
 
-    all_labels = toset(concat(
+  all_labels = toset(concat(
     tolist(coalesce(var.labels, [])),
     var.icon != null ? [{
       label = "net.unraid.docker.icon",
@@ -16,26 +16,13 @@ locals {
     }] : []
   ))
 
-  # Merge order ensures that br1/br0 configs with static IPs override any generic entry.
-  all_networks_map = merge(
-    { for net in var.networks : net => { name = net, ipv4_address = null } },
-    var.attach_to_br1 ? {
-      "br1" = {
-        name         = data.docker_network.main_host.name
-        ipv4_address = var.br1_ipv4_addr
-      }
-    } : {},
-    var.attach_to_br0 ? {
-      "br0" = {
-        name         = data.docker_network.secondary_host.name
-        ipv4_address = var.br0_ipv4_addr
-      }
-    } : {}
-  )
+  # Create a map of networks, keyed by network name, for easy lookups.
+  # This resolves the "Invalid object key" error by using `net.name` (a string) as the key.
+  all_networks_map = { for net in var.networks : net.name => net }
 
   # `network_mode` should be the first network from the list that does NOT have a static IP.
   potential_primary_networks = [
-    for k, v in local.all_networks_map : k if v.ipv4_address == null
+    for k, v in local.all_networks_map : k if v.ip_address == null
   ]
 
   # Define the effective network mode.
@@ -57,11 +44,10 @@ locals {
 
   # Define the networks for the `networks_advanced` block
   advanced_network_attachments = (
-    # networks_advanced is not compatible with 'host' or 'none' mode
+    # If the effective network mode is 'host' or 'none', we don't need advanced networks.
     local.effective_network_mode == "host" || local.effective_network_mode == "none" ? {} :
     {
       for k, v in local.all_networks_map : k => v
-      if k != local.effective_network_mode
     }
   )
 }

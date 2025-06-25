@@ -9,6 +9,7 @@ on:
       - .github/workflows/run-plan.yml
       - ReadMe.md
       - .gitignore
+  workflow_dispatch:
 jobs:
   terraform_plan:
     runs-on: ubuntu-latest

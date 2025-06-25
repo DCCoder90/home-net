@@ -41,6 +41,8 @@ your_stack_name:
       service_name: "My Awesome Service"
       # Required: Docker image name and tag
       image_name: "myrepo/my-service:latest"
+      # Optional: Docker network mode
+      network_mode: "bridge"
       # Optional: Description of the service
       description: "A brief description of what this service does."
       # Optional: URL to an icon for the service (e.g., for Unraid UI)
@@ -123,6 +125,7 @@ your_stack_name:
 *   **`services`**: The core of the stack, defining individual Docker containers.
     *   **`service_name`**: The name of the Docker container and the base for Authentik application names.
     *   **`image_name`**: The Docker image to pull (e.g., `linuxserver/sonarr:latest`).
+    *   **`network_mode`**: The docker network mode to set
     *   **`network.internal`**: If `true`, the service is not exposed externally via Nginx Proxy Manager.
     *   **`network.service_port`**: The port the service listens on *inside* the container.
     *   **`network.ip_address`**: A static IP address to assign to the container on `br0` or `br1` if specified in `network.networks`.

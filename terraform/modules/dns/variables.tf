@@ -5,9 +5,9 @@ variable "internal_only" {
 }
 
 variable "access_list_id" {
-  type = string
+  type        = string
   description = "ID of access list in NGINX"
-  default = null
+  default     = null
 }
 
 variable "service_port" {
@@ -24,7 +24,7 @@ variable "service_ipv4" {
 variable "forward_scheme" {
   description = "Scheme of forwarded service"
   type        = string
-  default = "http"
+  default     = "http"
 }
 
 variable "dns_cloudflare_api_token" {
@@ -37,7 +37,7 @@ variable "dns_cloudflare_api_token" {
 variable "admin_email" {
   description = "Email address for the admin user"
   type        = string
-  sensitive = true
+  sensitive   = true
 }
 
 variable "external_host_ipv4" {

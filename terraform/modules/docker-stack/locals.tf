@@ -1,9 +1,18 @@
 locals {
+  service_ip_addresses = {
+    for service_key, service_config in var.stack.services : service_key => try(
+      [for n in try(service_config.network.networks, []) : n.ip_address if n.name == "br1" && n.ip_address != null][0],
+      [for n in try(service_config.network.networks, []) : n.ip_address if n.name == "br0" && n.ip_address != null][0],
+      [for n in try(service_config.network.networks, []) : n.ip_address if n.ip_address != null][0],
+      null
+    )
+  }
+
   # Networks that this module should actually create.
-  # Filter out br0 and br1 as they are pre-existing host networks.
+  # Filter out pre-existing host networks.
   creatable_networks = {
     for name, config in coalesce(var.stack.networks, {}) : name => config
-    if name != "br0" && name != "br1"
+    if !contains(var.system.existing_networks, name)
   }
 
   # A map of generated secrets, with the secret name as the key.

@@ -1,7 +1,7 @@
 
 resource "random_password" "service_password" {
   for_each = {
-      for k, v in var.stack.services : k => v if lookup(lookup(v, "auth", {}), "enabled", false) == true && lookup(lookup(v, "auth", {}), "proxy", false) == true
+    for k, v in var.stack.services : k => v if lookup(lookup(v, "auth", {}), "enabled", false) == true && lookup(lookup(v, "auth", {}), "proxy", false) == true
   }
 
   length           = 24
@@ -11,14 +11,16 @@ resource "random_password" "service_password" {
 
 
 module "proxy_authentication" {
-  source   = "../proxy_auth"
+  source = "../proxy_auth"
   for_each = {
-      for k, v in var.stack.services : k => v if lookup(lookup(v, "auth", {}), "enabled", false) == true && lookup(lookup(v, "auth", {}), "proxy", false) == true
+    for k, v in var.stack.services : k => v if lookup(lookup(v, "auth", {}), "enabled", false) == true && lookup(lookup(v, "auth", {}), "proxy", false) == true
   }
 
-  group = each.value.auth.group
-  description = each.value.description
-  internal_host               = "http://${each.value.network.ip_address}:${each.value.network.service_port}"
+  group                       = each.value.auth.group
+  description                 = each.value.description
+  # If a static IP is defined, use it. Otherwise, fall back to the service name,
+  # which is resolvable within a Docker network.
+  internal_host               = "http://${coalesce(local.service_ip_addresses[each.key], each.value.service_name)}:${each.value.network.service_port}"
   external_host               = each.value.dns.domain_name
   name                        = each.value.service_name
   username_attribute          = "${each.value.service_name}_username"
@@ -35,28 +37,28 @@ module "proxy_authentication" {
 }
 
 module "oauth_authentication" {
-  source   = "../oauth_auth"
+  source = "../oauth_auth"
   for_each = {
-      for k, v in var.stack.services : k => v if lookup(lookup(v, "auth", {}), "enabled", false) == true && lookup(lookup(lookup(v, "auth", {}), "oauth", {}), "enabled", false) == true
+    for k, v in var.stack.services : k => v if lookup(lookup(v, "auth", {}), "enabled", false) == true && lookup(lookup(lookup(v, "auth", {}), "oauth", {}), "enabled", false) == true
   }
 
-  group = each.value.auth.group
-  description = each.value.description
+  group                       = each.value.auth.group
+  description                 = each.value.description
   name                        = each.value.service_name
   create_access_group         = true
   access_group_name           = "tf_${each.value.service_name}"   //Update to allow for using custom groups rather than just generated
   user_to_add_to_access_group = var.system.network_admin_username //Update to allow for a list of users
   allowed_redirect_uris = concat(
-      [ 
-        { 
-          matching_mode = "strict", 
-          url = "https://${each.value.dns.domain_name}" }
-      ],
-      [ 
-        for uri_path in coalesce(each.value.auth.oauth.redirect_uris, []) : {
-          matching_mode = "strict",
-          url           = "https://${each.value.dns.domain_name}/${uri_path}"
-        }
-      ]
-    )
+    [
+      {
+        matching_mode = "strict",
+      url = "https://${each.value.dns.domain_name}" }
+    ],
+    [
+      for uri_path in coalesce(each.value.auth.oauth.redirect_uris, []) : {
+        matching_mode = "strict",
+        url           = "https://${each.value.dns.domain_name}/${uri_path}"
+      }
+    ]
+  )
 }

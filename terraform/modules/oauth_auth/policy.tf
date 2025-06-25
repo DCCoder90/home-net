@@ -1,7 +1,7 @@
 resource "authentik_group" "access_groups" {
   for_each = var.create_access_group ? toset([var.access_group_name]) : toset([])
 
-  name         = each.key
+  name = each.key
   # is_superuser = false # Default, can be made a variable if needed
   # attributes   = {}  # Default, can be made a variable if needed
 
@@ -24,12 +24,12 @@ data "authentik_group" "preexisting_groups_to_bind" {
 }
 
 resource "authentik_policy_binding" "app_binding" {
-  count  = length(var.access_group_name) > 0 ? 1 : 0 
+  count  = length(var.access_group_name) > 0 ? 1 : 0
   target = authentik_application.name.uuid
   group = var.create_access_group ? (
     length(var.access_group_name) > 0 && length(authentik_group.access_groups) > 0 ? values(authentik_group.access_groups)[0].id : null
-  ) : (
+    ) : (
     length(var.access_group_name) > 0 && length(data.authentik_group.preexisting_groups_to_bind) > 0 ? values(data.authentik_group.preexisting_groups_to_bind)[0].id : null
   )
-  order  = 0
+  order = 0
 }

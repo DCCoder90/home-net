@@ -32,7 +32,7 @@ resource "docker_container" "container" {
     for_each = local.advanced_network_attachments
     content {
       name         = networks_advanced.value.name
-      ipv4_address = networks_advanced.value.ipv4_address
+      ipv4_address = networks_advanced.value.ip_address
     }
   }
 
@@ -51,8 +51,8 @@ resource "docker_container" "container" {
     iterator = mount_iterator
 
     content {
-      target    = split(":", mount_iterator.value)[1] 
-      source    =  split(":", mount_iterator.value)[0] 
+      target    = split(":", mount_iterator.value)[1]
+      source    = split(":", mount_iterator.value)[0]
       read_only = strcontains(mount_iterator.value, ":ro") ? true : false
       type      = "bind"
     }

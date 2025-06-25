@@ -16,56 +16,35 @@ variable "environment_vars" {
 }
 
 variable "networks" {
-  type = list(string)
+  type = list(object({
+    name         = string
+    ip_address = optional(string, "") # Optional static IP address for the network
+  }))
   description = "List of networks to attach to"
-  default = []
+  default     = []
 }
 
-variable "icon"{
-  type = string
+variable "icon" {
+  type    = string
   default = null
 }
 
-variable "web_ui"{
-  type = string
+variable "web_ui" {
+  type    = string
   default = null
 }
 
-variable "commands"{
-  type = list(string)
+variable "commands" {
+  type    = list(string)
   default = null
 }
 
-variable "labels"{
+variable "labels" {
   type = set(object({
     label = string
     value = string
   }))
   default = null
-}
-
-variable "attach_to_br1" {
-  type        = bool
-  description = "Attach to br1 network?"
-  default     = false
-}
-
-variable "attach_to_br0" {
-  type        = bool
-  description = "Attach to br0 network?"
-  default     = false
-}
-
-variable "br1_ipv4_addr" {
-  type        = string
-  description = "IPv4 address to assign on network br1"
-  default     = null
-}
-
-variable "br0_ipv4_addr" {
-  type        = string
-  description = "IPv4 address to assign on network br0"
-  default     = null
 }
 
 variable "container_restart" {
@@ -140,9 +119,6 @@ variable "container_network_mode" {
   type        = string
   description = <<-EOT
     Base network mode for the container. Defaults to 'null'. Common values: 'none', 'bridge', 'host', 'container:<name|id>'.
-    Gateway Priority:
-    - If `attach_to_br1` is true, 'br1' will become the primary network, overriding this mode unless it's 'host'.
-    - Else if `attach_to_br0` is true, 'br0' will become the primary network, overriding this mode unless it's 'host'.
     Behavior for modes:
     - 'bridge': (Default if not overridden by br1/br0) Connects to the default Docker bridge.
     - 'none': If neither br1 nor br0 are attached, creates the container without a network interface. If br1 or br0 are attached, one of them becomes the primary.
@@ -161,8 +137,8 @@ variable "container_capabilities" {
   default = {} # Defaults to an empty object, meaning 'add' and 'drop' will be null if not specified.
 }
 
-variable "mounts"{
+variable "mounts" {
   description = "Specification for mounts to be added to containers created as part of the service."
-  type = list(string)
-  default = []
+  type        = list(string)
+  default     = []
 }

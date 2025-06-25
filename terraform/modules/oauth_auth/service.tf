@@ -42,11 +42,11 @@ data "authentik_certificate_key_pair" "generated" {
 # Then use `data.authentik_certificate_key_pair.generated.id`
 
 resource "authentik_provider_oauth2" "name" {
-  name                  = lower(replace(var.name, " ", "-"))
-  client_id             = random_string.example.result
-  authorization_flow    = data.authentik_flow.default-authorization-flow.id
-  invalidation_flow     = data.authentik_flow.default-invalidation-flow.id
-  signing_key = data.authentik_certificate_key_pair.generated.id
+  name               = lower(replace(var.name, " ", "-"))
+  client_id          = random_string.example.result
+  authorization_flow = data.authentik_flow.default-authorization-flow.id
+  invalidation_flow  = data.authentik_flow.default-invalidation-flow.id
+  signing_key        = data.authentik_certificate_key_pair.generated.id
 
   allowed_redirect_uris = var.allowed_redirect_uris
 
@@ -65,6 +65,6 @@ resource "authentik_application" "name" {
   protocol_provider = authentik_provider_oauth2.name.id
 }
 
-data "authentik_provider_oauth2_config" "oauth_config"{
+data "authentik_provider_oauth2_config" "oauth_config" {
   name = authentik_provider_oauth2.name.name
 }
