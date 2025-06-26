@@ -1,0 +1,61 @@
+media-servers:
+  zone_name: "dcapi.app"
+  env:
+    - "TZ=America/Chicago"
+  mounts:
+    - "/etc/localtime:/etc/localtime:ro"
+  generated_secrets:
+  networks:
+    db-network:
+      internal: true
+      driver: bridge
+  services:
+    mongodb:
+        dns:
+          enabled: false
+        network:
+          networks:
+            - name: "db-network"
+        auth:
+          enabled: false
+        icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/mongodb.png"
+        service_name: "mongodb"
+        description: ""
+        image_name: "mongo:latest"
+        env:
+          - "MONGO_INITDB_ROOT_USERNAME="
+          - "MONGO_INITDB_ROOT_PASSWORD="
+        mounts:
+          - "/mnt/user/DataStore/mongo-data:/data/db"
+    postgres:
+      image: "postgres:14"
+      icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/postgres.png"
+      service_name: "postgres"
+      volumes:
+        - "/mnt/user/DataStore/postgres-data:/var/lib/postgresql/data"
+      dns:
+        enabled: false
+        network:
+          networks:
+            - name: "db-network"
+      environment:
+        - "POSTGRES_USER="
+        - "POSTGRES_PASSWORD="
+        - "POSTGRES_DB="
+    redis:
+      image: "redis:latest"
+      service_name: "redis"
+      icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/redis.png"
+      volumes:
+        - "/mnt/user/DataStore/redis-data:/data"
+      dns:
+        enabled: false
+        network:
+          networks:
+            - name: "db-network"
+      commands:
+        - "/bin/sh"
+        - "-c"
+        - "redis-server --appendonly yes --requirepass \"$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}\""
+      environment:
+        - "REDIS_PASSWORD="
