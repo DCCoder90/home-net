@@ -87,21 +87,3 @@
         image_name: "linuxserver/lidarr:2.13.0-develop"
         mounts:
           - "/mnt/user/Arr/lidarr-data:/config"
-      readarr:
-        dns:
-          enabled: true
-          domain_name: "readarr.dcapi.app"
-        network:
-          internal: true
-          service_port: 8787
-          networks:
-            - name: "br1"
-              ip_address: "192.168.5.26"
-        auth:
-          enabled: true
-          proxy: true
-          group: "Arr"
-        service_name: "readarr"
-        image_name: "linuxserver/readarr:0.4.17-develop"
-        mounts:
-          - "/mnt/user/Arr/readarr-data:/config"
