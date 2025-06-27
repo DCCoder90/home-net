@@ -11,16 +11,16 @@ media-servers:
   networks:
   services:
     jellyfin:
-        dns:
+      dns:
           enabled: true
           domain_name: "media.mallett.family"
-        network:
+      network:
           internal: false
           service_port: 8096
           networks:
             - name: "br1" 
               ip_address: "192.168.5.46"
-        auth:
+      auth:
           enabled: true
           group: "Media"
           oauth: 
@@ -35,12 +35,31 @@ media-servers:
               - "openid"
               - "email"
               - "profile"
-        icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/jellyfin.png"
-        service_name: "jellyfin"
-        description: "Jellyfin is a Free Software Media System that puts you in control of managing and streaming your media."
-        image_name: "linuxserver/jellyfin:10.10.7"
-        env:
-          - "PUID=0"
-          - "PGID=0"
-        mounts:
-          - "/mnt/user/appdata/jellyfin:/config"
+      icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/jellyfin.png"
+      service_name: "jellyfin"
+      description: "Jellyfin is a Free Software Media System that puts you in control of managing and streaming your media."
+      image_name: "linuxserver/jellyfin:10.10.7"
+      env:
+        - "PUID=0"
+        - "PGID=0"
+      mounts:
+        - "/mnt/user/appdata/jellyfin:/config"
+        - "/mnt/user/Cache/transcodes:/transcode"
+    plex:
+      image_name: "linuxserver/plex:1.41.8"
+      service_name: "plex-home"
+      network_mode: "host"
+      icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/plex.png"
+      mounts:
+        - "/mnt/user/appdata/binhex-plex:/config"
+        - "/mnt/user/Cache/transcodes:/transcode"
+      dns:
+        enabled: false
+        domain_name: "plex.mallett.family"
+      auth:
+        enabled: false
+      network:
+        internal: false
+        service_port: 32400
+      env:
+        - "PLEX_CLAIM=claim-R-3WQe_zEBC3_mBY75UU"

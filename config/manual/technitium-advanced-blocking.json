@@ -1,0 +1,81 @@
+{
+  "enableBlocking": true,
+  "blockListUrlUpdateIntervalHours": 6,
+  "localEndPointGroupMap": {
+    "127.0.0.1": "bypass"
+  },
+  "networkGroupMap": {
+    "0.0.0.0/0": "everyone",
+    "[::]/0": "everyone",
+    "192.168.2.33": "kids",
+    "192.168.2.34": "kids",
+    "192.168.2.35": "kids",
+    "192.168.2.36": "kids",
+    "192.168.2.37": "kids"
+  },
+  "groups": [
+    {
+      "name": "everyone",
+      "enableBlocking": false,
+      "allowTxtBlockingReport": true,
+      "blockAsNxDomain": true,
+      "blockingAddresses": [
+        "0.0.0.0",
+        "::"
+      ],
+      "allowed": [],
+      "blocked": [],
+      "allowListUrls": [],
+      "blockListUrls": [],
+      "allowedRegex": [],
+      "blockedRegex": [],
+      "regexAllowListUrls": [],
+      "regexBlockListUrls": [],
+      "adblockListUrls": []
+    },
+    {
+      "name": "kids",
+      "enableBlocking": true,
+      "allowTxtBlockingReport": true,
+      "blockAsNxDomain": true,
+      "blockingAddresses": [
+        "0.0.0.0",
+        "::"
+      ],
+      "allowed": [],
+      "blocked": [],
+      "allowListUrls": [],
+      "blockListUrls": [
+        {
+          "url": "https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/social/hosts",
+          "blockAsNxDomain": true,
+          "blockingAddresses": []
+        }
+      ],
+      "allowedRegex": [],
+      "blockedRegex": [],
+      "regexAllowListUrls": [],
+      "regexBlockListUrls": [],
+      "adblockListUrls": []
+    },
+    {
+      "name": "bypass",
+      "enableBlocking": true,
+      "allowTxtBlockingReport": true,
+      "blockAsNxDomain": true,
+      "blockingAddresses": [
+        "0.0.0.0",
+        "::"
+      ],
+      "allowed": [],
+      "blocked": [],
+      "allowListUrls": [],
+      "blockListUrls": [],
+      "allowedRegex": [],
+      "blockedRegex": [],
+      "regexAllowListUrls": [],
+      "regexBlockListUrls": [],
+      "adblockListUrls": []
+    }
+  ]
+}

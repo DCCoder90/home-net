@@ -17,7 +17,7 @@ variable "environment_vars" {
 
 variable "networks" {
   type = list(object({
-    name         = string
+    name       = string
     ip_address = optional(string, "") # Optional static IP address for the network
   }))
   description = "List of networks to attach to"

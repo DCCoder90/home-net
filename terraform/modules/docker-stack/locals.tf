@@ -15,9 +15,12 @@ locals {
     if !contains(var.system.existing_networks, name)
   }
 
-  # A map of generated secrets, with the secret name as the key.
+  # A map of secrets fetched from Infisical.
+  # This will fail the plan if a secret listed in `var.stack.generated_secrets` is not found
+  # in Infisical, which is the desired behavior to prevent deploying with missing credentials.
   generated_secrets = {
-    for key, secret in random_password.generated : key => secret.result
+    for secret_name in toset(coalesce(var.stack.generated_secrets, [])) :
+    secret_name => data.infisical_secrets.generated_secrets[0].secrets[secret_name].value
   }
 
   # For each service, process its environment variables to substitute secret placeholders.

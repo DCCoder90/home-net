@@ -1,10 +1,18 @@
-resource "random_password" "generated" {
-  for_each = toset(coalesce(var.stack.generated_secrets, []))
-
-  length  = 48
-  special = true
+data "infisical_projects" "home-net" {
+  # This assumes a constant project slug. Consider making this configurable
+  # via var.system if it needs to be more dynamic.
+  slug = "home-net-ln-sy"
 }
 
+data "infisical_secrets" "generated_secrets" {
+  # Only fetch secrets if the stack configuration requests them.
+  count = length(coalesce(var.stack.generated_secrets, [])) > 0 ? 1 : 0
+
+  env_slug     = "dev"
+  workspace_id = data.infisical_projects.home-net.id
+  # This path corresponds to where the root `secrets` module stores secrets.
+  folder_path = "/generated/credentials"
+}
 
 module "custom_network" {
   count    = length(local.creatable_networks) > 0 ? 1 : 0
@@ -16,8 +24,8 @@ module "service_container" {
   for_each = var.stack.services
   source   = "../../modules/docker"
 
-  icon = each.value.icon
-  web_ui = try(each.value.network.service_port, null) != null && local.service_ip_addresses[each.key] != null ? "http://${local.service_ip_addresses[each.key]}:${each.value.network.service_port}" : null
+  icon                   = each.value.icon
+  web_ui                 = try(each.value.network.service_port, null) != null && local.service_ip_addresses[each.key] != null ? "http://${local.service_ip_addresses[each.key]}:${each.value.network.service_port}" : null
   container_name         = each.value.service_name
   container_image        = each.value.image_name
   container_network_mode = each.value.network_mode

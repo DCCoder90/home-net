@@ -33,6 +33,11 @@ terraform {
       source  = "goauthentik/authentik"
       version = "2025.4.0"
     }
+
+    infisical = {
+      source  = "infisical/infisical"
+      version = "0.15.19"
+    }
   }
 }
 
@@ -71,4 +76,6 @@ locals {
     for f in fileset("${path.module}/../config/services", "*.yaml") :
     yamldecode(file("${path.module}/../config/services/${f}"))
   ]...)
+  # Load all secrets
+  secrets = yamldecode(file("${path.module}/../config/secrets.yaml")).secrets
 }

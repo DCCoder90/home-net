@@ -53,6 +53,7 @@ Before running this configuration, the following components must be in place.
 - **Terraform Agent**: A HCP Terraform Agent must be running on the Unraid server with access to the Docker socket (`/var/run/docker.sock`).
 - **Nginx Proxy Manager**: An instance of Nginx Proxy Manager must be running and accessible to the Terraform agent.
 - **Authentik**: An instance of Authentik must be running and configured.
+- **Technitium**: An instance of Technitium must be running and configured.
 
 ### Cloud & API Access
 - **HCP Terraform**: A workspace must be created and configured.

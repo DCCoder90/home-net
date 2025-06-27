@@ -16,8 +16,8 @@ module "proxy_authentication" {
     for k, v in var.stack.services : k => v if lookup(lookup(v, "auth", {}), "enabled", false) == true && lookup(lookup(v, "auth", {}), "proxy", false) == true
   }
 
-  group                       = each.value.auth.group
-  description                 = each.value.description
+  group       = each.value.auth.group
+  description = each.value.description
   # If a static IP is defined, use it. Otherwise, fall back to the service name,
   # which is resolvable within a Docker network.
   internal_host               = "http://${coalesce(local.service_ip_addresses[each.key], each.value.service_name)}:${each.value.network.service_port}"
