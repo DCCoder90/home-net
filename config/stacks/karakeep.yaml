@@ -4,7 +4,6 @@ karakeep:
   mounts:
   generated_secrets:
     - "NEXTAUTH_SECRET"
-    #- "MEILI_MASTER_KEY"
   networks:
     karakeep:
       internal: true
