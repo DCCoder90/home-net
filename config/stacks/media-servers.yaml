@@ -55,6 +55,8 @@ media-servers:
       dns:
         enabled: true
         domain_name: "plex.mallett.family"
+      auth:
+        enabled: false
       network:
         internal: false
         service_port: 32400

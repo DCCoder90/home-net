@@ -1,10 +1,15 @@
-media-servers:
+databases:
   zone_name: "dcapi.app"
   env:
     - "TZ=America/Chicago"
   mounts:
     - "/etc/localtime:/etc/localtime:ro"
   generated_secrets:
+    - "MONGO_USER"
+    - "MONGO_PASSWORD"
+    - "REDIS_PASSWORD"
+    - "POSTGRES_USER"
+    - "POSTGRES_PASSWORD"
   networks:
     db-network:
       internal: true
@@ -13,49 +18,55 @@ media-servers:
     mongodb:
         dns:
           enabled: false
+        auth:
+          enabled: false
         network:
           networks:
             - name: "db-network"
         auth:
           enabled: false
         icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/mongodb.png"
-        service_name: "mongodb"
+        service_name: "mongodb:8.0.10"
         description: ""
         image_name: "mongo:latest"
         env:
-          - "MONGO_INITDB_ROOT_USERNAME="
-          - "MONGO_INITDB_ROOT_PASSWORD="
+          - "MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}"
+          - "MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}"
         mounts:
           - "/mnt/user/DataStore/mongo-data:/data/db"
     postgres:
-      image: "postgres:14"
+      image_name: "postgres:14"
       icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/postgres.png"
       service_name: "postgres"
       volumes:
         - "/mnt/user/DataStore/postgres-data:/var/lib/postgresql/data"
       dns:
         enabled: false
-        network:
-          networks:
-            - name: "db-network"
+      auth:
+        enabled: false
+      network:
+        networks:
+          - name: "db-network"
       environment:
-        - "POSTGRES_USER="
-        - "POSTGRES_PASSWORD="
-        - "POSTGRES_DB="
+        - "POSTGRES_USER=${POSTGRES_USER}"
+        - "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}"
+        - "POSTGRES_DB=home"
     redis:
-      image: "redis:latest"
+      image_name: "redis:8.02"
       service_name: "redis"
       icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/redis.png"
       volumes:
         - "/mnt/user/DataStore/redis-data:/data"
       dns:
         enabled: false
-        network:
-          networks:
-            - name: "db-network"
+      auth:
+        enabled: false
+      network:
+        networks:
+          - name: "db-network"
       commands:
         - "/bin/sh"
         - "-c"
         - "redis-server --appendonly yes --requirepass \"$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}\""
       environment:
-        - "REDIS_PASSWORD="
+        - "REDIS_PASSWORD=${REDIS_PASSWORD}"
