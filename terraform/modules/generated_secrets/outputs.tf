@@ -1,7 +1,7 @@
 output "generated_secrets_list" {
   description = "A list of objects, each containing the name and generated value of a secret."
   value       = local.generated_secret_list
-  sensitive   = true 
+  sensitive   = true
 }
 
 output "generated_secrets_map" {

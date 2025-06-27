@@ -11,7 +11,7 @@ data "infisical_secrets" "generated_secrets" {
   env_slug     = "dev"
   workspace_id = data.infisical_projects.home-net.id
   # This path corresponds to where the root `secrets` module stores secrets.
-  folder_path  = "/generated/credentials"
+  folder_path = "/generated/credentials"
 }
 
 module "custom_network" {
@@ -24,8 +24,8 @@ module "service_container" {
   for_each = var.stack.services
   source   = "../../modules/docker"
 
-  icon = each.value.icon
-  web_ui = try(each.value.network.service_port, null) != null && local.service_ip_addresses[each.key] != null ? "http://${local.service_ip_addresses[each.key]}:${each.value.network.service_port}" : null
+  icon                   = each.value.icon
+  web_ui                 = try(each.value.network.service_port, null) != null && local.service_ip_addresses[each.key] != null ? "http://${local.service_ip_addresses[each.key]}:${each.value.network.service_port}" : null
   container_name         = each.value.service_name
   container_image        = each.value.image_name
   container_network_mode = each.value.network_mode

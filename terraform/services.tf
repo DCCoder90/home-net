@@ -1,7 +1,7 @@
 module "secrets" {
-  source   = "./modules/generated_secrets"
+  source = "./modules/generated_secrets"
 
-  name  = local.secrets
+  name = local.secrets
 }
 
 module "stacks" {
