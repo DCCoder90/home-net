@@ -1,9 +1,17 @@
+module "secrets" {
+  source   = "./modules/generated_secrets"
+
+  name  = local.secrets
+}
+
 module "stacks" {
   for_each = local.stacks
   source   = "./modules/docker-stack"
 
   stack  = each.value
   system = local.system
+
+  //depends_on = [ module.secrets ]
 }
 
 module "flaresolverr_service" {

@@ -44,24 +44,22 @@ media-servers:
         - "PGID=0"
       mounts:
         - "/mnt/user/appdata/jellyfin:/config"
-        - "/mnt/user/appdata/jellyfin/transcode:/transcode"
+        - "/mnt/user/Cache/transcodes:/transcode"
     plex:
       image_name: "linuxserver/plex:1.41.8"
-      service_name: "plex"
+      service_name: "plex-home"
+      network_mode: "host"
       icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/plex.png"
       mounts:
         - "/mnt/user/appdata/binhex-plex:/config"
-        - "/mnt/user/appdata/binhex-plex/transcode:/transcode"
+        - "/mnt/user/Cache/transcodes:/transcode"
       dns:
-        enabled: true
+        enabled: false
         domain_name: "plex.mallett.family"
       auth:
         enabled: false
       network:
         internal: false
         service_port: 32400
-        networks:
-          - name: "br1" 
-            ip_address: "192.168.5.45"
       env:
-        - "PLEX_CLAIM=SOMECLAIMTOKEN"
+        - "PLEX_CLAIM=claim-R-3WQe_zEBC3_mBY75UU"

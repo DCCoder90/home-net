@@ -7,5 +7,7 @@
   "public_facing_ip": "0.0.0.0",
   "cloudflare_api_token": "cloudflare api token",
   "vpn_user":"username for vpn service",
-  "vpn_pass":"password for vpn service"
+  "vpn_pass":"password for vpn service",
+  "infiscal_client_id":"",
+  "infiscal_client_secret":""
 }

@@ -51,3 +51,15 @@ variable "vpn_pass" {
   description = "The password for the VPN connection."
   sensitive   = true
 }
+
+variable "infiscal_client_id" {
+  type        = string
+  description = "The password for the VPN connection."
+  sensitive   = true
+}
+
+variable "infiscal_client_secret" {
+  type        = string
+  description = "The password for the VPN connection."
+  sensitive   = true
+}
