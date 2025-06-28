@@ -4,7 +4,6 @@ variable "stack" {
     mounts            = optional(list(string))
     volumes           = optional(list(string))
     generated_secrets = optional(list(string))
-    manual_secrets    = optional(list(string))
     zone_name         = optional(string, null)
     networks = optional(map(object({
       internal = optional(bool, false)
