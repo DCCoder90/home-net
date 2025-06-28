@@ -1,3 +1,5 @@
+
+/*
 data "nginxproxymanager_access_lists" "access_lists" {}
 
 module "service_dns" {
@@ -21,3 +23,5 @@ module "service_dns" {
   dns_cloudflare_api_token = var.system.cloudflare_api_token
   external_host_ipv4       = var.system.public_facing_ip
 }
+
+*/

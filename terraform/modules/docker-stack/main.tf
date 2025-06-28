@@ -22,7 +22,14 @@ module "custom_network" {
 
 module "service_container" {
   for_each = var.stack.services
-  source   = "../../modules/docker"
+  source   = "../../modules/docker-service"
+
+  service = each.value
+  system = var.system
+
+/*
+Still need to combine environment, mounts, and networks!
+
 
   icon                   = each.value.icon
   web_ui                 = try(each.value.network.service_port, null) != null && local.service_ip_addresses[each.key] != null ? "http://${local.service_ip_addresses[each.key]}:${each.value.network.service_port}" : null
@@ -39,4 +46,5 @@ module "service_container" {
   # explicitly lists that network in its own configuration.
   # The docker module expects a list of objects with `name` and `ipv4_address`.
   networks = coalesce(each.value.network.networks, [])
+  */
 }
