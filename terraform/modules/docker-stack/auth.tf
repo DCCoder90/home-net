@@ -1,4 +1,4 @@
-
+/*
 resource "random_password" "service_password" {
   for_each = {
     for k, v in var.stack.services : k => v if lookup(lookup(v, "auth", {}), "enabled", false) == true && lookup(lookup(v, "auth", {}), "proxy", false) == true
@@ -62,3 +62,5 @@ module "oauth_authentication" {
     ]
   )
 }
+
+*/
