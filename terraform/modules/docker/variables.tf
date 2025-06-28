@@ -24,6 +24,11 @@ variable "networks" {
   default     = []
 }
 
+variable "enable_gpu" {
+  type = bool
+  default = false
+}
+
 variable "icon" {
   type    = string
   default = null
