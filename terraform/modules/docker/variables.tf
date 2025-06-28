@@ -27,6 +27,7 @@ variable "networks" {
 variable "enable_gpu" {
   type = bool
   default = false
+  description = "If true, use nvidia runtime to add GPU support to the container."
 }
 
 variable "icon" {
