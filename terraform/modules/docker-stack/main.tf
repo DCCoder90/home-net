@@ -29,6 +29,7 @@ module "service_container" {
   container_name         = each.value.service_name
   container_image        = each.value.image_name
   container_network_mode = each.value.network_mode
+  enable_gpu             = each.value.enable_gpu
   environment_vars       = toset(concat(coalesce(var.stack.env, []), local.processed_envs[each.key], coalesce(var.stack.env, []), coalesce(local.oauth_envs[each.key], [])))
   mounts                 = concat(coalesce(var.stack.mounts, []), coalesce(each.value.mounts, []))
   container_capabilities = each.value.capabilities

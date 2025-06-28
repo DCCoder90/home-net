@@ -18,6 +18,7 @@ variable "stack" {
       description  = optional(string, "")
       commands     = optional(list(string))
       mounts       = optional(list(string))
+      enable_gpu   = optional(bool, false)
       env          = optional(list(string))
       volumes      = optional(list(string))
       capabilities = optional(object({
