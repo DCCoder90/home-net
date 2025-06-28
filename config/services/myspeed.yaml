@@ -1,0 +1,22 @@
+deluge-vpn:
+  dns:
+    enabled: true
+  network:
+    internal: true
+    service_port: 5216
+    networks:
+      - name: "br1"
+        ip_address: "192.168.5.28"
+  auth:
+    enabled: true
+    proxy: true
+    group: "Arr"
+  icon: "https://vectorified.com/images/deluge-icon-3.jpg"
+  service_name: "myspeed"
+  image_name: "germannewsmaker/myspeed"
+  domain_name: "speed.dcapi.app"
+  mounts:
+    - "/etc/localtime:/etc/localtime:ro"
+    - "/mnt/user/appdata/myspeed:/myspeed/data"
+  env:
+    - "TZ=America/Chicago"
