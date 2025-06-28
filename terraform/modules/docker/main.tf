@@ -28,7 +28,6 @@ resource "docker_container" "container" {
   privileged   = var.container_privileged_mode
   command      = var.commands
   runtime      = var.enable_gpu ? "nvidia" : null
-  
 
   dynamic "networks_advanced" {
     for_each = local.advanced_network_attachments

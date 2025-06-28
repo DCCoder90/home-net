@@ -57,7 +57,7 @@ media-servers:
         - "/mnt/user/Cache/transcodes:/transcode"
       dns:
         enabled: false
-        domain_name: "plex.mallett.family"   
+        domain_name: "plex.mallett.family"
       auth:
         enabled: false
       network:
