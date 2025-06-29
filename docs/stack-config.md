@@ -129,7 +129,11 @@ your_stack_name:
     *   **`network.internal`**: If `true`, the service is not exposed externally via Nginx Proxy Manager.
     *   **`network.service_port`**: The port the service listens on *inside* the container.
     *   **`network.ip_address`**: A static IP address to assign to the container on `br0` or `br1` if specified in `network.networks`.
-    *   **`network.networks`**: A list of Docker networks to attach the container to. This can include `br0`, `br1`, or custom networks defined in `stack.networks`.
+*   **`network.networks`**: A list of Docker networks to attach the container to. This can include `br0`, `br1`, or custom networks defined in the stack-level `networks` block.
+    > **Guidance**:
+    > - Use `br0` for services that need to be directly accessible on your primary LAN (e.g., for network discovery protocols like mDNS or for devices that need to connect directly).
+    > - Use `br1` for most standard services that will be accessed via the reverse proxy. This isolates their traffic from the main LAN.
+
     *   **`dns.enabled`**: If `true`, Terraform will create a DNS record and an Nginx Proxy Manager host for this service.
     *   **`dns.domain_name`**: The full domain name for the service (e.g., `sonarr.yourdomain.com`).
     *   **`dns.access_list_id`**: This field is **not set directly**. The module automatically assigns the "Internal Only" access list for internal services and the "CloudFlare Only" access list for external services.
