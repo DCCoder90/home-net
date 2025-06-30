@@ -1,0 +1,45 @@
+monitoring:
+  zone_name: "dcapi.app"
+  env:
+    - "TZ=America/Chicago"
+  mounts:
+    - "/etc/localtime:/etc/localtime:ro"
+  generated_secrets:
+  networks:
+  services:
+    grafana:
+      dns:
+          enabled: true
+          domain_name: "monitor.dcapi.app"
+      network:
+          internal: true
+          service_port: 8096
+          networks:
+            - name: "br1" 
+              ip_address: "192.168.5.46"
+      auth:
+          enabled: true
+          group: "Media"
+          oauth: 
+            enabled: true
+            keys:
+              OAUTH_CLIENT_ID: "client_id"
+              OAUTH_CLIENT_SECRET: "client_secret"
+              OAUTH_WELLKNOWN_URL: "well_known_url"
+            redirect_uris:
+              - "sso/OID/redirect/Authentik"
+            scopes:
+              - "openid"
+              - "email"
+              - "profile"
+      icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/jellyfin.png"
+      service_name: "grafana"
+      description: ""
+      image_name: "grafana/grafana:12.0.2"
+      enable_gpu: true
+      env:
+        - "PUID=0"
+        - "PGID=0"
+      mounts:
+        - "/mnt/user/appdata/jellyfin:/config"
+        - "/mnt/user/Cache/transcodes:/transcode"
