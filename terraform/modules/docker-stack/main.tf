@@ -5,13 +5,11 @@ data "infisical_projects" "home-net" {
 }
 
 data "infisical_secrets" "generated_secrets" {
-  # Only fetch secrets if the stack configuration requests them.
   count = length(coalesce(var.stack.generated_secrets, [])) > 0 ? 1 : 0
 
   env_slug     = "dev"
   workspace_id = data.infisical_projects.home-net.id
-  # This path corresponds to where the root `secrets` module stores secrets.
-  folder_path = "/generated/credentials"
+  folder_path = "/secrets"
 }
 
 module "custom_network" {
@@ -21,7 +19,7 @@ module "custom_network" {
 }
 
 module "service_container" {
-  for_each = var.stack.services
+  for_each = local.services
   source   = "../../modules/docker-service"
 
   service = each.value

@@ -3,7 +3,6 @@ variable "stack" {
     env               = optional(list(string))
     mounts            = optional(list(string))
     volumes           = optional(list(string))
-    generated_secrets = optional(list(string))
     zone_name         = optional(string, null)
     networks = optional(map(object({
       internal = optional(bool, false)
@@ -20,7 +19,8 @@ variable "stack" {
       mounts       = optional(list(string))
       enable_gpu   = optional(bool, false)
       env          = optional(list(string))
-      volumes      = optional(list(string))
+      volumes      = optional(list(string)),
+      secrets      = optional(list(string)),  
       capabilities = optional(object({
         add  = optional(list(string))
         drop = optional(list(string))

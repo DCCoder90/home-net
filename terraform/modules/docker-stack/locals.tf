@@ -15,32 +15,43 @@ locals {
     if !contains(var.system.existing_networks, name)
   }
 
-  # A map of secrets fetched from Infisical.
-  # This will fail the plan if a secret listed in `var.stack.generated_secrets` is not found
-  # in Infisical, which is the desired behavior to prevent deploying with missing credentials.
-  generated_secrets = {
-    for secret_name in toset(coalesce(var.stack.generated_secrets, [])) :
-    secret_name => data.infisical_secrets.generated_secrets[0].secrets[secret_name].value
-  }
-
-  # For each service, process its environment variables to substitute secret placeholders.
-  processed_envs = {
-    for service_key, service_config in var.stack.services : service_key => [
-      for env_string in coalesce(service_config.env, []) : (
-        # This pattern ensures that for each env var, we get either the string with the secret
-        # replaced, or the original string if no placeholder was found.
-        # The one() function enforces a "one secret per line" rule, failing if multiple placeholders exist.
-        one(concat(
-          [
-            for secret_name, secret_value in local.generated_secrets :
-            replace(env_string, format("$${%s}", secret_name), secret_value)
-            if strcontains(env_string, format("$${%s}", secret_name))
-          ],
-          # This list provides the fallback original string if no secret placeholder was found.
-          !anytrue([for name in keys(local.generated_secrets) : strcontains(env_string, format("$${%s}", name))]) ? [env_string] : []
-        ))
-      )
-    ]
+ // services is a map of service configurations with environment variables processed
+  // to replace secret placeholders with their actual values from your data source.
+  services = {
+    // Iterate over each service defined in your stack configuration.
+    // 'service_name' is the key (e.g., "my-api"), and 'service_config' is the service's attribute map.
+    for service_name, service_config in var.stack.services.definitions :
+    service_name => merge(
+      // We start by copying all original attributes from the service configuration.
+      service_config,
+      {
+        // Then, we override the 'environment' attribute with the processed values.
+        env = {
+          // Iterate over each environment variable for the current service.
+          // 'coalesce' ensures that if 'environment' is null, we safely iterate over an empty map.
+          for env_name, env_value in coalesce(service_config.env, {}) :
+          // The environment variable name (key) remains the same.
+          env_name => reduce(
+            // We iterate over the list of secret names that are candidates for replacement.
+            var.stack.services.secrets,
+            // The initial value for the reduction is the original environment variable's value.
+            env_value,
+            // This reducer function is applied for each secret name.
+            // 'current_value' is the accumulated string, and 'secret_name' is the current secret being processed.
+            (current_value, secret_name) -> replace(
+              current_value,
+              // This is the placeholder pattern to find, e.g., "${PATH_ROOT}".
+              // The "$${" escapes Terraform's interpolation, so it looks for the literal characters.
+              "$${${secret_name}}",
+              // This is the value to substitute, fetched from your data source.
+              // Note: This will raise an error if the secret_name does not exist in the data source,
+              // which helps ensure all required secrets are present.
+              data.infisical_secrets.generated_secrets.secrets[secret_name].value
+            )
+          )
+        }
+      }
+    )
   }
 
   oauth_envs = {

@@ -42,16 +42,20 @@ variable "service" {
 
     # --- Authentication ---
     auth = optional(object({
-      enabled = optional(bool, false),
-      proxy   = optional(bool, false),
-      group   = optional(string, "Uncategorized"),
+      enabled = optional(bool, false)
+      group   = optional(string, "Uncategorized")
+      proxy = optional(object({
+        enabled     = optional(bool, false)
+        user_secret = optional(string)
+        pass_secret = optional(string)
+      }), {})
       oauth = optional(object({
         enabled       = optional(bool, false),
-        keys          = optional(map(string), {})
-        scopes        = optional(list(string))
+        keys          = optional(map(string), {}),
+        scopes        = optional(list(string)),
         redirect_uris = optional(list(string))
       }), {})
-    }))
+    }), {})
   })
 
   description = "Service and it's configuration"
