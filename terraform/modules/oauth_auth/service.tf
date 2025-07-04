@@ -1,4 +1,4 @@
-resource "random_string" "example" {
+resource "random_string" "client_id" {
   length           = 16
   special          = false
   upper            = true
@@ -43,7 +43,7 @@ data "authentik_certificate_key_pair" "generated" {
 
 resource "authentik_provider_oauth2" "name" {
   name               = lower(replace(var.name, " ", "-"))
-  client_id          = random_string.example.result
+  client_id          = random_string.client_id.result
   authorization_flow = data.authentik_flow.default-authorization-flow.id
   invalidation_flow  = data.authentik_flow.default-invalidation-flow.id
   signing_key        = data.authentik_certificate_key_pair.generated.id

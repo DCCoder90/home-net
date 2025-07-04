@@ -1,8 +1,9 @@
+/*
 module "secrets" {
   source = "./modules/generated_secrets"
 
   name = local.secrets
-}
+}*/
 
 module "stacks" {
   for_each = local.stacks
