@@ -23,6 +23,8 @@
           enabled: true
           proxy:
             enabled: true
+            user_secret: "prowlarr_username"
+            pass_secret: "prowlarr_password"
           group: "Arr"
         icon: "https://static-00.iconduck.com/assets.00/prowlarr-icon-512x512-v9ekdjxx.png"
         service_name: "prowlarr"
@@ -44,6 +46,8 @@
           enabled: true
           proxy:
             enabled: true
+            user_secret: "sonarr_username"
+            pass_secret: "sonarr_password"
           group: "Arr"
         icon: "https://static-00.iconduck.com/assets.00/sonarr-icon-1024x1024-wkay604k.png"
         service_name: "sonarr"
@@ -65,6 +69,8 @@
           enabled: true
           proxy:
             enabled: true
+            user_secret: "radarr_username"
+            pass_secret: "radarr_password"
           group: "Arr"
         icon: "https://static-00.iconduck.com/assets.00/radarr-icon-462x512-bydv4e4f.png"
         service_name: "radarr"
@@ -86,6 +92,8 @@
           enabled: true
           proxy:
             enabled: true
+            user_secret: "lidarr_username"
+            pass_secret: "lidarr_password"
           group: "Arr"
         service_name: "lidarr" 
         image_name: "linuxserver/lidarr:2.13.0-develop"

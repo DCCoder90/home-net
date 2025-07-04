@@ -18,8 +18,8 @@ module "proxy_authentication" {
   user_to_add_to_access_group = var.system.network_admin_username
   access_group_attributes = jsonencode(
     {
-      "${var.service.service_name}_username" : data.infisical_secrets.secrets[0].secrets["${var.service.service_name}_username"].value,
-      "${var.service.service_name}_password" : data.infisical_secrets.secrets[0].secrets["${var.service.service_name}_password"].value
+      "${var.service.service_name}_username" : data.infisical_secrets.secrets[0].secrets[coalesce(try(var.service.auth.proxy.user_secret, null), "${var.service.service_name}_username")].value,
+      "${var.service.service_name}_password" : data.infisical_secrets.secrets[0].secrets[coalesce(try(var.service.auth.proxy.pass_secret, null), "${var.service.service_name}_password")].value
     }
   )
 }
