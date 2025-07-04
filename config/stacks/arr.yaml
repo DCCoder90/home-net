@@ -21,7 +21,8 @@
               ip_address: "192.168.5.22"
         auth:
           enabled: true
-          proxy: true
+          proxy:
+            enabled: true
           group: "Arr"
         icon: "https://static-00.iconduck.com/assets.00/prowlarr-icon-512x512-v9ekdjxx.png"
         service_name: "prowlarr"
@@ -41,7 +42,8 @@
               ip_address: "192.168.5.23"
         auth:
           enabled: true
-          proxy: true
+          proxy:
+            enabled: true
           group: "Arr"
         icon: "https://static-00.iconduck.com/assets.00/sonarr-icon-1024x1024-wkay604k.png"
         service_name: "sonarr"
@@ -61,7 +63,8 @@
               ip_address: "192.168.5.24"
         auth:
           enabled: true
-          proxy: true
+          proxy:
+            enabled: true
           group: "Arr"
         icon: "https://static-00.iconduck.com/assets.00/radarr-icon-462x512-bydv4e4f.png"
         service_name: "radarr"
@@ -81,7 +84,8 @@
               ip_address: "192.168.5.25"
         auth:
           enabled: true
-          proxy: true
+          proxy:
+            enabled: true
           group: "Arr"
         service_name: "lidarr" 
         image_name: "linuxserver/lidarr:2.13.0-develop"

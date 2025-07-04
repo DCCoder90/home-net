@@ -4,14 +4,6 @@ data "infisical_projects" "home-net" {
   slug = "home-net-ln-sy"
 }
 
-data "infisical_secrets" "generated_secrets" {
-  count = length(coalesce(var.stack.generated_secrets, [])) > 0 ? 1 : 0
-
-  env_slug     = "dev"
-  workspace_id = data.infisical_projects.home-net.id
-  folder_path = "/secrets"
-}
-
 module "custom_network" {
   count    = length(local.creatable_networks) > 0 ? 1 : 0
   source   = "../../modules/docker-network"
@@ -19,9 +11,10 @@ module "custom_network" {
 }
 
 module "service_container" {
-  for_each = local.services
+  for_each = var.stack.services
   source   = "../../modules/docker-service"
 
+  zone_name = var.stack.zone_name
   service = each.value
   system = var.system
 

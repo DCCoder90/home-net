@@ -21,11 +21,9 @@ variable "service" {
 
     # --- Environment & Secrets ---
     env               = optional(list(string))
-    generated_secrets = optional(list(string))
+    secrets = optional(map(string))
 
     # --- Networking & DNS ---
-    zone_name = optional(string, null)
-
     network = optional(object({ 
       internal     = optional(bool, false)
       service_port = optional(number)
@@ -59,6 +57,12 @@ variable "service" {
   })
 
   description = "Service and it's configuration"
+}
+
+variable "zone_name"{
+  type = string
+  default = ""
+  description = "DNS Zone name for service if DNS enabled."
 }
 
 variable "system" {
