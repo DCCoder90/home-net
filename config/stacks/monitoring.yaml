@@ -14,6 +14,8 @@ monitoring:
       icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/prometheus.png"
       dns:
         enabled: false 
+      auth:
+        enabled: false
       network:
         internal: true
         service_port: 9090
