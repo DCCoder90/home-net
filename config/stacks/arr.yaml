@@ -55,6 +55,8 @@
         domain_name: "sonarr.dcapi.app"
         mounts:
           - "/mnt/user/Arr/sonarr-data:/config"
+          - "/mnt/user/Media:/media"
+          - "/mnt/user/Downloads:/downloads"
       radarr:
         dns:
           enabled: true
@@ -78,6 +80,8 @@
         domain_name: "radarr.dcapi.app"
         mounts:
           - "/mnt/user/Arr/radarr-data:/config"
+          - "/mnt/user/Media:/media"
+          - "/mnt/user/Downloads:/downloads"
       lidarr: 
         dns:
           enabled: true
@@ -99,3 +103,5 @@
         image_name: "linuxserver/lidarr:2.13.0-develop"
         mounts:
           - "/mnt/user/Arr/lidarr-data:/config"
+          - "/mnt/user/Media:/media"
+          - "/mnt/user/Downloads:/downloads"
