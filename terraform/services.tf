@@ -1,6 +1,6 @@
 module "stacks" {
   for_each = local.stacks
-  source   = "./modules/docker-stack"
+  source   = "git@github.com:DCCoder90/home-tf-modules.git//docker-stack?ref=1.0.0"
 
   stack  = each.value
   system = local.system
@@ -8,7 +8,7 @@ module "stacks" {
 
 module "services"{
   for_each = local.services
-  source   = "./modules/docker-service"
+  source   = "git@github.com:DCCoder90/home-tf-modules.git//docker-service?ref=1.0.0"
 
   service  = each.value
   system   = local.system
