@@ -21,7 +21,7 @@
         auth:
           enabled: true
           proxy:
-            enabled: truehttps://www.youtube.com/watch?v=VbHPDYTyLQg
+            enabled: true
             user_secret: "prowlarr_username"
             pass_secret: "prowlarr_password"
           group: "Arr"
