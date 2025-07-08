@@ -1,11 +1,13 @@
 flaresolverr:
-  service_name: "flaresolverr"
-  image_name: "flaresolverr/flaresolverr:v3.3.25"
+  dns:
+    enabled: false
   network:
     internal: true
     service_port: 8112
     networks:
       - name: "br1"
-        ip_address: "192.168.5.27"
-  env:
-    - "TZ=America/Chicago"
+        ip_address: "192.168.5.29"
+  auth:
+    enabled: false
+  service_name: "flaresolverr"
+  image_name: "flaresolverr/flaresolverr:v3.3.25"

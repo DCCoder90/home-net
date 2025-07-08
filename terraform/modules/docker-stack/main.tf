@@ -4,16 +4,6 @@ data "infisical_projects" "home-net" {
   slug = "home-net-ln-sy"
 }
 
-data "infisical_secrets" "generated_secrets" {
-  # Only fetch secrets if the stack configuration requests them.
-  count = length(coalesce(var.stack.generated_secrets, [])) > 0 ? 1 : 0
-
-  env_slug     = "dev"
-  workspace_id = data.infisical_projects.home-net.id
-  # This path corresponds to where the root `secrets` module stores secrets.
-  folder_path = "/generated/credentials"
-}
-
 module "custom_network" {
   count    = length(local.creatable_networks) > 0 ? 1 : 0
   source   = "../../modules/docker-network"
@@ -22,7 +12,15 @@ module "custom_network" {
 
 module "service_container" {
   for_each = var.stack.services
-  source   = "../../modules/docker"
+  source   = "../../modules/docker-service"
+
+  zone_name = var.stack.zone_name
+  service = each.value
+  system = var.system
+
+/*
+Still need to combine environment, mounts, and networks!
+
 
   icon                   = each.value.icon
   web_ui                 = try(each.value.network.service_port, null) != null && local.service_ip_addresses[each.key] != null ? "http://${local.service_ip_addresses[each.key]}:${each.value.network.service_port}" : null
@@ -39,4 +37,5 @@ module "service_container" {
   # explicitly lists that network in its own configuration.
   # The docker module expects a list of objects with `name` and `ipv4_address`.
   networks = coalesce(each.value.network.networks, [])
+  */
 }

@@ -9,3 +9,7 @@ admin_username: "DCCoder"
 existing_networks:
  - "br1"
  - "br0"
+infisical:
+  project: "home-net-ln-sy"
+  environment: "dev"
+  folder: "/secrets"

@@ -3,7 +3,6 @@ variable "stack" {
     env               = optional(list(string))
     mounts            = optional(list(string))
     volumes           = optional(list(string))
-    generated_secrets = optional(list(string))
     zone_name         = optional(string, null)
     networks = optional(map(object({
       internal = optional(bool, false)
@@ -20,7 +19,8 @@ variable "stack" {
       mounts       = optional(list(string))
       enable_gpu   = optional(bool, false)
       env          = optional(list(string))
-      volumes      = optional(list(string))
+      volumes      = optional(list(string)),
+      secrets      = optional(map(string)),  
       capabilities = optional(object({
         add  = optional(list(string))
         drop = optional(list(string))
@@ -30,17 +30,21 @@ variable "stack" {
         internal    = optional(bool, true),
         domain_name = optional(string)
       })
-      auth = optional(object({
-        enabled = optional(bool, false),
-        proxy   = optional(bool, false),
-        group   = optional(string, "Uncategorized"),
-        oauth = optional(object({
-          enabled       = optional(bool, false),
-          keys          = optional(map(string), {}),
-          scopes        = optional(list(string)),
-          redirect_uris = optional(list(string))
-        }), {})
-      }))
+    auth = optional(object({
+      enabled = optional(bool, false)
+      group   = optional(string, "Uncategorized")
+      proxy = optional(object({
+        enabled     = optional(bool, false)
+        user_secret = optional(string)
+        pass_secret = optional(string)
+      }), {})
+      oauth = optional(object({
+        enabled       = optional(bool, false),
+        keys          = optional(map(string), {}),
+        scopes        = optional(list(string)),
+        redirect_uris = optional(list(string))
+      }), {})
+    }), {})
       network = optional(object({
         internal     = optional(bool, false)
         service_port = optional(number)
