@@ -1,6 +1,6 @@
 deluge-vpn:
   dns:
-    enabled: true
+    enabled: false
   network:
     internal: true
     service_port: 8112
@@ -8,18 +8,19 @@ deluge-vpn:
       - name: "br1"
         ip_address: "192.168.5.28"
   auth:
-    enabled: true
-    proxy: true
+    enabled: false
     group: "Arr"
+  secrets:
+    VPN_USER: "VPN_USER" 
+    VPN_PASS: "VPN_PASS" 
   icon: "https://vectorified.com/images/deluge-icon-3.jpg"
   service_name: "deluge-vpn"
   image_name: "binhex/arch-delugevpn:2.2"
-  domain_name: "prowlarr.dcapi.app"
   mounts:
     - "/etc/localtime:/etc/localtime:ro"
     - "/mnt/user/Arr/deluge-data:/config"
     - "/mnt/user/Downloads:/data/downloads"
-    - "/mnt/user/appdata/binhex-delugevpn/openvpn:/config/openvpn"
+    - "/mnt/user/Arr/deluge-data/openvpn:/config/openvpn"
   capabilities:
     add:
       - "CAP_NET_ADMIN"
@@ -35,3 +36,4 @@ deluge-vpn:
     - "VPN_PROV=custom"
     - "VPN_CLIENT=openvpn"
     - "LAN_NETWORK=192.168.1.0/24"
+    - "UPDATE_VAL=1"
