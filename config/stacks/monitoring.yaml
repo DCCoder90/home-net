@@ -17,7 +17,7 @@ monitoring:
       network:
         internal: true
         service_port: 9090
-          networks:
+        networks:
             - name: "br1" 
               ip_address: "192.168.5.55"
       mounts:
