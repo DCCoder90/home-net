@@ -13,7 +13,23 @@ The structure of each top-level key in these files is **not standardized**. It i
 
 Below are examples of different structures found in this project.
 
-### Example 1: A Standalone Docker Service (`deluge-vpn`)
+'''### Example 1: A Standalone Docker Service (`flaresolverr`)
+
+This service is consumed by the `flaresolverr_service` module in `services.tf`, which is a wrapper around the generic `docker` module.
+
+```yaml
+flaresolverr:
+  service_name: "flaresolverr"
+  image_name: "flaresolverr/flaresolverr:latest"
+  network:
+    networks:
+      - "br1"
+  env:
+    - "LOG_LEVEL=info"
+    - "TZ=America/New_York"
+```
+
+### Example 2: A Standalone Docker Service (`deluge-vpn`)
 
 This service is consumed by the `delugevpn_service` module in `services.tf`, which is a wrapper around the generic `docker` module.
 
@@ -31,7 +47,7 @@ deluge-vpn:
   capabilities:
     add:
       - "NET_ADMIN"
-```
+```''
 
 ### Example 2: A Global Configuration Object (`authentik`)
 

@@ -143,11 +143,3 @@ your_stack_name:
     *   **`auth.oauth.redirect_uris`**: A list of additional relative paths (e.g., `/oauth/callback`) that will be appended to the service's domain name to form the complete, valid OAuth redirect URIs required by Authentik.
  
 
-## Generated Secrets Workflow
-
-*   **`generated_secrets` (Stack Level)**: A list of string names (e.g., `"API_KEY"`) for secrets that your services will consume.
-    *   **Workflow**:
-        1.  **Definition**: You must first define these secret names in the `config/secrets.yaml` file.
-        2.  **Generation & Storage**: The `generated_secrets` Terraform module (run as part of the root module) reads `config/secrets.yaml`, generates a unique, value for each listed secret, and then securely stores these generated values in Infisical Cloud.
-        3.  **Consumption by Stacks**: When you list a secret name here, the `docker-stack` module will automatically pull the corresponding secret value from Infisical and inject it as an environment variable into the container.
-    *   **Important Note**: Any secret name listed in a stack's `generated_secrets` field *must* first be defined in `config/secrets.yaml` to ensure it is generated and stored in Infisical. If a requested secret is not found, the Terraform plan will fail, preventing deployment with missing credentials.
