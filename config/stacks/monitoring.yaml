@@ -21,8 +21,8 @@ monitoring:
             - name: "br1" 
               ip_address: "192.168.5.55"
       mounts:
-        - "/mnt/user/appdata/path/to/prometheus.yml:/etc/prometheus/prometheus.yml"
-        - "/mnt/user/appdata/path/to/prometheus:/prometheus"
+        - "/mnt/user/appdata/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
+        - "/mnt/user/appdata/prometheus/prometheus/data:/prometheus"
       env:
         - "TZ=America/Chicago"
     grafana:
@@ -65,7 +65,7 @@ monitoring:
         - "GF_AUTH_OAUTH_AUTO_LOGIN=true"
 
       mounts:
-        - "/mnt/user/appdata/path/to/grafana:/var/lib/grafana"
+        - "/mnt/user/appdata/grafana:/var/lib/grafana"
     wud:
       service_name: "whatsupdocker"
       image_name: ""
