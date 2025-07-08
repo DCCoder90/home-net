@@ -26,8 +26,6 @@ your_stack_name:
   generated_secrets:
     - "API_KEY"
     - "DATABASE_PASSWORD"
-  # Optional: DNS zone name for services in this stack (overrides global if set)
-  zone_name: "yourdomain.com"
   # Optional: Custom Docker networks to be created for this stack
   networks:
     my_custom_network:
@@ -120,7 +118,6 @@ your_stack_name:
 *   **`commands` (Service Level)**: A list of strings representing the command to run in the container, overriding the image's default command.
 *   **`volumes` (Stack/Service Level)**: A list of Docker volume configurations.
 *   **`generated_secrets`**: A list of string names (e.g., `"API_KEY"`) for secrets that your services will consume.
-*   **`zone_name`**: The DNS zone (e.g., `yourdomain.com`) under which service domains will be created.
 *   **`networks` (Stack Level)**: Defines custom Docker networks to be created for this stack. These are separate from `br0` and `br1`.
 *   **`services`**: The core of the stack, defining individual Docker containers.
     *   **`service_name`**: The name of the Docker container and the base for Authentik application names.
