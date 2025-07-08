@@ -1,5 +1,4 @@
   arr_services:
-    zone_name: "dcapi.app"
     env:
       - "PUID=1000"
       - "PGID=100"

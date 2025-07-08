@@ -14,7 +14,6 @@ module "service_container" {
   for_each = var.stack.services
   source   = "../../modules/docker-service"
 
-  zone_name = var.stack.zone_name
   service = each.value
   system = var.system
 

@@ -6,7 +6,7 @@ module "service_dns" {
 
   internal_only = var.service.network.internal
   service_port  = var.service.auth.proxy.enabled ? var.system.authentik.port : var.service.network.service_port
-  zone_name     = var.zone_name
+  zone_name     = local.zone_name
   domain_name   = var.service.dns.domain_name
 
   # Really don't like having the ACLs hardcoded here...

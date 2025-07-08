@@ -59,12 +59,6 @@ variable "service" {
   description = "Service and it's configuration"
 }
 
-variable "zone_name"{
-  type = string
-  default = ""
-  description = "DNS Zone name for service if DNS enabled."
-}
-
 variable "system" {
   type        = any
   description = "A dynamic object containing system-wide configuration variables. Its attributes are accessed via lookup() for flexibility."

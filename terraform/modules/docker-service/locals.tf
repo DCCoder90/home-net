@@ -22,4 +22,9 @@ locals {
 
   # Create a map of Nginx Proxy Manager access lists by name for easy lookup.
   npm_access_lists_by_name = { for al in data.nginxproxymanager_access_lists.access_lists.access_lists : al.name => al.id }
+
+  domain = var.service.dns.domain_name == null ? "test.example" : var.service.dns.domain_name
+  domain_name_parts = split(".", local.domain)
+  zone_name = join(".", slice(local.domain_name_parts, length(local.domain_name_parts) - 2, length(local.domain_name_parts)))
+
 }

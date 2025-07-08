@@ -1,5 +1,4 @@
 media-servers:
-  zone_name: "mallett.family"
   env:
     - "TZ=America/Chicago"
     - "NVIDIA_DRIVER_CAPABILITIES=all"
