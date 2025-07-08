@@ -1,5 +1,4 @@
   arr_services:
-    zone_name: "dcapi.app"
     env:
       - "PUID=1000"
       - "PGID=100"
@@ -22,7 +21,7 @@
         auth:
           enabled: true
           proxy:
-            enabled: true
+            enabled: truehttps://www.youtube.com/watch?v=VbHPDYTyLQg
             user_secret: "prowlarr_username"
             pass_secret: "prowlarr_password"
           group: "Arr"
