@@ -3,7 +3,6 @@ variable "stack" {
     env               = optional(list(string))
     mounts            = optional(list(string))
     volumes           = optional(list(string))
-    zone_name         = optional(string, null)
     networks = optional(map(object({
       internal = optional(bool, false)
       driver   = optional(string, "bridge")
