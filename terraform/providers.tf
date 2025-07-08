@@ -4,16 +4,16 @@ provider "nginxproxymanager" {
   password = var.nginx_proxy_pass
 }
 
-
 provider "docker" {
   host = "unix:///var/run/docker.sock"
+//  host     = "ssh://root@192.168.1.41:22"
+//  ssh_opts = ["-o", "StrictHostKeyChecking=no", "-o", "UserKnownHostsFile=/dev/null"]
 }
 
 /*
 provider "docker" {
-  host     = "ssh://root@192.168.1.41:22"
-  ssh_opts = ["-o", "StrictHostKeyChecking=no", "-o", "UserKnownHostsFile=/dev/null"]
-}*/
+}
+*/
 
 provider "technitium" {
   url   = var.technitium_host
