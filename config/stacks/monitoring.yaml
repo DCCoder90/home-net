@@ -96,8 +96,12 @@ monitoring:
               - "openid"
               - "email"
               - "profile"
+      secrets:
+        WUD_TRIGGER_DISCORD_DISCORDWUD_URL: "WUD_TRIGGER_DISCORD_DISCORDWUD_URL"
       env:
         - "WUD_AUTH_OIDC_AUTHENTIK_REDIRECT=true"
         - "WUD_LOG_LEVEL=info"
+        - "WUD_TRIGGER_DISCORD_DISCORDWUD_BOTUSERNAME=Docker"
+        - "WUD_TRIGGER_DISCORD_DISCORDWUD_CARDLABEL=Docker Update"
       mounts:
         - "/var/run/docker.sock:/var/run/docker.sock"
