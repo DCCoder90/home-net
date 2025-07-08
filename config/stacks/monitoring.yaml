@@ -1,0 +1,103 @@
+monitoring:
+  zone_name: "dcapi.app"
+  env:
+    - "TZ=America/Chicago"
+  mounts:
+    - "/etc/localtime:/etc/localtime:ro"
+  generated_secrets:
+  networks:
+  services:
+    prometheus:
+      service_name: "prometheus"
+      image_name: "prom/prometheus:v2.53.5"
+      description: "A systems and service monitoring system. It collects metrics from configured targets at given intervals, evaluates rule expressions, displays the results, and can trigger alerts when specified conditions are observed."
+      icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/prometheus.png"
+      dns:
+        enabled: false 
+      auth:
+        enabled: false
+      network:
+        internal: true
+        service_port: 9090
+        networks:
+            - name: "br1" 
+              ip_address: "192.168.5.55"
+      mounts:
+        - "/mnt/user/appdata/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
+        - "/mnt/user/appdata/prometheus/prometheus/data:/prometheus"
+      env:
+        - "TZ=America/Chicago"
+    grafana:
+      icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/grafana.png"
+      service_name: "grafana"
+      description: "Enables you to query, visualize, alert on, and explore your metrics, logs, and traces wherever they’re stored. "
+      image_name: "grafana/grafana:12.0.2"
+      dns:
+          enabled: true
+          domain_name: "monitor.dcapi.app"
+      network:
+          internal: true
+          service_port: 3000
+          networks:
+            - name: "br1" 
+              ip_address: "192.168.5.56"
+      auth:
+          enabled: true
+          group: "Monitoring"
+          oauth: 
+            enabled: true
+            keys:
+              GF_AUTH_GENERIC_OAUTH_CLIENT_ID: "client_id"
+              GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET: "client_secret"
+              GF_AUTH_GENERIC_OAUTH_AUTH_URL: "authorize_url"
+              GF_AUTH_GENERIC_OAUTH_TOKEN_URL: "token_url"
+              GF_AUTH_GENERIC_OAUTH_API_URL: "user_info_url"
+              GF_AUTH_SIGNOUT_REDIRECT_URL: "sign_out_url"
+            redirect_uris:
+              - "login/generic_oauth"
+            scopes:
+              - "openid"
+              - "email"
+              - "profile"
+      env:
+        - "GF_SERVER_ROOT_URL=https://monitor.dcapi.app"
+        - "GF_AUTH_GENERIC_OAUTH_ENABLED=true"
+        - "GF_AUTH_GENERIC_OAUTH_NAME=authentik"
+        - "GF_AUTH_GENERIC_OAUTH_SCOPES=openid email profile"
+        - "GF_AUTH_OAUTH_AUTO_LOGIN=true"
+
+      mounts:
+        - "/mnt/user/appdata/grafana:/var/lib/grafana"
+    wud:
+      service_name: "whatsupdocker"
+      image_name: "getwud/wud:8.1"
+      description: "Keep your containers up-to-date!"
+      dns:
+          enabled: true
+          domain_name: "docker.dcapi.app"
+      network:
+          internal: true
+          service_port: 3000
+          networks:
+            - name: "br1" 
+              ip_address: "192.168.5.57"
+      auth:
+          enabled: true
+          group: "Monitoring"
+          oauth: 
+            enabled: true
+            keys:
+              WUD_AUTH_OIDC_AUTHENTIK_CLIENTID	: "client_id"
+              WUD_AUTH_OIDC_AUTHENTIK_CLIENTSECRET	: "client_secret"
+              WUD_AUTH_OIDC_AUTHENTIK_DISCOVERY	: "well_known_url"
+            redirect_uris:
+              - "auth/oidc/authentik/cb"
+            scopes:
+              - "openid"
+              - "email"
+              - "profile"
+      env:
+        - "WUD_AUTH_OIDC_AUTHENTIK_REDIRECT=true"
+        - "WUD_LOG_LEVEL=info"
+      mounts:
+        - "/var/run/docker.sock:/var/run/docker.sock"
