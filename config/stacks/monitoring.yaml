@@ -68,8 +68,8 @@ monitoring:
         - "/mnt/user/appdata/grafana:/var/lib/grafana"
     wud:
       service_name: "whatsupdocker"
-      image_name: ""
-      description: ""
+      image_name: "getwud/wud:8.1"
+      description: "Keep your containers up-to-date!"
       dns:
           enabled: true
           domain_name: "docker.dcapi.app"
