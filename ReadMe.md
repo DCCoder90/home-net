@@ -9,6 +9,7 @@ This repository contains configurations for managing various services and infras
 
 This repository automates the deployment and configuration of my home lab. The primary goal is to maintain a completely reproducible environment using IaC. This ensures that the entire lab can be quickly and reliably rebuilt from scratch in the event of a catastrophic failure.
 
+Comprehensive documentation can be found in [docs/infra](docs/infra/Home.md)
 ## ✨ Key Features
 
 *   **Infrastructure as Code**: The entire infrastructure is defined using Terraform.
@@ -78,8 +79,8 @@ This repository follows a strict Pull Request-based workflow to ensure changes a
 
 This project is configured primarily through YAML files located in the `config/` directory. For detailed instructions on how to structure these files, please refer to the documentation in the `docs/` directory:
 
-*   **Stack Configuration Guide**: [stack-config.md](docs/stack-config.md)
-*   **Service Configuration Guide**: [service-config.md](docs/service-config.md)
+*   **Stack Configuration Guide**: [stack-config.md](docs/config/stack-config.md)
+*   **Service Configuration Guide**: [service-config.md](docs/config/service-config.md)
 
 
 ## 🔐 Secrets Management
