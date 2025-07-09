@@ -10,7 +10,7 @@ requestrr:
   auth:
     enabled: false
   service_name: "requestrr"
-  image_name: "linuxserver/requestrr:2.1.2"
+  image_name: "darkalfx/requestrr:v2.1.3"
   mounts:
     - "/mnt/user/Arr/requestrr-data:/config"
     - "/etc/localtime:/etc/localtime:ro"
