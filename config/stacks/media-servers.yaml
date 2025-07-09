@@ -54,6 +54,7 @@ media-servers:
       mounts:
         - "/mnt/user/appdata/binhex-plex:/config"
         - "/mnt/user/Cache/transcodes:/transcode"
+        - "/mnt/user/Media:/media"
       dns:
         enabled: false
         domain_name: "plex.mallett.family"
