@@ -3,6 +3,8 @@ immich:
   mounts:
     - "/etc/localtime:/etc/localtime:ro"
   networks:
+    immich_internal_db_net:
+      internal: true
   services:
     immich-server:
       secrets:
@@ -20,7 +22,6 @@ immich:
         service_port: 2283
         networks:
           - name: "immich_internal_db_net"
-            internal: true
           - name: "br1"
             ip_address: "192.168.5.47"
       auth:
