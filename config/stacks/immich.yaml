@@ -60,6 +60,6 @@ immich:
           enabled: false
         icon: "https://static-00.iconduck.com/assets.00/chrome-icon-512x512-5ln6wbyk.png"
         service_name: "immich_postgres_pgvecto_rs"
-        image_name: "tensorchord/pgvecto-rs:pg16-v0.3.0
+        image_name: "tensorchord/pgvecto-rs:pg16-v0.3.0"
         mounts:
           - "/mnt/user/appdata/PostgreSQL_Immich:/var/lib/postgresql/data"
