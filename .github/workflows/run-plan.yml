@@ -5,10 +5,11 @@ on:
     branches:
       - main
     paths-ignore:
-      - .github/workflows/run-apply.yml
-      - .github/workflows/run-plan.yml
-      - ReadMe.md
-      - .gitignore
+      - '.github/workflows/run-apply.yml'
+      - '.github/workflows/run-plan.yml'
+      - './ReadMe.md'
+      - './.gitignore'
+      - './docs/*'
   workflow_dispatch:
 jobs:
   terraform_plan:
