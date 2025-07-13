@@ -8,6 +8,7 @@ immich:
   services:
     immich-server:
       secrets:
+        REDIS_USERNAME: "tower_redis_username" 
         REDIS_PASSWORD: "tower_redis_password"
         REDIS_HOSTNAME: "tower_redis_hostname"
         DB_PASSWORD: "immich_db_password"

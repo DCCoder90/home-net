@@ -11,6 +11,7 @@ redis:
     enabled: false
   secrets:
     REDIS_PASSWORD: "tower_redis_password" 
+    REDIS_USERNAME: "tower_redis_username" 
   service_name: "redis"
   image_name: "redis:alpine"
   mounts:
@@ -19,4 +20,5 @@ redis:
   commands:
     - "/bin/sh"
     - "-c"
-    - "redis-server --appendonly yes --requirepass \"$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}\""
+    - "redis-server --appendonly yes --requirepass \"$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}\" --user \"$${REDIS_USERNAME:?REDIS_USERNAME variable is not set}\" on > \"$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}\" ~* allcommands  --user default off nopass nocommands"
+    - ""
