@@ -6,7 +6,7 @@ redis:
     service_port: 6379
     networks:
       - name: "br1"
-        ip_address: "192.168.4.115"
+        ip_address: "192.168.4.116"
   auth:
     enabled: false
   secrets:
