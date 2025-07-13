@@ -30,7 +30,7 @@ monitoring:
     grafana:
       icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/grafana.png"
       service_name: "grafana"
-      description: "Enables you to query, visualize, alert on, and explore your metrics, logs, and traces wherever they’re stored. "
+      description: "Enables you to query, visualize, alert on, and explore your metrics, logs, and traces wherever they’re stored."
       image_name: "grafana/grafana:12.0.2"
       dns:
           enabled: true
