@@ -26,18 +26,12 @@ immich:
             ip_address: "192.168.5.47"
       auth:
         enabled: false
-      icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/karakeep.png"
+      icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/immich.png"
       service_name: "immich_server"
       description: ""
       image_name: "altran1502/immich-server:v1.134.0"
       env:
-        - "DB_HOSTNAME=${DB_HOSTNAME}"
-        - "DB_USERNAME=${DB_USERNAME}"
-        - "DB_PASSWORD=${DB_PASSWORD}"
-        - "DB_DATABASE_NAME=${DB_DATABASE_NAME}"
         - "DB_PORT=5432"
-        - "REDIS_HOSTNAME=${REDIS_HOSTNAME}"
-        - "REDIS_PASSWORD=${REDIS_PASSWORD}"
         - "REDIS_PORT=6379"
         - "SERVER_HOST=0.0.0.0"
         - "MACHINE_LEARNING_PORT=3003"
@@ -59,7 +53,7 @@ immich:
             - name: "immich_internal_db_net"
         auth:
           enabled: false
-        icon: "https://static-00.iconduck.com/assets.00/chrome-icon-512x512-5ln6wbyk.png"
+        icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/postgres.png"
         service_name: "immich_postgres_pgvecto_rs"
         image_name: "tensorchord/pgvecto-rs:pg16-v0.3.0"
         mounts:
