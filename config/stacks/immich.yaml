@@ -1,0 +1,60 @@
+immich:
+  env:
+  mounts:
+    - "/etc/localtime:/etc/localtime:ro"
+  networks:
+    immich_internal_db_net:
+      internal: true
+  services:
+    immich-server:
+      secrets:
+        REDIS_PASSWORD: "tower_redis_password"
+        REDIS_HOSTNAME: "tower_redis_hostname"
+        DB_PASSWORD: "immich_db_password"
+        DB_USERNAME: "immich_db_username"
+        DB_DATABASE_NAME: "immich_db_database"
+        DB_HOSTNAME: "immich_database_host"
+      dns:
+        enabled: true
+        domain_name: "photos.mallett.family"
+      network:
+        internal: false
+        service_port: 2283
+        networks:
+          - name: "immich_internal_db_net"
+          - name: "br1"
+            ip_address: "192.168.5.47"
+      auth:
+        enabled: false
+      icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/immich.png"
+      service_name: "immich_server"
+      description: ""
+      image_name: "altran1502/immich-server:v1.134.0"
+      env:
+        - "DB_PORT=5432"
+        - "REDIS_PORT=6379"
+        - "SERVER_HOST=0.0.0.0"
+        - "MACHINE_LEARNING_PORT=3003"
+        - "MACHINE_LEARNING_WORKERS=1"
+        - "MACHINE_LEARNING_WORKER_TIMEOUT=120"
+        - "PUID=99"
+        - "PGID=100"
+        - "UMASK=022"
+      mounts:
+        - "/mnt/user/PhotosBackup:/usr/src/app/upload"
+        - "/mnt/user/PhotosBackup:/photos"
+        - "/mnt/user/appdata/immich:/config"
+    database:
+        dns:  
+          enabled: false
+        network:
+          internal: true
+          networks:
+            - name: "immich_internal_db_net"
+        auth:
+          enabled: false
+        icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/postgres.png"
+        service_name: "immich_postgres_pgvecto_rs"
+        image_name: "tensorchord/pgvecto-rs:pg16-v0.3.0"
+        mounts:
+          - "/mnt/user/appdata/PostgreSQL_Immich:/var/lib/postgresql/data"

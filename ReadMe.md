@@ -105,14 +105,12 @@ Static secrets, such as API tokens and passwords, are stored as **sensitive vari
 |AUTHENTIK_URL|env|N|
 |AUTHENTIK_TOKEN|env|Y|
 |AUTHENTIK_INSECURE|env|N|
-|AUTHENTIK_TOKEN|env|Y|
-|AUTHENTIK_URL|env|N|
 |vpn_pass|terraform|Y|
 |vpn_user|terraform|Y|
 
 > **Note**: Some non-secret values (like `public_facing_ip`) are marked as sensitive to prevent them from being exposed in public logs or plan outputs.
 
-'''### Dynamic Secrets
+### Dynamic Secrets
 For services deployed by the `proxy_service_stack` module, credentials are not stored statically. Instead:
 1.  **Infisical Integration**: For services requiring arbitrary secrets (like API keys or JWT signing keys), you can define a list of secret names in the stack's YAML file under `generated_secrets`. Terraform will fetch these secrets from Infisical Cloud and inject them into the container's environment variables.
 2.  **OAuth Credentials**: For services using OAuth, the `docker-stack` module automatically creates an OAuth2 provider in Authentik. The resulting `client_id` and `client_secret` are then injected as environment variables into the container.
