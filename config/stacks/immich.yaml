@@ -53,6 +53,10 @@ immich:
             - name: "immich_internal_db_net"
         auth:
           enabled: false
+        secrets:
+          POSTGRES_PASSWORD: "immich_db_password"
+          POSTGRES_USER: "immich_db_username"
+          POSTGRES_DB: "immich_db_database"
         icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/postgres.png"
         service_name: "immich_postgres_pgvecto_rs"
         image_name: "tensorchord/pgvecto-rs:pg16-v0.3.0"
