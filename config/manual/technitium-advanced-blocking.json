@@ -1,17 +1,18 @@
 {
   "enableBlocking": true,
-  "blockListUrlUpdateIntervalHours": 6,
+  "blockListUrlUpdateIntervalHours": 24,
   "localEndPointGroupMap": {
     "127.0.0.1": "bypass"
   },
   "networkGroupMap": {
-    "0.0.0.0/0": "everyone",
-    "[::]/0": "everyone",
     "192.168.2.33": "kids",
     "192.168.2.34": "kids",
     "192.168.2.35": "kids",
     "192.168.2.36": "kids",
-    "192.168.2.37": "kids"
+    "192.168.2.37": "kids",
+    "192.168.2.224": "kids",
+    "0.0.0.0/0": "everyone",
+    "[::]/0": "everyone"
   },
   "groups": [
     {
@@ -24,7 +25,9 @@
         "::"
       ],
       "allowed": [],
-      "blocked": [],
+      "blocked": [
+        "example.com"
+      ],
       "allowListUrls": [],
       "blockListUrls": [],
       "allowedRegex": [],
@@ -43,11 +46,36 @@
         "::"
       ],
       "allowed": [],
-      "blocked": [],
+      "blocked": [
+        "discord.com",
+        "youtube.com",
+        "bigolive.tv",
+        "claspws.tv",
+        "spotify.com",
+        "ifood.tv",
+        "ravm.tv",
+        "play.works",
+        "teads.tv",
+        "vod.delivery.roku.com",
+        "vod-playlist.sr.roku.com",
+        "midland.sb.roku.com",
+        "cdn-apple.com",
+        "discover.provider.plex.tv"
+      ],
       "allowListUrls": [],
       "blockListUrls": [
         {
           "url": "https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/social/hosts",
+          "blockAsNxDomain": true,
+          "blockingAddresses": []
+        },
+        {
+          "url": "https://github.com/StevenBlack/hosts/raw/refs/heads/master/alternates/fakenews-porn-only/hosts",
+          "blockAsNxDomain": true,
+          "blockingAddresses": []
+        },
+        {
+          "url": "https://github.com/StevenBlack/hosts/raw/refs/heads/master/alternates/gambling-only/hosts",
           "blockAsNxDomain": true,
           "blockingAddresses": []
         }
