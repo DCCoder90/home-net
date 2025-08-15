@@ -46,7 +46,7 @@ media-servers:
         - "/mnt/user/appdata/jellyfin:/config"
         - "/mnt/user/appdata/jellyfin/transcode:/transcode"
     plex:
-      image_name: "linuxserver/plex:1.41.8"
+      image_name: "linuxserver/plex:1.42.1"
       service_name: "plex"
       icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/plex.png"
       mounts:
