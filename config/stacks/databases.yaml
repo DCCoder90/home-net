@@ -1,4 +1,4 @@
-media-servers:
+databases:
   zone_name: "dcapi.app"
   env:
     - "TZ=America/Chicago"
