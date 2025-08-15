@@ -1,0 +1,23 @@
+kavita:
+  dns:
+    enabled: true
+    domain_name: "books.mallett.family"
+    internal: false
+  network:
+    internal: true
+    service_port: 5000
+    networks:
+      - name: "br1"
+        ip_address: "192.168.5.33"
+  auth:
+    enabled: false
+  service_name: "kavita"
+  image_name: "linuxserver/kavita:0.8.7"
+  mounts:
+    - "/etc/localtime:/etc/localtime:ro"
+    - "/mnt/user/Arr/kavita-config:/kavita/config"
+    - "/mnt/user/Media:/media"
+  env:
+    - "TZ=America/Chicago"
+    - "PGID=1000"
+    - "PUID=1000"

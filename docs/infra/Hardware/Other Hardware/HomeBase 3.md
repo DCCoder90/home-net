@@ -1,0 +1,9 @@
+# HomeBase 3
+
+HomeBase 3
+
+S380HB
+
+192.168.2.202
+
+10:2C:B1:EE:7F:1F

@@ -1,5 +1,4 @@
 karakeep:
-  zone_name: "mallett.family"
   env:
   mounts:
   generated_secrets:

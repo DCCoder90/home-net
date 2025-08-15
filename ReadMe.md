@@ -9,6 +9,7 @@ This repository contains configurations for managing various services and infras
 
 This repository automates the deployment and configuration of my home lab. The primary goal is to maintain a completely reproducible environment using IaC. This ensures that the entire lab can be quickly and reliably rebuilt from scratch in the event of a catastrophic failure.
 
+Comprehensive documentation can be found in [docs/infra](docs/infra/Home.md)
 ## ✨ Key Features
 
 *   **Infrastructure as Code**: The entire infrastructure is defined using Terraform.
@@ -53,6 +54,7 @@ Before running this configuration, the following components must be in place.
 - **Terraform Agent**: A HCP Terraform Agent must be running on the Unraid server with access to the Docker socket (`/var/run/docker.sock`).
 - **Nginx Proxy Manager**: An instance of Nginx Proxy Manager must be running and accessible to the Terraform agent.
 - **Authentik**: An instance of Authentik must be running and configured.
+- **Technitium**: An instance of Technitium must be running and configured.
 
 ### Cloud & API Access
 - **HCP Terraform**: A workspace must be created and configured.
@@ -77,8 +79,8 @@ This repository follows a strict Pull Request-based workflow to ensure changes a
 
 This project is configured primarily through YAML files located in the `config/` directory. For detailed instructions on how to structure these files, please refer to the documentation in the `docs/` directory:
 
-*   **Stack Configuration Guide**: [stack-config.md](docs/stack-config.md)
-*   **Service Configuration Guide**: [service-config.md](docs/service-config.md)
+*   **Stack Configuration Guide**: [stack-config.md](docs/config/stack-config.md)
+*   **Service Configuration Guide**: [service-config.md](docs/config/service-config.md)
 
 
 ## 🔐 Secrets Management
@@ -103,8 +105,6 @@ Static secrets, such as API tokens and passwords, are stored as **sensitive vari
 |AUTHENTIK_URL|env|N|
 |AUTHENTIK_TOKEN|env|Y|
 |AUTHENTIK_INSECURE|env|N|
-|AUTHENTIK_TOKEN|env|Y|
-|AUTHENTIK_URL|env|N|
 |vpn_pass|terraform|Y|
 |vpn_user|terraform|Y|
 
@@ -112,10 +112,10 @@ Static secrets, such as API tokens and passwords, are stored as **sensitive vari
 
 ### Dynamic Secrets
 For services deployed by the `proxy_service_stack` module, credentials are not stored statically. Instead:
-1.  **Generated Secrets**: For services requiring arbitrary secrets (like API keys or JWT signing keys), you can define a list of secret names in the stack's YAML file under `generated_secrets`. Terraform will generate a unique, high-entropy value for each and inject it into the container's environment variables.
+1.  **Infisical Integration**: For services requiring arbitrary secrets (like API keys or JWT signing keys), you can define a list of secret names in the stack's YAML file under `generated_secrets`. Terraform will fetch these secrets from Infisical Cloud and inject them into the container's environment variables.
 2.  **OAuth Credentials**: For services using OAuth, the `docker-stack` module automatically creates an OAuth2 provider in Authentik. The resulting `client_id` and `client_secret` are then injected as environment variables into the container.
 
-This ensures that secrets are managed dynamically and securely, with minimal manual intervention.
+This ensures that secrets are managed dynamically and securely, with minimal manual intervention.'''
 
 ## ⚠️ Operational Notes
 

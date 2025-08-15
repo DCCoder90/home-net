@@ -1,5 +1,4 @@
   arr_services:
-    zone_name: "dcapi.app"
     env:
       - "PUID=1000"
       - "PGID=100"
@@ -21,7 +20,10 @@
               ip_address: "192.168.5.22"
         auth:
           enabled: true
-          proxy: true
+          proxy:
+            enabled: true
+            user_secret: "prowlarr_username"
+            pass_secret: "prowlarr_password"
           group: "Arr"
         icon: "https://static-00.iconduck.com/assets.00/prowlarr-icon-512x512-v9ekdjxx.png"
         service_name: "prowlarr"
@@ -41,7 +43,10 @@
               ip_address: "192.168.5.23"
         auth:
           enabled: true
-          proxy: true
+          proxy:
+            enabled: true
+            user_secret: "sonarr_username"
+            pass_secret: "sonarr_password"
           group: "Arr"
         icon: "https://static-00.iconduck.com/assets.00/sonarr-icon-1024x1024-wkay604k.png"
         service_name: "sonarr"
@@ -49,6 +54,8 @@
         domain_name: "sonarr.dcapi.app"
         mounts:
           - "/mnt/user/Arr/sonarr-data:/config"
+          - "/mnt/user/Media:/media"
+          - "/mnt/user/Downloads:/downloads"
       radarr:
         dns:
           enabled: true
@@ -61,7 +68,10 @@
               ip_address: "192.168.5.24"
         auth:
           enabled: true
-          proxy: true
+          proxy:
+            enabled: true
+            user_secret: "radarr_username"
+            pass_secret: "radarr_password"
           group: "Arr"
         icon: "https://static-00.iconduck.com/assets.00/radarr-icon-462x512-bydv4e4f.png"
         service_name: "radarr"
@@ -69,6 +79,8 @@
         domain_name: "radarr.dcapi.app"
         mounts:
           - "/mnt/user/Arr/radarr-data:/config"
+          - "/mnt/user/Media:/media"
+          - "/mnt/user/Downloads:/downloads"
       lidarr: 
         dns:
           enabled: true
@@ -81,9 +93,14 @@
               ip_address: "192.168.5.25"
         auth:
           enabled: true
-          proxy: true
+          proxy:
+            enabled: true
+            user_secret: "lidarr_username"
+            pass_secret: "lidarr_password"
           group: "Arr"
         service_name: "lidarr" 
         image_name: "linuxserver/lidarr:nightly-2.13.2.4685-ls165"
         mounts:
           - "/mnt/user/Arr/lidarr-data:/config"
+          - "/mnt/user/Media:/media"
+          - "/mnt/user/Downloads:/downloads"

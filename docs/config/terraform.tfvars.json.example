@@ -1,0 +1,13 @@
+{
+  "nginx_proxy_address": "http://192.168.4.2:81",
+  "nginx_proxy_user": "myemail",
+  "nginx_proxy_pass": "nginx_proxy_pass",
+  "technitium_api_token": "api token",
+  "network_admin_email": "myemail",
+  "public_facing_ip": "0.0.0.0",
+  "cloudflare_api_token": "cloudflare api token",
+  "vpn_user":"username for vpn service",
+  "vpn_pass":"password for vpn service",
+  "infiscal_client_id":"",
+  "infiscal_client_secret":""
+}

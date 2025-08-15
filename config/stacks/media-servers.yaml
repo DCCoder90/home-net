@@ -1,5 +1,4 @@
 media-servers:
-  zone_name: "mallett.family"
   env:
     - "TZ=America/Chicago"
     - "NVIDIA_DRIVER_CAPABILITIES=all"
@@ -39,27 +38,28 @@ media-servers:
       service_name: "jellyfin"
       description: "Jellyfin is a Free Software Media System that puts you in control of managing and streaming your media."
       image_name: "linuxserver/jellyfin:10.10.7"
+      enable_gpu: true
       env:
         - "PUID=0"
         - "PGID=0"
       mounts:
         - "/mnt/user/appdata/jellyfin:/config"
-        - "/mnt/user/appdata/jellyfin/transcode:/transcode"
+        - "/mnt/user/Cache/transcodes:/transcode"
     plex:
       image_name: "linuxserver/plex:1.42.1"
-      service_name: "plex"
+      service_name: "plex-home"
+      network_mode: "host"
+      enable_gpu: true
       icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/plex.png"
       mounts:
         - "/mnt/user/appdata/binhex-plex:/config"
-        - "/mnt/user/appdata/binhex-plex/transcode:/transcode"
+        - "/mnt/user/Cache/transcodes:/transcode"
+        - "/mnt/user/Media:/media"
       dns:
-        enabled: true
+        enabled: false
         domain_name: "plex.mallett.family"
+      auth:
+        enabled: false
       network:
         internal: false
         service_port: 32400
-        networks:
-          - name: "br1" 
-            ip_address: "192.168.5.45"
-      env:
-        - "PLEX_CLAIM=SOMECLAIMTOKEN"

@@ -33,11 +33,16 @@ terraform {
       source  = "goauthentik/authentik"
       version = "2025.4.0"
     }
+
+    infisical = {
+      source  = "infisical/infisical"
+      version = "0.15.19"
+    }
   }
 }
 
 module "nginx_conf" {
-  source = "./modules/nginx_config"
+  source   = "git@github.com:DCCoder90/home-tf-modules.git//nginx_config?ref=1.0.0"
 }
 
 locals {
