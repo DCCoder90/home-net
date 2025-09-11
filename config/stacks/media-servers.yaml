@@ -64,4 +64,4 @@ media-servers:
         internal: false
         service_port: 32400
       env:
-        - "PLEX_CLAIM=claim--B79BMDZ8ky-PyxHAYdM"
+        - "PLEX_CLAIM=claim-JH2rm3LFhR-tbx9hCEwM"
