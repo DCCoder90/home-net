@@ -46,7 +46,7 @@ media-servers:
         - "/mnt/user/appdata/jellyfin:/config"
         - "/mnt/user/Cache/transcodes:/transcode"
     plex:
-      image_name: "linuxserver/plex:1.41.8"
+      image_name: "linuxserver/plex:1.42.1"
       service_name: "plex-home"
       network_mode: "host"
       enable_gpu: true
