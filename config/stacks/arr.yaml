@@ -27,7 +27,7 @@
           group: "Arr"
         icon: "https://static-00.iconduck.com/assets.00/prowlarr-icon-512x512-v9ekdjxx.png"
         service_name: "prowlarr"
-        image_name: "linuxserver/prowlarr:2.0.3-develop"
+        image_name: "linuxserver/prowlarr:2.0.5"
         domain_name: "prowlarr.dcapi.app"
         mounts:
           - "/mnt/user/Arr/prowlarr-data:/config"
@@ -75,7 +75,7 @@
           group: "Arr"
         icon: "https://static-00.iconduck.com/assets.00/radarr-icon-462x512-bydv4e4f.png"
         service_name: "radarr"
-        image_name: "linuxserver/radarr:5.26.2"
+        image_name: "linuxserver/radarr:5.27.5"
         domain_name: "radarr.dcapi.app"
         mounts:
           - "/mnt/user/Arr/radarr-data:/config"
