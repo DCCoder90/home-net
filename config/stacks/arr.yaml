@@ -99,7 +99,7 @@
             pass_secret: "lidarr_password"
           group: "Arr"
         service_name: "lidarr" 
-        image_name: "linuxserver/lidarr:2.13.0-develop"
+        image_name: "linuxserver/lidarr:nightly-2.13.2.4685-ls165"
         mounts:
           - "/mnt/user/Arr/lidarr-data:/config"
           - "/mnt/user/Media:/media"
