@@ -36,7 +36,7 @@ karakeep:
         icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/karakeep.png"
         service_name: "karakeep"
         description: "Karakeep is an open source \"Bookmark Everything\" app that uses AI for automatically tagging the content you throw at it. The app is built with self-hosting as a first class citizen."
-        image_name: "ghcr.io/karakeep-app/karakeep:0.25.0"
+        image_name: "ghcr.io/karakeep-app/karakeep:0.27.1"
         env:
           - "MEILI_ADDR=http://meillisearch:7700"
           - "BROWSER_WEB_URL=http://chrome:9222"
@@ -61,7 +61,7 @@ karakeep:
           enabled: false
         icon: "https://static-00.iconduck.com/assets.00/search-icon-512x512-dlh8ei42.png"
         service_name: "meillisearch"
-        image_name: "getmeili/meilisearch:v1.13.3"
+        image_name: "getmeili/meilisearch:v1.21.0"
         mounts:
           - "/mnt/user/DataStore/meili/data:/meili_data"
         networks:
