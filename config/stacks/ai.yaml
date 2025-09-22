@@ -13,7 +13,7 @@
           service_port: 11434
           networks:
             - name: "br1"
-              ip_address: "192.168.5.22"
+              ip_address: "192.168.5.48"
         auth:
           enabled: false
           group: "AI"
@@ -33,7 +33,7 @@
           service_port: 5678
           networks:
             - name: "br1"
-              ip_address: "192.168.5.22"
+              ip_address: "192.168.5.49"
         auth:
           enabled: false
           group: "AI"
