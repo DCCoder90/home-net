@@ -29,7 +29,7 @@
           enabled: true
           domain_name: "n8n.dcapi.app"
         network:
-          internal: true
+          internal: false
           service_port: 5678
           networks:
             - name: "br1"
