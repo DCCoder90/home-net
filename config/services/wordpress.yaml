@@ -5,7 +5,7 @@ wordpress:
     internal: false
   network:
     internal: false
-    service_port: 8080
+    service_port: 80
     networks:
       - name: "br1"
         ip_address: "192.168.5.82"
