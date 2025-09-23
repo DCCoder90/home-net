@@ -1,0 +1,22 @@
+wordpress:
+  dns:
+    enabled: false
+    domain_name: "wordpress.mallett.family"
+    internal: true
+  network:
+    internal: true
+    service_port: 8080
+    networks:
+      - name: "br1"
+        ip_address: "192.168.5.83"
+  auth:
+    enabled: false
+  secrets:
+    MYSQL_ROOT_PASSWORD: "tower_mysql_root_pwd_temp" 
+    MYSQL_DATABASE: "tower_mysql_db_temp" 
+    MYSQL_USER: "tower_mysql_user_temp" 
+    MYSQL_PASSWORD: "tower_mysql_pass_temp" 
+  service_name: "mysql"
+  image_name: "mysql"
+  mounts:
+    - "/etc/localtime:/etc/localtime:ro"
