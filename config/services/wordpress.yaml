@@ -12,7 +12,7 @@ wordpress:
   auth:
     enabled: false
   env:
-    WORDPRESS_DB_HOST: "192.168.5.83"
+    - "WORDPRESS_DB_HOST=192.168.5.83"
   secrets:
     WORDPRESS_DB_USER: "tower_mysql_user_temp" 
     WORDPRESS_DB_PASSWORD: "tower_mysql_pass_temp" 
