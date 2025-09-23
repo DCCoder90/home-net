@@ -1,7 +1,6 @@
-wordpress:
+mysql:
   dns:
     enabled: false
-    domain_name: "wordpress.mallett.family"
     internal: true
   network:
     internal: true
