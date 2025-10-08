@@ -43,7 +43,39 @@
         domain_name: "n8n.dcapi.app"
         mounts:
           - "/mnt/cache/appdata/n8n:/home/node/.n8n"
+          - "/mnt/user/Misc/ssh:/home/node/.ssh"
         env:
           - "N8N_SECURE_COOKIE=false"
           - "WEBHOOK_URL=https://n8n.dcapi.app/"
           - "GENERIC_TIMEZONE=America/Chicago"
+      comfy-ui:
+        dns:
+          enabled: true
+          domain_name: "comfy.dcapi.app"
+        network:
+          internal: true
+          service_port: 8188
+          networks:
+            - name: "br1"
+              ip_address: "192.168.5.49"
+        enable_gpu: true
+        auth:
+          enabled: false
+          group: "AI"
+        icon: "https://cdn-icons-png.freepik.com/512/8246/8246323.png"
+        service_name: "comfy-ui"
+        image_name: "mmartial/comfyui-nvidia-docker:latest"
+        domain_name: "comfy.dcapi.app"
+        mounts:
+          - "/mnt/user/appdata/comfyui-nvidia/basedir:/basedir"
+          - "/mnt/user/appdata/comfyui-nvidia/mnt:/comfy/mnt"
+        env:
+          - "WANTED_UID=99"
+          - "WANTED_GID=100"
+          - "SECURITY_LEVEL=normal"
+          - "FORCE_CHOWN=true"
+          - "DISABLE_UPGRADES=false"
+          - "USE_PIPUPGRADE=true"
+          - "USE_SOCAT=false"
+          - "BASE_DIRECTORY=/basedir"
+          - "CA_TS_FALLBACK_DIR=/comfy/mnt"
