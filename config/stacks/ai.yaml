@@ -39,7 +39,7 @@
           group: "AI"
         icon: "https://cdn-icons-png.freepik.com/512/8246/8246323.png"
         service_name: "n8n"
-        image_name: "n8nio/n8n:1.113.0"
+        image_name: "n8nio/n8n:2.0.1"
         domain_name: "n8n.dcapi.app"
         mounts:
           - "/mnt/cache/appdata/n8n:/home/node/.n8n"
