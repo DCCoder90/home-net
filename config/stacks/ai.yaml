@@ -19,7 +19,7 @@
           group: "AI"
         icon: "https://cdn-icons-png.freepik.com/512/10852/10852297.png"
         service_name: "ollama"
-        image_name: "ollama/ollama:0.12.0"
+        image_name: "ollama/ollama:0.13.3"
         mounts:
           - "/mnt/user/appdata/ollama:/root/.ollama"
         env:
@@ -39,7 +39,7 @@
           group: "AI"
         icon: "https://cdn-icons-png.freepik.com/512/8246/8246323.png"
         service_name: "n8n"
-        image_name: "n8nio/n8n:2.0.1"
+        image_name: "n8nio/n8n:2.0.2"
         domain_name: "n8n.dcapi.app"
         mounts:
           - "/mnt/cache/appdata/n8n:/home/node/.n8n"

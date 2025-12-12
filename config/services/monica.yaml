@@ -1,0 +1,18 @@
+wordpress:
+  dns:
+    enabled: false
+    internal: false
+  network:
+    internal: true
+    service_port: 80
+    networks:
+      - name: "br1"
+        ip_address: "192.168.4.202"
+  auth:
+    enabled: false
+  env:
+    - "MAIL_MAILER=log"
+  service_name: "monica"
+  image_name: "monica:4.1.2"
+  mounts:
+    - "/etc/localtime:/etc/localtime:ro"
