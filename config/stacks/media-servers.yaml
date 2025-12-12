@@ -37,7 +37,7 @@ media-servers:
       icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/jellyfin.png"
       service_name: "jellyfin"
       description: "Jellyfin is a Free Software Media System that puts you in control of managing and streaming your media."
-      image_name: "linuxserver/jellyfin:10.10.7"
+      image_name: "linuxserver/jellyfin:10.11.4"
       enable_gpu: true
       env:
         - "PUID=0"
@@ -46,7 +46,7 @@ media-servers:
         - "/mnt/user/appdata/jellyfin:/config"
         - "/mnt/user/Cache/transcodes:/transcode"
     plex:
-      image_name: "linuxserver/plex:1.42.1"
+      image_name: "linuxserver/plex:1.42.2"
       service_name: "plex-home"
       network_mode: "host"
       enable_gpu: true
