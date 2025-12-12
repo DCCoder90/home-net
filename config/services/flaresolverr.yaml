@@ -10,4 +10,4 @@ flaresolverr:
   auth:
     enabled: false
   service_name: "flaresolverr"
-  image_name: "flaresolverr/flaresolverr:v3.3.25"
+  image_name: "flaresolverr/flaresolverr:v3.4.6"
