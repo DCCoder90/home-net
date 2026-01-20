@@ -39,7 +39,7 @@ paperless:
         - "/mnt/user/DataStore/paperless/consume:/usr/src/paperless/consume"
       env:
         - "PAPERLESS_REDIS=redis://redis:6379"
-        - "PAPERLESS_DBHOST=db"
+        - "PAPERLESS_DBHOST=paperless_db"
         - "PAPERLESS_DBPORT=5432"
         - "PAPERLESS_DBNAME=paperless"
         - "PAPERLESS_DBUSER=paperless"
