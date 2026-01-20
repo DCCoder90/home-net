@@ -1,0 +1,81 @@
+paperless:
+  env:
+    - "TZ=America/Chicago"
+    - "PUID=99"
+    - "PGID=100"
+  mounts:
+    - "/etc/localtime:/etc/localtime:ro"
+  generated_secrets:
+    - "PAPERLESS_DB_PASS"
+    - "PAPERLESS_SECRET_KEY"
+  networks:
+    paperless_internal:
+      internal: true
+  services:
+    paperless:
+      service_name: "paperless"
+      image_name: "ghcr.io/paperless-ngx/paperless-ngx:latest"
+      dns:
+        enabled: true
+        domain_name: "paperless.mallett.family"
+      network:
+        internal: false
+        service_port: 8000
+        networks:
+          - name: "br1"
+            ip_address: "192.168.5.60"
+          - name: "paperless_internal"
+      auth:
+        enabled: true
+        proxy: true
+        group: "Productivity"
+      mounts:
+        - "/mnt/user/DataStore/paperless/data:/usr/src/paperless/data"
+        - "/mnt/user/DataStore/paperless/media:/usr/src/paperless/media"
+        - "/mnt/user/DataStore/paperless/export:/usr/src/paperless/export"
+        - "/mnt/user/DataStore/paperless/consume:/usr/src/paperless/consume"
+      env:
+        - "PAPERLESS_REDIS=redis://redis:6379"
+        - "PAPERLESS_DBHOST=db"
+        - "PAPERLESS_DBPORT=5432"
+        - "PAPERLESS_DBNAME=paperless"
+        - "PAPERLESS_DBUSER=paperless"
+        - "PAPERLESS_DBPASS=${PAPERLESS_DB_PASS}"
+        - "PAPERLESS_SECRET_KEY=${PAPERLESS_SECRET_KEY}"
+        - "PAPERLESS_URL=https://paperless.mallett.family"
+        - "PAPERLESS_TIME_ZONE=America/Chicago"
+        - "PAPERLESS_OCR_LANGUAGE=eng"
+        # Authentik SSO Integration (Proxy Mode)
+        - "PAPERLESS_ENABLE_HTTP_REMOTE_USER=true"
+        - "PAPERLESS_HTTP_REMOTE_USER_HEADER_NAME=HTTP_X_AUTHENTIK_USERNAME"
+      icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/paperless-ngx.png"
+
+    redis:
+      service_name: "paperless_redis"
+      image_name: "redis:7"
+      dns:
+        enabled: false
+      auth:
+        enabled: false
+      network:
+        internal: true
+        networks:
+          - name: "paperless_internal"
+    
+    db:
+      service_name: "paperless_db"
+      image_name: "postgres:16"
+      dns:
+        enabled: false
+      auth:
+        enabled: false
+      network:
+        internal: true
+        networks:
+          - name: "paperless_internal"
+      mounts:
+        - "/mnt/user/DataStore/paperless/pgdata:/var/lib/postgresql/data"
+      env:
+        - "POSTGRES_DB=paperless"
+        - "POSTGRES_USER=paperless"
+        - "POSTGRES_PASSWORD=${PAPERLESS_DB_PASS}"
