@@ -51,7 +51,7 @@ locals {
   # The keys used here (e.g., 'nginx_proxy_address') should be considered the
   # canonical names for these variables throughout the project.
   system = merge(
-    yamldecode(file("${path.module}/../config/system.yaml")),
+    yamldecode(file("${path.module}/../../config/system.yaml")),
     {
       nginx_proxy_address    = var.nginx_proxy_address
       nginx_proxy_user       = var.nginx_proxy_user
@@ -68,12 +68,12 @@ locals {
   )
   # Load all stack configurations from the /config/stacks directory.
   stacks = merge([
-    for f in fileset("${path.module}/../config/stacks", "*.yaml") :
-    yamldecode(file("${path.module}/../config/stacks/${f}"))
+    for f in fileset("${path.module}/../../config/stacks", "*.yaml") :
+    yamldecode(file("${path.module}/../../config/stacks/${f}"))
   ]...)
   # Load all standalone service configurations from the /config/services directory.
   services = merge([
-    for f in fileset("${path.module}/../config/services", "*.yaml") :
-    yamldecode(file("${path.module}/../config/services/${f}"))
+    for f in fileset("${path.module}/../../config/services", "*.yaml") :
+    yamldecode(file("${path.module}/../../config/services/${f}"))
   ]...)
 }
