@@ -1,0 +1,12 @@
+technitium:
+  service_name: "technitium_dns"
+  image_name: "technitium/dns-server:latest"
+  networks:
+    - name: "br1"
+      ip_address: "192.168.4.13"
+  env:
+    - "TZ=America/Chicago"
+  secrets:
+    DNS_SERVER_ADMIN_PASSWORD: "technitium_admin_password"
+  mounts:
+    - "/mnt/user/Networking/dns:/etc/dns"

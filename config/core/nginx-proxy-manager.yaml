@@ -1,0 +1,13 @@
+nginx_proxy_manager:
+  service_name: "Nginx-Proxy-Manager-Official"
+  image_name: "jc21/nginx-proxy-manager:latest"
+  networks:
+    - name: "br1"
+      ip_address: "192.168.4.2"
+  env:
+    - "TZ=America/Los_Angeles"
+    - "DB_SQLITE_FILE=/data/database.sqlite"
+  mounts:
+    - "/mnt/user/appdata/NginxProxymanager-Latest/data:/data"
+    - "/mnt/user/appdata/NginxProxymanager-Latest/letsencrypt:/etc/letsencrypt"
+    - "/tmp/NginxProxymanager-Latest/var/log:/var/log"

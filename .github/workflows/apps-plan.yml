@@ -1,16 +1,16 @@
-name: Terraform Plan
+name: Apps Plan
 
 on:
   pull_request:
     branches:
       - main
-    paths-ignore:
-      - '.github/workflows/run-apply.yml'
-      - '.github/workflows/run-plan.yml'
-      - './ReadMe.md'
-      - './.gitignore'
-      - './docs/*'
+    paths:
+      - 'terraform/apps/**'
+      - 'config/stacks/**'
+      - 'config/services/**'
+      - 'config/system.yaml'
   workflow_dispatch:
+
 jobs:
   terraform_plan:
     runs-on: ubuntu-latest
@@ -18,7 +18,7 @@ jobs:
       contents: read
       pull-requests: write
     env:
-        TF_WORKSPACE: ${{ secrets.TF_WORKSPACE }}
+        TF_WORKSPACE: ${{ secrets.TF_WORKSPACE_APPS }}
         CONFIG_DIRECTORY: "./"
 
     steps:
@@ -32,17 +32,17 @@ jobs:
           workspace: ${{ env.TF_WORKSPACE }}
           directory: ${{ env.CONFIG_DIRECTORY }}
           token: ${{ secrets.TF_API_TOKEN  }}
-          organization: ${{ secrets.TF_ORGANIZATION }} 
+          organization: ${{ secrets.TF_ORGANIZATION }}
 
       - name: Trigger Terraform Cloud Plan
         uses: hashicorp/tfc-workflows-github/actions/create-run@v1.3.2
         id: create-run
         with:
           token: ${{ secrets.TF_API_TOKEN  }}
-          hostname: app.terraform.io 
-          organization: ${{ secrets.TF_ORGANIZATION }} 
-          workspace: ${{ secrets.TF_WORKSPACE }} 
-          message: "Triggered by PR push: ${{ github.event.pull_request.head.ref }}"
+          hostname: app.terraform.io
+          organization: ${{ secrets.TF_ORGANIZATION }}
+          workspace: ${{ secrets.TF_WORKSPACE_APPS }}
+          message: "Apps Plan - PR: ${{ github.event.pull_request.head.ref }}"
           plan_only: true
 
       - uses: hashicorp/tfc-workflows-github/actions/plan-output@v1.3.2
@@ -50,29 +50,27 @@ jobs:
         with:
           plan: ${{ steps.create-run.outputs.plan_id }}
           token: ${{ secrets.TF_API_TOKEN  }}
-          organization: ${{ secrets.TF_ORGANIZATION }} 
+          organization: ${{ secrets.TF_ORGANIZATION }}
 
       - uses: actions/github-script@v6
         if: github.event_name == 'pull_request'
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            // 1. Retrieve existing bot comments for the PR
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
             })
             const botComment = comments.find(comment => {
-              return comment.user.type === 'Bot' && comment.body.includes('HCP Terraform Plan Output')
+              return comment.user.type === 'Bot' && comment.body.includes('HCP Terraform Apps Plan Output')
             })
-            const output = `#### HCP Terraform Plan Output
+            const output = `#### HCP Terraform Apps Plan Output
                \`\`\`\n
                Plan: ${{ steps.plan-output.outputs.add }} to add, ${{ steps.plan-output.outputs.change }} to change, ${{ steps.plan-output.outputs.destroy }} to destroy.
                \`\`\`
                [HCP Terraform Plan](${{ steps.create-run.outputs.run_link }})
                `
-            // 3. If we have a comment, update it, otherwise create a new one
             if (botComment) {
               github.rest.issues.updateComment({
                 owner: context.repo.owner,

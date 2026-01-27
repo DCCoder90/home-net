@@ -1,0 +1,75 @@
+authentik:
+  services:
+    postgres:
+      service_name: "postgresql14"
+      image_name: "postgres:14"
+      networks:
+        - name: "br1"
+          ip_address: "192.168.4.105"
+      env:
+        - "TZ=America/Los_Angeles"
+        - "POSTGRES_USER=dccoder"
+        - "POSTGRES_DB="
+      secrets:
+        POSTGRES_PASSWORD: "authentik_postgres_password"
+      mounts:
+        - "/mnt/disk1/appdata/postgresql14:/var/lib/postgresql/data"
+
+    redis:
+      service_name: "Redis"
+      image_name: "redis:alpine"
+      networks:
+        - name: "br1"
+          ip_address: "192.168.4.115"
+      env:
+        - "TZ=America/Los_Angeles"
+      commands:
+        - "--save"
+        - "60"
+        - "1"
+      mounts:
+        - "/mnt/user/DataStore/redis:/data"
+
+    server:
+      service_name: "authentik"
+      image_name: "beryju/authentik:latest"
+      privileged: true
+      user: "1000"
+      networks:
+        - name: "br1"
+          ip_address: "192.168.4.55"
+      env:
+        - "TZ=America/Los_Angeles"
+        - "AUTHENTIK_REDIS__HOST=192.168.4.115"
+        - "AUTHENTIK_POSTGRESQL__HOST=192.168.4.105"
+        - "AUTHENTIK_POSTGRESQL__NAME=authentik"
+        - "AUTHENTIK_POSTGRESQL__USER=dccoder"
+        - "AUTHENTIK_ERROR_REPORTING__ENABLED=true"
+      secrets:
+        AUTHENTIK_SECRET_KEY: "authentik_secret_key"
+        AUTHENTIK_POSTGRESQL__PASSWORD: "authentik_postgres_password"
+      mounts:
+        - "/mnt/cache/authentik:/media"
+
+    worker:
+      service_name: "authentik-worker"
+      image_name: "beryju/authentik:latest"
+      user: "root"
+      commands:
+        - "worker"
+      networks:
+        - name: "br1"
+          ip_address: "192.168.4.56"
+      env:
+        - "TZ=America/Los_Angeles"
+        - "AUTHENTIK_REDIS__HOST=192.168.4.115"
+        - "AUTHENTIK_POSTGRESQL__HOST=192.168.4.105"
+        - "AUTHENTIK_POSTGRESQL__NAME=authentik"
+        - "AUTHENTIK_POSTGRESQL__USER=dccoder"
+        - "AUTHENTIK_ERROR_REPORTING__ENABLED=true"
+      secrets:
+        AUTHENTIK_SECRET_KEY: "authentik_secret_key"
+        AUTHENTIK_POSTGRESQL__PASSWORD: "authentik_postgres_password"
+      mounts:
+        - "/mnt/cache/authentik/media:/media"
+        - "/mnt/cache/authentik/templates:/templates"
