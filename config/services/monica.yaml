@@ -1,0 +1,22 @@
+monica:
+  dns:
+    enabled: true
+    domain_name: "monica.mallett.family"
+    internal: false
+  network:
+    internal: true
+    service_port: 5000
+    networks:
+      - name: "br1"
+        ip_address: "192.168.5.58"
+  auth:
+    enabled: false
+  service_name: "monica"
+  image_name: "monica:5.0-apache"
+  icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/monica-light.png"
+  mounts:
+    - "/etc/localtime:/etc/localtime:ro"
+  env:
+    - "TZ=America/Chicago"
+    - "PGID=1000"
+    - "PUID=1000"
