@@ -4,26 +4,6 @@
     mounts:
       - "/etc/localtime:/etc/localtime:ro"
     services:
-      ollama:
-        enable_gpu: true
-        dns:
-          enabled: false
-        network:
-          internal: true
-          service_port: 11434
-          networks:
-            - name: "br1"
-              ip_address: "192.168.5.48"
-        auth:
-          enabled: false
-          group: "AI"
-        icon: "https://cdn-icons-png.freepik.com/512/10852/10852297.png"
-        service_name: "ollama"
-        image_name: "ollama/ollama:0.13.3"
-        mounts:
-          - "/mnt/user/appdata/ollama:/root/.ollama"
-        env:
-          - "OLLAMA_ORIGINS=*"
       n8n:
         dns:
           enabled: true
