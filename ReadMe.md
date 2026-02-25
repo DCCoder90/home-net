@@ -105,8 +105,6 @@ Static secrets, such as API tokens and passwords, are stored as **sensitive vari
 |AUTHENTIK_URL|env|N|
 |AUTHENTIK_TOKEN|env|Y|
 |AUTHENTIK_INSECURE|env|N|
-|vpn_pass|terraform|Y|
-|vpn_user|terraform|Y|
 
 > **Note**: Some non-secret values (like `public_facing_ip`) are marked as sensitive to prevent them from being exposed in public logs or plan outputs.
 

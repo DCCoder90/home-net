@@ -3,7 +3,7 @@ name: Terraform Apply
 on:
   push:
     branches:
-      - main 
+      - main
     paths-ignore:
       - '.github/workflows/run-apply.yml'
       - '.github/workflows/run-plan.yml'
@@ -11,22 +11,25 @@ on:
       - './.gitignore'
       - './docs/*'
   workflow_dispatch:
-    inputs:
-      tfc_run_id:
-        description: 'Optional: Terraform Cloud Run ID to apply. If left empty, a new run will be created.'
-        required: false
-        type: string
 
 jobs:
   terraform_apply:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pull-requests: write 
+      pull-requests: write
+    strategy:
+      max-parallel: 1
+      matrix:
+        include:
+          - name: core
+            workspace_secret: TF_WORKSPACE_CORE
+          - name: apps
+            workspace_secret: TF_WORKSPACE_APPS
     env:
-        TF_WORKSPACE: ${{ secrets.TF_WORKSPACE_CORE }}
+        TF_WORKSPACE: ${{ secrets[matrix.workspace_secret] }}
         CONFIG_DIRECTORY: "./"
-        
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -37,35 +40,28 @@ jobs:
         with:
           workspace: ${{ env.TF_WORKSPACE }}
           directory: ${{ env.CONFIG_DIRECTORY }}
-          token: ${{ secrets.TF_API_TOKEN  }}
-          organization: ${{ secrets.TF_ORGANIZATION }} 
+          token: ${{ secrets.TF_API_TOKEN }}
+          organization: ${{ secrets.TF_ORGANIZATION }}
 
-      - name: Trigger Terraform Cloud Apply Plan
+      - name: Trigger Terraform Cloud Apply
         uses: hashicorp/tfc-workflows-github/actions/create-run@v1.3.2
         id: create-run
-        if: ${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && (github.event.inputs.tfc_run_id == '' || github.event.inputs.tfc_run_id == null)) }}
         with:
           token: ${{ secrets.TF_API_TOKEN }}
-          hostname: app.terraform.io 
-          organization: ${{ secrets.TF_ORGANIZATION }} 
-          workspace: ${{ env.TF_WORKSPACE }} 
-          message: "Triggered by push to main: ${{ github.sha }}"
-          is_destroy: false 
+          hostname: app.terraform.io
+          organization: ${{ secrets.TF_ORGANIZATION }}
+          workspace: ${{ env.TF_WORKSPACE }}
+          message: "Triggered by push to main (${{ matrix.name }}): ${{ github.sha }}"
+          is_destroy: false
 
-      - name: Check Terraform Cloud Run Status
-        if: ${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && (github.event.inputs.tfc_run_id == '' || github.event.inputs.tfc_run_id == null)) }}
-        run: |
-          echo "Terraform Cloud Plan ID: ${{ steps.create-run.outputs.run_id }}"
-          echo "Terraform Cloud Plan URL: ${{ steps.create-run.outputs.run_url }}"
-
-      - name: Run Plan
+      - name: Apply Run
         uses: hashicorp/tfc-workflows-github/actions/apply-run@v1.3.2
         id: apply
         with:
             hostname: app.terraform.io
-            token: ${{ secrets.TF_API_TOKEN }} 
-            run: ${{ github.event.inputs.tfc_run_id || steps.create-run.outputs.run_id }}
-            comment: "Confirmed from GitHub Actions CI"
+            token: ${{ secrets.TF_API_TOKEN }}
+            run: ${{ steps.create-run.outputs.run_id }}
+            comment: "Confirmed from GitHub Actions CI (${{ matrix.name }})"
 
       - name: Check Terraform Cloud Run Status
         run: |
