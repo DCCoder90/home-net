@@ -1,3 +1,24 @@
+# --- Import Blocks ---
+import {
+  to = docker_image.technitium
+  id = "sha256:84d1bc860349"
+}
+
+import {
+  to = docker_container.technitium_dns
+  id = "ee9ec2823d8e"
+}
+
+import {
+  to = docker_image.nginx_proxy
+  id = "sha256:9f5e0949eb63"
+}
+
+import {
+  to = docker_container.nginx_proxy
+  id = "dc2c940e26c8"
+}
+
 # --- Technitium DNS ---
 resource "docker_image" "technitium" {
   name         = "technitium/dns-server:latest"
