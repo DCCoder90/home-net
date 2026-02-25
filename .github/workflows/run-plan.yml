@@ -18,7 +18,7 @@ jobs:
       contents: read
       pull-requests: write
     env:
-        TF_WORKSPACE: ${{ secrets.TF_WORKSPACE }}
+        TF_WORKSPACE: ${{ secrets.TF_WORKSPACE_CORE }}
         CONFIG_DIRECTORY: "./"
 
     steps:
@@ -41,7 +41,7 @@ jobs:
           token: ${{ secrets.TF_API_TOKEN  }}
           hostname: app.terraform.io 
           organization: ${{ secrets.TF_ORGANIZATION }} 
-          workspace: ${{ secrets.TF_WORKSPACE }} 
+          workspace: ${{ env.TF_WORKSPACE }} 
           message: "Triggered by PR push: ${{ github.event.pull_request.head.ref }}"
           plan_only: true
 
