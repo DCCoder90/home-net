@@ -7,12 +7,20 @@ terraform {
   }
 
   required_providers {
+    docker = {
+      source  = "kreuzwerker/docker"
+      version = "3.6.2"
+    }
+
     nginxproxymanager = {
       source  = "Sander0542/nginxproxymanager"
       version = "1.2.0"
     }
-    # Cloudflare/Infisical can go here if you move DNS zones to Core later
   }
+}
+
+provider "docker" {
+  host = "unix:///var/run/docker.sock"
 }
 
 provider "nginxproxymanager" {
@@ -24,4 +32,12 @@ provider "nginxproxymanager" {
 # Core Variables Loading
 locals {
   system = yamldecode(file("${path.module}/../../config/system.yaml"))
+}
+
+data "docker_network" "br0" {
+  name = "br0"
+}
+
+data "docker_network" "br1" {
+  name = "br1"
 }
