@@ -16,17 +16,22 @@ variable "dns_admin_password" {
 
 variable "host_path_dns_config" {
   type    = string
-  default = "/mnt/user/appdata/technitium"
+  default = "/mnt/user/Networking/dns"
 }
 
 variable "host_path_npm_data" {
   type    = string
-  default = "/mnt/user/appdata/npm/data"
+  default = "/mnt/user/appdata/NginxProxymanager-Latest/data"
 }
 
 variable "host_path_npm_letsencrypt" {
   type    = string
-  default = "/mnt/user/appdata/npm/letsencrypt"
+  default = "/mnt/user/appdata/NginxProxymanager-Latest/letsencrypt"
+}
+
+variable "host_path_npm_logs" {
+  type    = string
+  default = "/tmp/NginxProxymanager-Latest/var/log"
 }
 
 # Variables provided by Terraform Cloud variable sets

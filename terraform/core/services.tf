@@ -1,14 +1,3 @@
-# --- Import Blocks ---
-import {
-  to = docker_container.technitium_dns
-  id = "ee9ec2823d8e123ce4a87f722c72ec60696a67ba11b7958c118b2fd3930e87c9"
-}
-
-import {
-  to = docker_container.nginx_proxy
-  id = "dc2c940e26c873c4c202b664c32f74e7df9cdb55cd663e52e82ab50469f7d21a"
-}
-
 # --- Technitium DNS ---
 resource "docker_image" "technitium" {
   name         = "technitium/dns-server:latest"
@@ -51,9 +40,13 @@ resource "docker_image" "nginx_proxy" {
 }
 
 resource "docker_container" "nginx_proxy" {
-  name    = "jc21/nginx-proxy-manager"
+  name    = "Nginx-Proxy-Manager-Official"
   image   = docker_image.nginx_proxy.image_id
   restart = "unless-stopped"
+
+  env = [
+    "TZ=${var.tz}",
+  ]
 
   # Standard Ports
   ports {
@@ -79,12 +72,17 @@ resource "docker_container" "nginx_proxy" {
     container_path = "/etc/letsencrypt"
   }
 
+  volumes {
+    host_path      = var.host_path_npm_logs
+    container_path = "/var/log"
+  }
+
   networks_advanced {
     name         = data.docker_network.br1.name
     ipv4_address = local.system.proxy_ip
   }
 
   lifecycle {
-    ignore_changes = [image, labels]
+    ignore_changes = [image, labels, env]
   }
 }
