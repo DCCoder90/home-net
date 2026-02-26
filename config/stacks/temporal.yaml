@@ -1,0 +1,67 @@
+temporal:
+  zone_name: "dcapi.app"
+  env:
+    - "TZ=America/Chicago"
+  mounts:
+    - "/etc/localtime:/etc/localtime:ro"
+  generated_secrets:
+    - "TEMPORAL_DB_PASS"
+  networks:
+    temporal_network:
+      internal: true
+  services:
+    postgresql:
+      service_name: "temporal_postgresql"
+      image_name: "postgres:15"
+      dns:
+        enabled: false
+      auth:
+        enabled: false
+      network:
+        internal: true
+        networks:
+          - name: "temporal_network"
+      mounts:
+        - "/mnt/user/appdata/temporal/pgdata:/var/lib/postgresql/data"
+      env:
+        - "POSTGRES_USER=temporal"
+        - "POSTGRES_PASSWORD=${TEMPORAL_DB_PASS}"
+        - "POSTGRES_DB=temporal"
+
+    temporal:
+      service_name: "temporal_server"
+      image_name: "temporalio/auto-setup:latest"
+      dns:
+        enabled: false
+      auth:
+        enabled: false
+      network:
+        internal: true
+        networks:
+          - name: "temporal_network"
+      env:
+        - "DB=postgres12"
+        - "DB_PORT=5432"
+        - "POSTGRES_USER=temporal"
+        - "POSTGRES_PWD=${TEMPORAL_DB_PASS}"
+        - "POSTGRES_SEEDS=temporal_postgresql"
+
+    temporal-ui:
+      service_name: "temporal_ui"
+      image_name: "temporalio/ui:latest"
+      dns:
+        enabled: true
+        domain_name: "temporal.dcapi.app"
+      network:
+        internal: false
+        service_port: 8080
+        networks:
+          - name: "temporal_network"
+          - name: "br1"
+            ip_address: "192.168.5.61"
+      auth:
+        enabled: false
+      icon: "https://avatars.githubusercontent.com/u/56493103"
+      env:
+        - "TEMPORAL_ADDRESS=temporal_server:7233"
+        - "TEMPORAL_CORS_ORIGINS=https://temporal.dcapi.app"
