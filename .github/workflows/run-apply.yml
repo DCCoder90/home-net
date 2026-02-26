@@ -27,7 +27,7 @@ jobs:
           - name: apps
             workspace: TF_WORKSPACE_APPS
     env:
-        TF_WORKSPACE: ${{ matrix.workspace }}
+        TF_WORKSPACE: ${{ secrets[matrix.workspace] }}
         CONFIG_DIRECTORY: "./"
 
     steps:
