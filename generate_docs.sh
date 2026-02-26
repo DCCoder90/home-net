@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the root Terraform directory
-TERRAFORM_ROOT="/home/dccoder/home-net/terraform"
+TERRAFORM_ROOT="/home/dccoder/home-net/terraform/apps"
 
 # Define the path to the central terraform-docs configuration file
 TERRAFORM_DOCS_CONFIG="${TERRAFORM_ROOT}/.terraform-docs.yml"

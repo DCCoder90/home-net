@@ -6,10 +6,10 @@ module "stacks" {
   system = local.system
 }
 
-module "services"{
+module "services" {
   for_each = local.services
   source   = "git@github.com:DCCoder90/home-tf-modules.git//docker-service?ref=1.0.0"
 
-  service  = each.value
-  system   = local.system
+  service = each.value
+  system  = local.system
 }

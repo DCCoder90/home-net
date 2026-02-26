@@ -30,7 +30,7 @@ All addresses listed as “Bridge” will be allocated to the IP address for eth
 | [Flaresolverr](Services/Media/Flaresolverr.md) | 192.168.5.29 |
 | [Deluge](Services/Other%20Services/Deluge.md) | 192.168.5.28 |
 | [Jellyfin](Services/Media/Jellyfin.md) | 192.168.4.46 |
-| [DNS-server](Services/Networking/DNS-server.md) | 192.168.1.59 |
+| [DNS-server](Services/Networking/DNS-server.md) | 192.168.4.53 |
 | [Immich](Services/Other%20Services/Immich.md) | 192.168.5.47 |
 | [MongoDB](Services/Database/MongoDB.md) | 192.168.5.74 |
 | [NetAlertX](Services/Networking/NetAlertX.md) | 192.168.1.45 |
