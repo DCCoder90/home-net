@@ -52,12 +52,12 @@ Before running this configuration, the following components must be in place.
 
 ### Core Services
 - **Terraform Agent**: A HCP Terraform Agent must be running on the Unraid server with access to the Docker socket (`/var/run/docker.sock`).
-- **Nginx Proxy Manager**: An instance of Nginx Proxy Manager must be running and accessible to the Terraform agent.
+- **Nginx Proxy Manager**: Managed by Terraform in the `core` workspace. Must be applied before the `apps` workspace.
+- **Technitium DNS**: Managed by Terraform in the `core` workspace. Must be applied before the `apps` workspace.
 - **Authentik**: An instance of Authentik must be running and configured.
-- **Technitium**: An instance of Technitium must be running and configured.
 
 ### Cloud & API Access
-- **HCP Terraform**: A workspace must be created and configured.
+- **HCP Terraform**: Two workspaces must be created and configured: `home-core` (for core infrastructure like DNS and the reverse proxy) and `home` (for application services). The `core` workspace must be applied before `apps`, as the apps workspace depends on core services being available.
 - **Cloudflare**: An API token is required with the following permissions:
   - `Zone:Read`
   - `DNS:Edit`
@@ -73,7 +73,7 @@ This repository follows a strict Pull Request-based workflow to ensure changes a
 3.  **Automated Plan**: The `run-plan.yml` GitHub Actions workflow automatically triggers. It uploads your configuration to HCP Terraform and runs a `terraform plan`.
 4.  **Review Plan**: The output of the plan is posted as a comment on your Pull Request for review. You can also view the full plan in the HCP Terraform UI.
 5.  **Merge**: Once the plan is approved, merge the Pull Request into `main`.
-6.  **Apply Changes**: The `run-apply.yml` action must be triggered manually from the GitHub Actions UI to apply the changes to production. This is a deliberate safety measure.
+6.  **Apply Changes**: Merging to `main` automatically triggers the `run-apply.yml` workflow, which applies changes sequentially—first to the `core` workspace, then to `apps`. The workflow can also be triggered manually via `workflow_dispatch`.
 
 ## ⚙️ Configuration
 
@@ -93,15 +93,20 @@ Static secrets, such as API tokens and passwords, are stored as **sensitive vari
 |Variable Name|Type|Sensitive?|
 |---|---|---|
 |cloudflare_api_token|terraform|Y|
-|vpn_user|terraform|Y|
-|vpn_pass|terraform|Y|
+|dns_admin_password|terraform|Y|
+|infiscal_client_id|terraform|Y|
+|infiscal_client_secret|terraform|Y|
 |network_admin_email|terraform|Y|
+|network_admin_username|terraform|N|
 |nginx_proxy_address|terraform|N|
 |nginx_proxy_pass|terraform|Y|
 |nginx_proxy_user|terraform|Y|
 |public_facing_ip|terraform|Y|
 |technitium_api_token|terraform|Y|
 |technitium_host|terraform|N|
+|technitium_password|terraform|Y|
+|vpn_user|terraform|Y|
+|vpn_pass|terraform|Y|
 |AUTHENTIK_URL|env|N|
 |AUTHENTIK_TOKEN|env|Y|
 |AUTHENTIK_INSECURE|env|N|
@@ -109,11 +114,11 @@ Static secrets, such as API tokens and passwords, are stored as **sensitive vari
 > **Note**: Some non-secret values (like `public_facing_ip`) are marked as sensitive to prevent them from being exposed in public logs or plan outputs.
 
 ### Dynamic Secrets
-For services deployed by the `proxy_service_stack` module, credentials are not stored statically. Instead:
+For services deployed by the `docker-stack` module, credentials are not stored statically. Instead:
 1.  **Infisical Integration**: For services requiring arbitrary secrets (like API keys or JWT signing keys), you can define a list of secret names in the stack's YAML file under `generated_secrets`. Terraform will fetch these secrets from Infisical Cloud and inject them into the container's environment variables.
 2.  **OAuth Credentials**: For services using OAuth, the `docker-stack` module automatically creates an OAuth2 provider in Authentik. The resulting `client_id` and `client_secret` are then injected as environment variables into the container.
 
-This ensures that secrets are managed dynamically and securely, with minimal manual intervention.'''
+This ensures that secrets are managed dynamically and securely, with minimal manual intervention.
 
 ## ⚠️ Operational Notes
 
