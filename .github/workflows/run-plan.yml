@@ -22,11 +22,9 @@ jobs:
       matrix:
         include:
           - name: core
-            workspace_secret: TF_WORKSPACE_CORE
           - name: apps
-            workspace_secret: TF_WORKSPACE_APPS
     env:
-        TF_WORKSPACE: ${{ secrets[matrix.workspace_secret] }}
+        TF_WORKSPACE: ${{ matrix.name == 'core' && secrets.TF_WORKSPACE_CORE || secrets.TF_WORKSPACE_APPS }}
         CONFIG_DIRECTORY: "./"
 
     steps:
