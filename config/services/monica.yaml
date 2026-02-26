@@ -12,7 +12,9 @@ monica:
     enabled: false
   env:
     - "MAIL_MAILER=log"
+    - "DB_CONNECTION=sqlite"
   service_name: "monica"
   image_name: "monica:4.1.2"
   mounts:
     - "/etc/localtime:/etc/localtime:ro"
+    - "/mnt/user/appdata/monica:/var/www/html/storage"
