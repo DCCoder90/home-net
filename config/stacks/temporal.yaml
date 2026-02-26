@@ -53,7 +53,7 @@ temporal:
         enabled: true
         domain_name: "temporal.dcapi.app"
       network:
-        internal: false
+        internal: true
         service_port: 8080
         networks:
           - name: "temporal_network"
