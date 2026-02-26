@@ -15,6 +15,16 @@ resource "docker_container" "technitium_dns" {
     "DNS_SERVER_ADMIN_PASSWORD=${var.dns_admin_password}"
   ]
 
+  labels {
+    label = "net.unraid.docker.icon"
+    value = "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/technitium.png"
+  }
+
+  labels {
+    label = "net.unraid.docker.webui"
+    value = "http://[IP]:[PORT:5380]"
+  }
+
   volumes {
     host_path      = var.host_path_dns_config
     container_path = "/etc/dns"
@@ -28,7 +38,8 @@ resource "docker_container" "technitium_dns" {
   lifecycle {
     ignore_changes = [
       image,
-      labels
+      labels,
+      log_opts
     ]
   }
 }
@@ -47,6 +58,16 @@ resource "docker_container" "nginx_proxy" {
   env = [
     "TZ=${var.tz}",
   ]
+
+  labels {
+    label = "net.unraid.docker.icon"
+    value = "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/nginx-proxy-manager.png"
+  }
+
+  labels {
+    label = "net.unraid.docker.webui"
+    value = "http://[IP]:[PORT:81]"
+  }
 
   # Standard Ports
   ports {
@@ -83,6 +104,6 @@ resource "docker_container" "nginx_proxy" {
   }
 
   lifecycle {
-    ignore_changes = [image, labels, env]
+    ignore_changes = [image, labels, env, log_opts, ports, volumes]
   }
 }
