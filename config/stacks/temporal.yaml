@@ -32,13 +32,17 @@ temporal:
       service_name: "temporal_server"
       image_name: "temporalio/auto-setup:latest"
       dns:
-        enabled: false
+        enabled: true
+        domain_name: "temporal-server.dcapi.app"
       auth:
         enabled: false
       network:
         internal: true
+        service_port: 7233
         networks:
           - name: "temporal_network"
+          - name: "br1"
+            ip_address: "192.168.5.62"
       env:
         - "DB=postgres12"
         - "DB_PORT=5432"
