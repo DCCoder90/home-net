@@ -95,6 +95,26 @@ monitoring:
         - "/var/lib/docker/:/var/lib/docker:ro"
         - "/dev/disk/:/dev/disk:ro"
       commands: ["--housekeeping_interval=30s"]
+    technitium-exporter:
+      service_name: "technitium-exporter"
+      image_name: "ghcr.io/brioche-works/technitium-dns-prometheus-exporter:master"
+      description: "Prometheus exporter for Technitium DNS Server metrics."
+      icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/technitium.png"
+      dns:
+        enabled: false
+      auth:
+        enabled: false
+      network:
+        internal: true
+        service_port: 8080
+        networks:
+          - name: "br1"
+            ip_address: "192.168.5.59"
+      secrets:
+        TECHNITIUM_API_DNS_TOKEN: "technitium_api_token"
+      env:
+        - "TECHNITIUM_API_DNS_BASE_URL=http://192.168.4.53:5380/"
+        - "TECHNITIUM_API_DNS_LABEL=technitium"
     wud:
       service_name: "whatsupdocker"
       image_name: "getwud/wud:8.2"
