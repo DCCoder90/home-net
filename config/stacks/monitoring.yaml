@@ -65,9 +65,14 @@ monitoring:
         - "GF_AUTH_GENERIC_OAUTH_NAME=authentik"
         - "GF_AUTH_GENERIC_OAUTH_SCOPES=openid email profile"
         - "GF_AUTH_OAUTH_AUTO_LOGIN=true"
+        - "GF_USERS_AUTO_ASSIGN_ORG_ROLE=Admin"
+        - "GF_AUTH_GENERIC_OAUTH_ALLOW_ASSIGN_GRAFANA_ADMIN=true"
 
       mounts:
         - "/mnt/user/appdata/grafana:/var/lib/grafana"
+        - "/mnt/user/appdata/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources"
+        - "/mnt/user/appdata/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards"
+        - "/mnt/user/appdata/grafana/dashboards:/var/lib/grafana/dashboards"
     cadvisor:
       service_name: "cadvisor"
       image_name: "gcr.io/cadvisor/cadvisor:v0.52.1"
