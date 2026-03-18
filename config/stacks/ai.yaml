@@ -50,4 +50,4 @@
         mounts:
           - "/mnt/cache/appdata/openclaw:/home/node/.openclaw"
         env:
-          - "OPENCLAW_GATEWAY_BIND=lan"
+          - "OPENCLAW_GATEWAY_BIND=0.0.0.0"
