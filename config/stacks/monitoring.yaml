@@ -68,6 +68,28 @@ monitoring:
 
       mounts:
         - "/mnt/user/appdata/grafana:/var/lib/grafana"
+    cadvisor:
+      service_name: "cadvisor"
+      image_name: "gcr.io/cadvisor/cadvisor:v0.52.1"
+      description: "Analyzes resource usage and performance characteristics of running containers."
+      icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/cadvisor.png"
+      dns:
+        enabled: false
+      auth:
+        enabled: false
+      network:
+        internal: true
+        service_port: 8080
+        networks:
+          - name: "br1"
+            ip_address: "192.168.5.58"
+      mounts:
+        - "/:/rootfs:ro"
+        - "/var/run:/var/run:ro"
+        - "/sys:/sys:ro"
+        - "/var/lib/docker/:/var/lib/docker:ro"
+        - "/dev/disk/:/dev/disk:ro"
+      commands: ["--housekeeping_interval=30s", "--docker_only=true", "--disable_metrics=accelerator,advtcp,cpu_topology,cpuset,hugetlb,memory_numa,process,referenced_memory,resctrl,sched,tcp,udp"]
     wud:
       service_name: "whatsupdocker"
       image_name: "getwud/wud:8.2"
