@@ -23,8 +23,8 @@ graph TD
         G_Radarr -- "Sends Download to" --> L_DelugeVPN
         H_Lidarr -- "Sends Download to" --> L_DelugeVPN
 
-        L_DelugeVPN -- "Downloads via" --> M_NordVPN[NordVPN]
-        M_NordVPN -- "Connects to" --> N_Internet[(Internet Peers/Sources)]
+        L_DelugeVPN -- "Downloads via" --> M_ProtonVPN[ProtonVPN]
+        M_ProtonVPN -- "Connects to" --> N_Internet[(Internet Peers/Sources)]
         L_DelugeVPN -- "Places Downloaded Media" --> O_MediaLibrary[(Media Library/Storage)]
     end
 
@@ -59,7 +59,7 @@ graph TD
     class I_Prowlarr indexer;
     class K_FlareSolverr utility;
     class L_DelugeVPN download;
-    class M_NordVPN vpn;
+    class M_ProtonVPN vpn;
     class B_PlexServer,C_JellyfinServer mediaserver;
     class O_MediaLibrary storage;
     class J_Indexers,N_Internet internet;
