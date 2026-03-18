@@ -67,7 +67,7 @@ media-servers:
       mounts:
         - "/mnt/user/appdata/tautulli:/config"
     plex:
-      image_name: "linuxserver/plex:1.42.2"
+      image_name: "linuxserver/plex:1.43.0"
       service_name: "plex-home"
       network_mode: "host"
       enable_gpu: true
