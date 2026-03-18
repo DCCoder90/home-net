@@ -1,78 +1,86 @@
 ## ⚙️ Standalone Service Definitions
 
-Standalone service definition files provide a flexible way to define individual services or global configuration parameters that are consumed directly by modules in the root `services.tf` file. This is distinct from the more structured "Stack Configuration Files" and is used for services that have unique requirements or don't fit into a multi-service stack.
+Standalone service definition files provide a flexible way to define individual services that are consumed directly by modules in the root `services.tf` file. This is distinct from the more structured "Stack Configuration Files" and is used for services that have unique requirements or don't fit into a multi-service stack.
 
 ### File Location
 
-All standalone service definition files must be placed in the `config/services/` directory. Each file should have a `.yaml` or `.yml` extension. Terraform will merge all top-level keys from all files found in this directory into a single `local.services` object.
-
+All standalone service definition files must be placed in the `config/services/` directory. Each file should have a `.yaml` extension. Terraform will merge all top-level keys from all files found in this directory into a single `local.services` object.
 
 ### Structure
 
-The structure of each top-level key in these files is **not standardized**. It is determined entirely by the specific Terraform module that consumes it. 
+Each standalone service file defines a single top-level key that acts as a unique identifier. The structure mirrors the service-level schema used inside stacks, with `dns`, `network`, `auth`, `secrets`, and other fields at the top level.
 
-Below are examples of different structures found in this project.
-
-'''### Example 1: A Standalone Docker Service (`flaresolverr`)
-
-This service is consumed by the `flaresolverr_service` module in `services.tf`, which is a wrapper around the generic `docker` module.
+### Example 1: A Standalone Docker Service (`flaresolverr`)
 
 ```yaml
 flaresolverr:
-  service_name: "flaresolverr"
-  image_name: "flaresolverr/flaresolverr:latest"
+  dns:
+    enabled: false
   network:
+    internal: true
+    service_port: 8112
     networks:
-      - "br1"
-  env:
-    - "LOG_LEVEL=info"
-    - "TZ=America/New_York"
+      - name: "br1"
+        ip_address: "192.168.5.29"
+  auth:
+    enabled: false
+  service_name: "flaresolverr"
+  image_name: "flaresolverr/flaresolverr:v3.4.6"
 ```
 
-### Example 2: A Standalone Docker Service (`deluge-vpn`)
-
-This service is consumed by the `delugevpn_service` module in `services.tf`, which is a wrapper around the generic `docker` module.
+### Example 2: A Standalone Docker Service with Secrets and Capabilities (`deluge-vpn`)
 
 ```yaml
 deluge-vpn:
+  dns:
+    enabled: false
+  network:
+    internal: true
+    service_port: 8112
+    networks:
+      - name: "br1"
+        ip_address: "192.168.5.28"
+  auth:
+    enabled: false
+    group: "Arr"
+  secrets:
+    VPN_USER: "VPN_USER"
+    VPN_PASS: "VPN_PASS"
   service_name: "deluge-vpn"
   image_name: "binhex/arch-delugevpn:2.2"
-  ip_address: "192.168.5.20"
-  env:
-    - "VPN_ENABLED=yes"
-    - "VPN_PROV=custom"
-    # ... other env vars
   mounts:
     - "/etc/localtime:/etc/localtime:ro"
+    - "/mnt/user/Arr/deluge-data:/config"
+    - "/mnt/user/Downloads:/data/downloads"
+    - "/mnt/user/Arr/deluge-data/openvpn:/config/openvpn"
   capabilities:
     add:
-      - "NET_ADMIN"
-```''
-
-### Example 2: A Global Configuration Object (`authentik`)
-
-This key does not define a deployable service. Instead, it holds configuration parameters for the Authentik provider and other modules that need to interact with your Authentik instance.
-
-```yaml
-authentik:
-  admin-user: "akadmin"
+      - "CAP_NET_ADMIN"
+  env:
+    - "TZ=America/Chicago"
+    - "VPN_ENABLED=yes"
+    - "VPN_PROV=custom"
+    - "VPN_CLIENT=openvpn"
+    - "LAN_NETWORK=192.168.1.0/16"
 ```
-
-This structure provides a flexible way to define individual services or global parameters that are directly integrated into your Terraform deployment.
 
 ### Field Meanings and Usage
 
-*   **`your_service_identifier`**: This is the top-level key in your YAML file (e.g., `flaresolverr`, `deluge-vpn`). It acts as a unique identifier for this specific service configuration within the `local.services` map.
+*   **`your_service_identifier`**: The top-level key in your YAML file (e.g., `flaresolverr`, `deluge-vpn`). It acts as a unique identifier for this specific service configuration within the `local.services` map.
 *   **`service_name`**: (Required) The human-readable name of the service, often used as the Docker container name.
 *   **`image_name`**: (Required) The Docker image to pull, including its tag (e.g., `binhex/arch-delugevpn:2.2`).
-*   **`ip_address`**: (Required) The static IPv4 address assigned to the container on its primary network interface (e.g., `br1`).
-*   **`service_port`**: (Optional) The port the service listens on *inside* the container. This is used by modules that need to construct URLs or proxy configurations.
+*   **`dns`**: DNS and proxy configuration for the service.
+    *   **`dns.enabled`**: If `true`, Terraform creates a DNS record and Nginx Proxy Manager host.
+    *   **`dns.domain_name`**: The full domain name for the service (required if `dns.enabled` is true).
+*   **`network`**: Network configuration for the service.
+    *   **`network.internal`**: If `true`, the service is only accessible internally (not exposed via the internet).
+    *   **`network.service_port`**: The port the service listens on *inside* the container.
+    *   **`network.networks`**: A list of network objects to attach the container to. Each object has:
+        *   `name`: The network name (e.g., `"br1"`).
+        *   `ip_address`: (Optional) A static IP to assign on that network.
+*   **`auth`**: Authentication configuration. See [stack-config.md](stack-config.md) for full auth options.
+*   **`secrets`**: A map of environment variable names to Infisical secret names. Terraform fetches these secrets and injects them as environment variables.
 *   **`env`**: (Optional) A list of `KEY=VALUE` strings that will be set as environment variables inside the container.
 *   **`mounts`**: (Optional) A list of bind mount strings in the format `host_path:container_path[:ro]`.
-*   **`capabilities.add`**: (Optional) A list of Linux capabilities to add to the container (e.g., `NET_ADMIN`).
+*   **`capabilities.add`**: (Optional) A list of Linux capabilities to add to the container (e.g., `CAP_NET_ADMIN`).
 *   **`icon`**: (Optional) A URL to an icon for the service, often used by UI tools like Unraid.
-*   **`web_ui`**: (Optional) A direct URL to the service's web interface. If not provided, some modules might attempt to construct one from `ip_address` and `service_port`.
-
-### Special Cases
-
-*   **`authentik`**: This top-level key in `config/services.yaml` is not a Docker service definition. Instead, it holds global configuration parameters for your Authentik instance (e.g., `admin-user`) that are consumed by other Terraform modules.

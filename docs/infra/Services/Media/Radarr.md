@@ -1,64 +1,53 @@
 # Radarr
 
 :::info
-Last Updated 5/27/25
-:::
-
-:::warning
-Documentation incomplete or contains filler info. Needs to be completed, do not rely on.
+Last Updated 3/18/2026
 :::
 
 ## I. Service Overview
 
-- **Unraid App Name:** `binhex-radarr`
-- **Description:** Movie collection manager.
-- **Access URL(s):**
-    - Unraid WebUI: Docker Tab -> radarr -> WebUI
-    - Direct: `http://<UNRAID_IP>:7878` (if 7878 is host port)
-    - Reverse Proxy: `https://radarr.yourdomain.com`
+- **Service Name:** Radarr
+- **Description:** Movie collection manager. Automatically searches for movies, manages downloads, and organizes media files.
 - **Status:** Production
+- **Managed By:** Terraform IaC (`config/stacks/arr.yaml`)
 
-## II. Unraid App & Docker Configuration
+## II. Docker & Network Configuration
 
-- **Source:** Community Applications (Binhex Repository)
-- **Key Unraid Template Settings:**
-    - **Host Path for AppData:** `/mnt/user/appdata/binhex-radarr`
-    - **Host Path for /movies:** `/mnt/user/media/movies` (Container: `/movies`)
-    - **Host Path for /downloads:** `/mnt/user/downloads/completed/movies` (Container: `/downloads`)
-    - **WebUI Port:** `7878` (Container: `7878`)
-    - **Network Type:** Bridge
-- **Environment Variables (Notable):**
-    - `UMASK=002`
-    - `PUID=99` (nobody)
-    - `PGID=100` (users)
+- **Docker Image:** `linuxserver/radarr:6.0.4`
+- **Network:** `br1`
+- **IP Address:** `192.168.5.24`
+- **Service Port:** `7878`
+- **Domain:** `radarr.dcapi.app` (internal only)
+- **Authentication:** Authentik proxy auth (group: `Arr`)
 
-## III. Application Configuration & Data
+## III. IaC Configuration
 
-- **Application Configuration:** Accessed via Web UI.
-    - Download client: Deluge (Unraid app, `http://<UNRAID_IP>:8112`)
-    - Indexers: Managed via Prowlarr (Unraid app).
-- **Credentials:**
-    - Admin Username: `myradarradmin`
-    - Password: Stored in Vaultwarden ("Radarr Admin").
-- **Backup Strategy:** `appdata/binhex-radarr` backed up nightly by Unraid "Appdata Backup" plugin to local backup array and cloud.
+- **Config File:** `config/stacks/arr.yaml` (part of the `arr_services` stack)
+- **Environment Variables:**
+    - `PUID=1000`
+    - `PGID=100`
+    - `TZ=America/Chicago`
+- **Volume Mounts:**
+    - `/mnt/user/Arr/radarr-data:/config`
+    - `/mnt/user/Media:/media`
+    - `/mnt/user/Downloads:/downloads`
+    - `/etc/localtime:/etc/localtime:ro` (inherited from stack)
+- **Secrets:** Proxy credentials (`radarr_username`, `radarr_password`) fetched from Infisical.
 
-## IV. Dependencies & Integrations
+## IV. Application Configuration
 
-- **Internal Dependencies (Unraid Apps):**
-    - [Prowlarr](link-to-prowlarr-page)
-    - [Deluge](link-to-deluge-page)
-- **Integrations:** [Nginx-Proxy-Manager App](link-to-npm-page) for SSL reverse proxy.
+- **Application Configuration:** Accessed via Web UI at `https://radarr.dcapi.app`.
+    - Download client: Deluge
+    - Indexers: Managed via Prowlarr
 
-## V. Management & Troubleshooting (Unraid Context)
+## V. Dependencies & Integrations
 
-- **Update Process:** Via Unraid "Apps" tab -> "Check for Updates".
-- **Restart Procedure:** Unraid UI -> Docker -> binhex-radarr -> Restart.
-- **Log Access:** Unraid UI -> Docker -> binhex-radarr -> Logs.
-    - App Data Logs: `/mnt/user/appdata/binhex-radarr/logs/`
-- **Reinstall:** Use "Previous Apps" feature in Community Applications if needed, ensuring appdata path is preserved.
+- **Internal Dependencies:**
+    - [Prowlarr](Prowlarr.md) — Indexer management
+    - [Deluge](../Other%20Services/Deluge.md) — Download client
+- **Integrations:** Nginx Proxy Manager for reverse proxy, Authentik for SSO.
 
 ## VI. Useful Links & Notes
 
-- **Support Thread:** \[Link to binhex-radarr Unraid support thread\]
 - **Official Docs:** https://wiki.servarr.com/radarr
-- **Notes:** Ensure Deluge's completed download path is visible to Radarr under its `/downloads` mapping.
+- Ensure Deluge's completed download path is visible to Radarr under its `/downloads` mapping.
