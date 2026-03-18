@@ -27,3 +27,23 @@
           - "N8N_SECURE_COOKIE=false"
           - "WEBHOOK_URL=https://n8n.dcapi.app/"
           - "GENERIC_TIMEZONE=America/Chicago"
+      openclaw:
+        dns:
+          enabled: true
+          domain_name: "claw.dcapi.app"
+        network:
+          internal: true
+          service_port: 18789
+          networks:
+            - name: "br1"
+              ip_address: "192.168.5.50"
+        auth:
+          enabled: false
+          group: "AI"
+        secrets:
+          DISCORD_BOT_TOKEN: "openclaw_discord_bot_token"
+        service_name: "openclaw"
+        image_name: "ghcr.io/openclaw/openclaw:latest"
+        domain_name: "claw.dcapi.app"
+        mounts:
+          - "/mnt/cache/appdata/openclaw:/home/node/.openclaw"
