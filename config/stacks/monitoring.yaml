@@ -115,6 +115,29 @@ monitoring:
       env:
         - "TECHNITIUM_API_DNS_BASE_URL=http://192.168.4.53:5380/"
         - "TECHNITIUM_API_DNS_LABEL=technitium"
+    technitium-exporter-extended:
+      service_name: "technitium-exporter-extended"
+      image_name: "ghcr.io/guycalledseven/technitium-dns-prometheus-exporter:latest"
+      description: "Extended Prometheus exporter for Technitium DNS with top domains, clients, and DHCP metrics."
+      icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/technitium.png"
+      dns:
+        enabled: false
+      auth:
+        enabled: false
+      network:
+        internal: true
+        service_port: 9105
+        networks:
+          - name: "br1"
+            ip_address: "192.168.5.63"
+      secrets:
+        TECHNITIUM_TOKEN: "technitium_api_token"
+      env:
+        - "TECHNITIUM_BASE_URL=http://192.168.4.53:5380"
+        - "SERVER_LABEL=technitium"
+        - "TECHNITIUM_STATS_RANGE=LastHour"
+        - "TECHNITIUM_TOP_LIMIT=50"
+        - "EXPORTER_PORT=9105"
     wud:
       service_name: "whatsupdocker"
       image_name: "getwud/wud:8.2"

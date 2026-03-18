@@ -1,0 +1,53 @@
+# Prometheus Configuration
+# This file is mounted into the Prometheus container at /etc/prometheus/prometheus.yml
+# Copy to /mnt/user/appdata/prometheus/prometheus.yml on Tower after changes
+
+global:
+  scrape_interval: 30s
+  evaluation_interval: 30s
+  scrape_timeout: 10s
+
+scrape_configs:
+  # --- Prometheus self-monitoring ---
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["192.168.5.55:9090"]
+        labels:
+          instance: "prometheus"
+
+  # --- Unraid Host (Node Exporter) ---
+  # The Unraid Prometheus plugin exposes node_exporter metrics on port 9100
+  - job_name: "node-exporter"
+    static_configs:
+      - targets: ["192.168.4.41:9100"]
+        labels:
+          instance: "tower"
+
+  # --- cAdvisor (Docker container metrics) ---
+  - job_name: "cadvisor"
+    static_configs:
+      - targets: ["192.168.5.58:8080"]
+        labels:
+          instance: "tower"
+
+  # --- Grafana ---
+  - job_name: "grafana"
+    static_configs:
+      - targets: ["192.168.5.56:3000"]
+        labels:
+          instance: "grafana"
+
+  # --- Technitium DNS Server (via brioche-works exporter) ---
+  - job_name: "technitium"
+    static_configs:
+      - targets: ["192.168.5.59:8080"]
+        labels:
+          instance: "technitium-dns"
+
+  # --- Technitium DNS Extended (via guycalledseven exporter) ---
+  # Provides top domains, top clients, DHCP, and per-zone metrics
+  - job_name: "technitium-extended"
+    static_configs:
+      - targets: ["192.168.5.63:9105"]
+        labels:
+          instance: "technitium-dns"
