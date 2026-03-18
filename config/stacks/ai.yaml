@@ -43,8 +43,11 @@
         secrets:
           ANTHROPIC_API_KEY: "openclaw_anthropic_api_key"
           DISCORD_BOT_TOKEN: "openclaw_discord_bot_token"
+          OPENCLAW_GATEWAY_TOKEN: "openclaw_gateway_token"
         service_name: "openclaw"
         image_name: "ghcr.io/openclaw/openclaw:latest"
         domain_name: "claw.dcapi.app"
         mounts:
           - "/mnt/cache/appdata/openclaw:/home/node/.openclaw"
+        env:
+          - "OPENCLAW_GATEWAY_BIND=lan"
