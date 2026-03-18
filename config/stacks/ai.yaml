@@ -45,6 +45,8 @@
           DISCORD_BOT_TOKEN: "openclaw_discord_bot_token"
           OPENCLAW_GATEWAY_TOKEN: "openclaw_gateway_token"
           TAUTULLI_API_KEY: "openclaw_tautulli_api_key"
+          RADARR_API_KEY: "openclaw_radarr_api_key"
+          SONARR_API_KEY: "openclaw_sonarr_api_key"
         service_name: "openclaw"
         image_name: "ghcr.io/openclaw/openclaw:latest"
         domain_name: "claw.dcapi.app"
@@ -53,3 +55,5 @@
         env:
           - "OPENCLAW_GATEWAY_BIND=lan"
           - "TAUTULLI_URL=https://mediastats.dcapi.app"
+          - "RADARR_URL=http://192.168.5.24:7878"
+          - "SONARR_URL=http://192.168.5.23:8989"
