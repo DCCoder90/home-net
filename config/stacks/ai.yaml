@@ -57,3 +57,24 @@
           - "TAUTULLI_URL=https://mediastats.dcapi.app"
           - "RADARR_URL=http://192.168.5.24:7878"
           - "SONARR_URL=http://192.168.5.23:8989"
+      ollama:
+        dns:
+          enabled: false
+        network:
+          internal: true
+          service_port: 11434
+          networks:
+            - name: "br1"
+              ip_address: "192.168.5.51"
+        auth:
+          enabled: false
+        service_name: "ollama"
+        description: "Ollama is a local large language model runner."
+        image_name: "ollama/ollama:latest"
+        icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/ollama.png"
+        enable_gpu: true
+        env:
+          - "NVIDIA_DRIVER_CAPABILITIES=all"
+          - "NVIDIA_VISIBLE_DEVICES=GPU-465cc8f0-4775-edd3-5402-87cca1022307"
+        mounts:
+          - "/mnt/user/appdata/ollama:/root/.ollama"
