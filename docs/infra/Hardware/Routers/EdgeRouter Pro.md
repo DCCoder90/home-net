@@ -59,7 +59,7 @@ Last Updated 3/19/26
         - **Range Start:** `192.168.2.38`
         - **Range Stop:** `192.168.2.243`
         - **Lease Time:** `86400` seconds (24 hours)
-        - **DNS Servers provided to clients:** `8.8.8.8`, `1.1.1.1`
+        - **DNS Servers provided to clients:** `192.168.4.53` (Technitium DNS)
 - **Interface** `eth3` **(Label: eth3):**
     - **Network Name/Purpose:** Unused.
     - **IP Subnet & Router IP:** `192.168.9.0/24`, Router IP: `192.168.9.1`
