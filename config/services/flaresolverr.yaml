@@ -3,7 +3,7 @@ flaresolverr:
     enabled: false
   network:
     internal: true
-    service_port: 8112
+    service_port: 8191
     networks:
       - name: "br1"
         ip_address: "192.168.5.29"
