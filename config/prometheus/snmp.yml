@@ -1,0 +1,172 @@
+# SNMP Exporter Configuration
+# This file is mounted into the snmp-exporter container at /etc/snmp_exporter/snmp.yml
+# Copy to /mnt/user/appdata/prometheus/snmp.yml on Tower after changes
+
+auths:
+  edgerouter_v2:
+    community: public
+    security_level: noAuthNoPriv
+    auth_protocol: MD5
+    priv_protocol: DES
+    version: 2
+
+modules:
+  if_mib:
+    walk:
+      - sysUpTime
+      - interfaces
+      - ifXTable
+    get:
+      - sysDescr.0
+      - sysName.0
+      - sysLocation.0
+      - sysContact.0
+    metrics:
+      - name: sysUpTime
+        oid: 1.3.6.1.2.1.1.3.0
+        type: gauge
+        help: The time (in hundredths of a second) since the network management portion of the system was last re-initialized.
+      - name: ifNumber
+        oid: 1.3.6.1.2.1.2.1.0
+        type: gauge
+        help: The number of network interfaces present on this system.
+      - name: ifIndex
+        oid: 1.3.6.1.2.1.2.2.1.1
+        type: gauge
+        indexes:
+          - labelname: ifIndex
+            type: Integer
+        help: A unique value for each interface.
+      - name: ifDescr
+        oid: 1.3.6.1.2.1.2.2.1.2
+        type: DisplayString
+        indexes:
+          - labelname: ifIndex
+            type: Integer
+        help: A textual string containing information about the interface.
+      - name: ifType
+        oid: 1.3.6.1.2.1.2.2.1.3
+        type: gauge
+        indexes:
+          - labelname: ifIndex
+            type: Integer
+        help: The type of interface.
+      - name: ifMtu
+        oid: 1.3.6.1.2.1.2.2.1.4
+        type: gauge
+        indexes:
+          - labelname: ifIndex
+            type: Integer
+        help: The size of the largest packet which can be sent/received on the interface.
+      - name: ifSpeed
+        oid: 1.3.6.1.2.1.2.2.1.5
+        type: gauge
+        indexes:
+          - labelname: ifIndex
+            type: Integer
+        help: An estimate of the interface's current bandwidth in bits per second.
+      - name: ifAdminStatus
+        oid: 1.3.6.1.2.1.2.2.1.7
+        type: gauge
+        indexes:
+          - labelname: ifIndex
+            type: Integer
+        help: The desired state of the interface (1=up, 2=down, 3=testing).
+      - name: ifOperStatus
+        oid: 1.3.6.1.2.1.2.2.1.8
+        type: gauge
+        indexes:
+          - labelname: ifIndex
+            type: Integer
+        help: The current operational state of the interface (1=up, 2=down).
+      - name: ifInOctets
+        oid: 1.3.6.1.2.1.2.2.1.10
+        type: counter
+        indexes:
+          - labelname: ifIndex
+            type: Integer
+        help: The total number of octets received on the interface.
+      - name: ifInUcastPkts
+        oid: 1.3.6.1.2.1.2.2.1.11
+        type: counter
+        indexes:
+          - labelname: ifIndex
+            type: Integer
+        help: The number of unicast packets delivered to a higher-layer protocol.
+      - name: ifInDiscards
+        oid: 1.3.6.1.2.1.2.2.1.13
+        type: counter
+        indexes:
+          - labelname: ifIndex
+            type: Integer
+        help: The number of inbound packets which were discarded.
+      - name: ifInErrors
+        oid: 1.3.6.1.2.1.2.2.1.14
+        type: counter
+        indexes:
+          - labelname: ifIndex
+            type: Integer
+        help: The number of inbound packets that contained errors.
+      - name: ifOutOctets
+        oid: 1.3.6.1.2.1.2.2.1.16
+        type: counter
+        indexes:
+          - labelname: ifIndex
+            type: Integer
+        help: The total number of octets transmitted out of the interface.
+      - name: ifOutUcastPkts
+        oid: 1.3.6.1.2.1.2.2.1.17
+        type: counter
+        indexes:
+          - labelname: ifIndex
+            type: Integer
+        help: The number of unicast packets transmitted.
+      - name: ifOutDiscards
+        oid: 1.3.6.1.2.1.2.2.1.19
+        type: counter
+        indexes:
+          - labelname: ifIndex
+            type: Integer
+        help: The number of outbound packets which were discarded.
+      - name: ifOutErrors
+        oid: 1.3.6.1.2.1.2.2.1.20
+        type: counter
+        indexes:
+          - labelname: ifIndex
+            type: Integer
+        help: The number of outbound packets that could not be transmitted because of errors.
+      - name: ifHCInOctets
+        oid: 1.3.6.1.2.1.31.1.1.1.6
+        type: counter
+        indexes:
+          - labelname: ifIndex
+            type: Integer
+        help: The total number of octets received on the interface (64-bit counter).
+      - name: ifHCOutOctets
+        oid: 1.3.6.1.2.1.31.1.1.1.10
+        type: counter
+        indexes:
+          - labelname: ifIndex
+            type: Integer
+        help: The total number of octets transmitted out of the interface (64-bit counter).
+      - name: ifHighSpeed
+        oid: 1.3.6.1.2.1.31.1.1.1.15
+        type: gauge
+        indexes:
+          - labelname: ifIndex
+            type: Integer
+        help: An estimate of the interface's current bandwidth in units of 1,000,000 bits per second.
+      - name: ifAlias
+        oid: 1.3.6.1.2.1.31.1.1.1.18
+        type: DisplayString
+        indexes:
+          - labelname: ifIndex
+            type: Integer
+        help: Interface alias name.
+    lookups:
+      - source_indexes: [ifIndex]
+        lookup: ifDescr
+        drop_source_indexes: false
+      - source_indexes: [ifIndex]
+        lookup: ifAlias
+        drop_source_indexes: false

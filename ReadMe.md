@@ -18,7 +18,6 @@ Comprehensive documentation can be found in [docs/infra](docs/infra/Home.md)
 *   **Dynamic Configuration**: Service definitions are externalized to YAML files in the `config/stacks/` and `config/services/` directories, allowing for easy modification.
 *   **Automated Proxy & DNS**: Nginx Proxy Manager is used to automatically create proxy hosts and manage SSL certificates for services.
 *   **Centralized Authentication**: Services are integrated with Authentik for single sign-on (SSO) and access control.
-*   **Post-Provisioning Configuration**: Ansible is used for configuration management tasks on running services after they have been provisioned by Terraform.
 
 
 ## 🏗️ Architecture Overview
@@ -121,17 +120,6 @@ For services deployed by the `docker-stack` module, credentials are not stored s
 This ensures that secrets are managed dynamically and securely, with minimal manual intervention.
 
 ## ⚠️ Operational Notes
-
-### Ansible for Post-Provisioning
-
-This project uses Ansible to perform configuration tasks after Terraform has provisioned the infrastructure. It uses a static inventory file located at `ansible/inventory/inventory.yml` to connect to the Unraid server.
-
-To run a playbook, first set the required environment variable for the password, then execute the playbook:
-```bash
-export ANSIBLE_SSH_PASS="your_unraid_password"
-cd ansible/
-ansible-playbook playbooks/your_playbook.yml
-```
 
 ### Manual Step for Authentik Proxy Providers
 

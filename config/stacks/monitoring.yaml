@@ -138,40 +138,20 @@ monitoring:
         - "TECHNITIUM_STATS_RANGE=LastHour"
         - "TECHNITIUM_TOP_LIMIT=50"
         - "EXPORTER_PORT=9105"
-    wud:
-      service_name: "whatsupdocker"
-      image_name: "getwud/wud:8.2"
-      description: "Keep your containers up-to-date!"
+    snmp-exporter:
+      service_name: "snmp-exporter"
+      image_name: "prom/snmp-exporter:v0.29.0"
+      description: "SNMP Exporter for Prometheus. Collects metrics from SNMP-enabled network devices such as the EdgeRouter."
+      icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/prometheus.png"
       dns:
-          enabled: true
-          domain_name: "docker.dcapi.app"
-      network:
-          internal: true
-          service_port: 3000
-          networks:
-            - name: "br1" 
-              ip_address: "192.168.5.57"
+        enabled: false
       auth:
-          enabled: true
-          group: "Monitoring"
-          oauth: 
-            enabled: true
-            keys:
-              WUD_AUTH_OIDC_AUTHENTIK_CLIENTID	: "client_id"
-              WUD_AUTH_OIDC_AUTHENTIK_CLIENTSECRET	: "client_secret"
-              WUD_AUTH_OIDC_AUTHENTIK_DISCOVERY	: "well_known_url"
-            redirect_uris:
-              - "auth/oidc/authentik/cb"
-            scopes:
-              - "openid"
-              - "email"
-              - "profile"
-      secrets:
-        WUD_TRIGGER_DISCORD_DISCORDWUD_URL: "WUD_TRIGGER_DISCORD_DISCORDWUD_URL"
-      env:
-        - "WUD_AUTH_OIDC_AUTHENTIK_REDIRECT=true"
-        - "WUD_LOG_LEVEL=info"
-        - "WUD_TRIGGER_DISCORD_DISCORDWUD_BOTUSERNAME=Docker"
-        - "WUD_TRIGGER_DISCORD_DISCORDWUD_CARDLABEL=Docker Update"
+        enabled: false
+      network:
+        internal: true
+        service_port: 9116
+        networks:
+          - name: "br1"
+            ip_address: "192.168.5.64"
       mounts:
-        - "/var/run/docker.sock:/var/run/docker.sock"
+        - "/mnt/user/appdata/prometheus/snmp.yml:/etc/snmp_exporter/snmp.yml"

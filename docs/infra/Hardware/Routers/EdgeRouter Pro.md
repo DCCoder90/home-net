@@ -1,7 +1,7 @@
 # EdgeRouter Pro
 
 :::info
-Last Updated 5/27/25
+Last Updated 3/19/26
 :::
 
 ## **1\. Device Overview**
@@ -9,7 +9,7 @@ Last Updated 5/27/25
 - **Hostname/Device Name:** EdgeRouter-Pro-8-Port
 - **Model:** Ubiquiti EdgeRouter Pro 8-Port (ERP-8)
 - **Role:** Primary Internet Router & Firewall
-- **Firmware Version:** EdgeRouter Pro v2.0.9-hotfix.7
+- **Firmware Version:** EdgeRouter-Pro-8-Port 3.0.1
 - **Management Access:**
     - **Primary IP Address for WebUI:** `192.168.1.1` (via `eth1`)
     - **WebUI Protocol:** HTTPS
@@ -35,7 +35,7 @@ Last Updated 5/27/25
     - **Status:** Connected
     - **ISP (Internet Service Provider):** AT&T
     - **Modem/ONT Connected To:** Refer to separate "Modem Documentation Page" for details.
-    - **Actual Public IP Address (as seen by internet):** `172.5.27.161` (Provided by AT&T upstream of the device at `192.168.3.254`)
+    - **Actual Public IP Address (as seen by internet):** Redacted (Provided by AT&T upstream of the device at `192.168.3.254`)
     - **Rated Speeds (Down/Up):** 1 Gbps / 1 Gbps
 
 ### **3.2. LAN Interface(s) / VLANs / Bridged Interfaces**
@@ -92,13 +92,7 @@ Last Updated 5/27/25
     - Drop invalid state packets.
     - Default action for new incoming connections from WAN: Drop.
 - **Key Custom Firewall Rule Sets/Groups & Specific Inbound Allow Rules:**
-    - **Twilio SIP Connectivity (Applied to** `WAN_IN` **ruleset):**
-        - **Source IP Address(es):** `168.86.128.0/18` (Covers `168.86.128.0` - `168.86.191.255`)
-        - **Destination Port(s):** `10000-60000`
-        - **Protocol:** UDP
-        - **Purpose:** Allow SIP connectivity from Twilio services.
-        - **Destination:** Currently "empty" / "allowed to all." _(User Note: This configuration is acknowledged and needs to be updated/reviewed for appropriate scoping eventually. Current state implies traffic is allowed to the router's WAN IP on these ports, or potentially any internal IP if not further restricted by DNAT rules. Verification of the intended destination and scope is recommended for security.)_
-    - No other named custom firewall rule sets are configured.
+    - No custom firewall rule sets are configured.
 - **Actual Port Forwarding Rules:**
     - **Plex Custom Port 1:**
         - **Description:** Plex (Custom Port 33443)
