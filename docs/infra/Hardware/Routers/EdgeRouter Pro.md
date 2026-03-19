@@ -1,7 +1,7 @@
 # EdgeRouter Pro
 
 :::info
-Last Updated 5/27/25
+Last Updated 3/19/26
 :::
 
 ## **1\. Device Overview**
@@ -9,7 +9,7 @@ Last Updated 5/27/25
 - **Hostname/Device Name:** EdgeRouter-Pro-8-Port
 - **Model:** Ubiquiti EdgeRouter Pro 8-Port (ERP-8)
 - **Role:** Primary Internet Router & Firewall
-- **Firmware Version:** EdgeRouter Pro v2.0.9-hotfix.7
+- **Firmware Version:** EdgeRouter-Pro-8-Port 3.0.1
 - **Management Access:**
     - **Primary IP Address for WebUI:** `192.168.1.1` (via `eth1`)
     - **WebUI Protocol:** HTTPS
