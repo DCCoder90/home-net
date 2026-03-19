@@ -92,13 +92,7 @@ Last Updated 3/19/26
     - Drop invalid state packets.
     - Default action for new incoming connections from WAN: Drop.
 - **Key Custom Firewall Rule Sets/Groups & Specific Inbound Allow Rules:**
-    - **Twilio SIP Connectivity (Applied to** `WAN_IN` **ruleset):**
-        - **Source IP Address(es):** `168.86.128.0/18` (Covers `168.86.128.0` - `168.86.191.255`)
-        - **Destination Port(s):** `10000-60000`
-        - **Protocol:** UDP
-        - **Purpose:** Allow SIP connectivity from Twilio services.
-        - **Destination:** Currently "empty" / "allowed to all." _(User Note: This configuration is acknowledged and needs to be updated/reviewed for appropriate scoping eventually. Current state implies traffic is allowed to the router's WAN IP on these ports, or potentially any internal IP if not further restricted by DNAT rules. Verification of the intended destination and scope is recommended for security.)_
-    - No other named custom firewall rule sets are configured.
+    - No custom firewall rule sets are configured.
 - **Actual Port Forwarding Rules:**
     - **Plex Custom Port 1:**
         - **Description:** Plex (Custom Port 33443)
