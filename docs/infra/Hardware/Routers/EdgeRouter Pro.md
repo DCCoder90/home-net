@@ -35,7 +35,7 @@ Last Updated 3/19/26
     - **Status:** Connected
     - **ISP (Internet Service Provider):** AT&T
     - **Modem/ONT Connected To:** Refer to separate "Modem Documentation Page" for details.
-    - **Actual Public IP Address (as seen by internet):** `172.5.27.161` (Provided by AT&T upstream of the device at `192.168.3.254`)
+    - **Actual Public IP Address (as seen by internet):** Redacted (Provided by AT&T upstream of the device at `192.168.3.254`)
     - **Rated Speeds (Down/Up):** 1 Gbps / 1 Gbps
 
 ### **3.2. LAN Interface(s) / VLANs / Bridged Interfaces**
