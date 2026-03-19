@@ -51,3 +51,23 @@ scrape_configs:
       - targets: ["192.168.5.63:9105"]
         labels:
           instance: "technitium-dns"
+
+  # --- EdgeRouter Pro (via SNMP Exporter) ---
+  # Scrapes SNMP metrics from the EdgeRouter using the if_mib module
+  - job_name: "edgerouter"
+    scrape_interval: 60s
+    scrape_timeout: 30s
+    static_configs:
+      - targets:
+          - "192.168.1.1"
+    metrics_path: /snmp
+    params:
+      module: [if_mib]
+      auth: [edgerouter_v2]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: "192.168.5.64:9116"
