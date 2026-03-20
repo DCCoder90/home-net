@@ -8,6 +8,12 @@ provider "docker" {
   host = "unix:///var/run/docker.sock"
 //  host     = "ssh://root@192.168.1.41:22"
 //  ssh_opts = ["-o", "StrictHostKeyChecking=no", "-o", "UserKnownHostsFile=/dev/null"]
+
+  registry_auth {
+    address  = "ghcr.io"
+    username = var.ghcr_username
+    password = var.ghcr_token
+  }
 }
 
 /*

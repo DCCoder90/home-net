@@ -63,3 +63,14 @@ variable "infiscal_client_secret" {
   description = "The client secret for Infisical authentication."
   sensitive   = true
 }
+
+variable "ghcr_username" {
+  type        = string
+  description = "GitHub Container Registry username."
+}
+
+variable "ghcr_token" {
+  type        = string
+  description = "GitHub Container Registry personal access token (read:packages scope)."
+  sensitive   = true
+}
