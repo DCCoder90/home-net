@@ -70,7 +70,7 @@
         auth:
           enabled: false
         secrets:
-          GATEWAY_TOKEN: "openclaw_gateway_token"
+          GATEWAY_TOKEN: "ai_chat_gateway_token"
         service_name: "ai-chat"
         image_name: "ghcr.io/dccoder90/ai-chat:c8716c4ade26dab1bd416236eecec0864dfa21ab"
         domain_name: "chat.mallett.family"
