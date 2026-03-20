@@ -1,0 +1,116 @@
+# Promtail Configuration
+# This file is mounted into the Promtail container at /etc/promtail/promtail.yaml
+# Copy to /mnt/user/appdata/promtail/promtail.yaml on Tower after changes
+
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+  log_level: warn
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://192.168.5.65:3100/loki/api/v1/push
+    batchwait: 1s
+    batchsize: 1048576
+    backoff_config:
+      min_period: 500ms
+      max_period: 5m
+      max_retries: 10
+
+scrape_configs:
+  # ---- Docker container logs via Docker socket discovery ----
+  - job_name: docker
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 15s
+        filters:
+          - name: status
+            values: ["running"]
+
+    relabel_configs:
+      # Use container name as the primary label
+      - source_labels: [__meta_docker_container_name]
+        regex: "/(.*)"
+        target_label: container
+
+      # Extract Compose project name as stack label
+      - source_labels: [__meta_docker_container_label_com_docker_compose_project]
+        target_label: stack
+        replacement: "${1}"
+      - source_labels: [stack]
+        regex: ""
+        replacement: "standalone"
+        target_label: stack
+
+      # Extract Compose service name
+      - source_labels: [__meta_docker_container_label_com_docker_compose_service]
+        target_label: compose_service
+
+      # Map container ID to its JSON log file path
+      - source_labels: [__meta_docker_container_id]
+        target_label: __path__
+        replacement: /var/lib/docker/containers/${1}/${1}-json.log
+
+    pipeline_stages:
+      # Parse the Docker JSON log wrapper
+      - json:
+          expressions:
+            output: log
+            stream: stream
+            time: time
+
+      # Promote the inner log line as the log body
+      - output:
+          source: output
+
+      # Use Docker's timestamp
+      - timestamp:
+          source: time
+          format: RFC3339Nano
+
+      # Add stream direction (stdout/stderr) as a label
+      - labels:
+          stream:
+
+      # Extract log level from common patterns
+      - match:
+          selector: '{container=~".+"}'
+          stages:
+            - regex:
+                expression: '(?i)(^|[^a-z])(?P<level>trace|debug|info|warn(?:ing)?|error|fatal|critical|panic)([^a-z]|$)'
+            - labels:
+                level:
+            # Normalize level values
+            - template:
+                source: level
+                template: '{{ if eq .Value "warning" }}warn{{ else if or (eq .Value "critical") (eq .Value "panic") }}fatal{{ else }}{{ .Value }}{{ end }}'
+
+      # Drop empty log lines
+      - drop:
+          expression: "^\\s*$"
+          drop_counter_reason: empty_line
+
+  # ---- Unraid host syslog ----
+  - job_name: unraid-syslog
+    static_configs:
+      - targets: [localhost]
+        labels:
+          job: unraid-syslog
+          container: unraid-host
+          stack: system
+          __path__: /var/log/syslog
+
+    pipeline_stages:
+      # Parse syslog format: "Mar 19 12:34:56 hostname daemon[pid]: message"
+      - regex:
+          expression: '^(?P<timestamp>\w+\s+\d+\s+\d+:\d+:\d+)\s+\S+\s+(?P<process>\S+):\s+(?P<message>.*)$'
+      - labels:
+          process:
+      - output:
+          source: message
+      # Drop noisy Unraid storage management messages
+      - drop:
+          expression: '(mdcmd|shfs|emhttpd.*updating|cache_dirs)'
+          drop_counter_reason: unraid_storage_noise

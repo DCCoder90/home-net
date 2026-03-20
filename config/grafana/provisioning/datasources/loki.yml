@@ -1,0 +1,12 @@
+apiVersion: 1
+
+datasources:
+  - name: Loki
+    uid: loki-homelab-ds
+    type: loki
+    access: proxy
+    url: http://192.168.5.65:3100
+    isDefault: false
+    editable: true
+    jsonData:
+      maxLines: 1000

@@ -71,3 +71,17 @@ scrape_configs:
         target_label: instance
       - target_label: __address__
         replacement: "192.168.5.64:9116"
+
+  # --- Loki ---
+  - job_name: "loki"
+    static_configs:
+      - targets: ["192.168.5.65:3100"]
+        labels:
+          instance: "loki"
+
+  # --- Promtail ---
+  - job_name: "promtail"
+    static_configs:
+      - targets: ["192.168.5.66:9080"]
+        labels:
+          instance: "promtail"

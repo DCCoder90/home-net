@@ -155,3 +155,43 @@ monitoring:
             ip_address: "192.168.5.64"
       mounts:
         - "/mnt/user/appdata/prometheus/snmp.yml:/etc/snmp_exporter/snmp.yml"
+    loki:
+      service_name: "loki"
+      image_name: "grafana/loki:3.6.7"
+      description: "Log aggregation system. Stores and indexes logs from all Docker containers and host services."
+      icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/grafana-loki.png"
+      dns:
+        enabled: false
+      auth:
+        enabled: false
+      network:
+        internal: true
+        service_port: 3100
+        networks:
+          - name: "br1"
+            ip_address: "192.168.5.65"
+      mounts:
+        - "/mnt/user/appdata/loki/config/loki.yaml:/etc/loki/loki.yaml"
+        - "/mnt/user/appdata/loki/data:/loki"
+      commands: ["-config.file=/etc/loki/loki.yaml"]
+    promtail:
+      service_name: "promtail"
+      image_name: "grafana/promtail:3.6.7"
+      description: "Log collection agent. Scrapes Docker container logs and host syslog, ships to Loki."
+      icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/grafana-loki.png"
+      dns:
+        enabled: false
+      auth:
+        enabled: false
+      network:
+        internal: true
+        service_port: 9080
+        networks:
+          - name: "br1"
+            ip_address: "192.168.5.66"
+      mounts:
+        - "/mnt/user/appdata/promtail/promtail.yaml:/etc/promtail/promtail.yaml"
+        - "/var/lib/docker/containers:/var/lib/docker/containers:ro"
+        - "/var/run/docker.sock:/var/run/docker.sock:ro"
+        - "/var/log:/var/log:ro"
+      commands: ["-config.file=/etc/promtail/promtail.yaml"]
