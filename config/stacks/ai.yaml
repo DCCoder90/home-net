@@ -60,7 +60,7 @@
       ai_chat:
         dns:
           enabled: true
-          domain_name: "kidchat.dcapi.app"
+          domain_name: "chat.mallett.family"
         network:
           internal: true
           service_port: 3000
@@ -73,7 +73,7 @@
           GATEWAY_TOKEN: "openclaw_gateway_token"
         service_name: "ai-chat"
         image_name: "ghcr.io/dccoder90/ai-chat:c8716c4ade26dab1bd416236eecec0864dfa21ab"
-        domain_name: "kidchat.dcapi.app"
+        domain_name: "chat.mallett.family"
         mounts:
           - "/mnt/user/appdata/ai-chat/config:/app/config"
         env:
