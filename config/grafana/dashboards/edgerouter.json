@@ -855,8 +855,5 @@
   "version": 1,
   "templating": {
     "list": []
-  },
-  "annotations": {
-    "list": []
   }
 }

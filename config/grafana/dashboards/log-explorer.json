@@ -23,7 +23,7 @@
           "type": "loki",
           "uid": "loki-homelab-ds"
         },
-        "query": "label_values(container)",
+        "query": "label_values({job=\"docker\"}, container)",
         "refresh": 2,
         "includeAll": true,
         "multi": true,
@@ -703,8 +703,5 @@
     }
   ],
   "schemaVersion": 39,
-  "version": 1,
-  "annotations": {
-    "list": []
-  }
+  "version": 1
 }

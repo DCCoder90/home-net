@@ -8,7 +8,7 @@ server:
   log_level: warn
 
 positions:
-  filename: /tmp/positions.yaml
+  filename: /run/promtail/positions.yaml
 
 clients:
   - url: http://192.168.5.65:3100/loki/api/v1/push
@@ -80,12 +80,12 @@ scrape_configs:
           stages:
             - regex:
                 expression: '(?i)(^|[^a-z])(?P<level>trace|debug|info|warn(?:ing)?|error|fatal|critical|panic)([^a-z]|$)'
-            - labels:
-                level:
-            # Normalize level values
+            # Normalize level values before promoting to label
             - template:
                 source: level
                 template: '{{ if eq .Value "warning" }}warn{{ else if or (eq .Value "critical") (eq .Value "panic") }}fatal{{ else }}{{ .Value }}{{ end }}'
+            - labels:
+                level:
 
       # Drop empty log lines
       - drop:

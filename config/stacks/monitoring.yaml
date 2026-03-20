@@ -191,6 +191,7 @@ monitoring:
             ip_address: "192.168.5.66"
       mounts:
         - "/mnt/user/appdata/promtail/promtail.yaml:/etc/promtail/promtail.yaml"
+        - "/mnt/user/appdata/promtail/positions:/run/promtail"
         - "/var/lib/docker/containers:/var/lib/docker/containers:ro"
         - "/var/run/docker.sock:/var/run/docker.sock:ro"
         - "/var/log:/var/log:ro"
