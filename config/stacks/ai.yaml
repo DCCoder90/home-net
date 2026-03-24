@@ -72,7 +72,7 @@
         secrets:
           GATEWAY_TOKEN: "ai_chat_gateway_token"
         service_name: "ai-chat"
-        image_name: "ghcr.io/dccoder90/ai-chat:c8716c4ade26dab1bd416236eecec0864dfa21ab"
+        image_name: "ghcr.io/dccoder90/ai-chat:25fa0f5bddd30569dabbb239f676d3f27fa688c2"
         domain_name: "chat.mallett.family"
         mounts:
           - "/mnt/user/appdata/ai-chat/config:/app/config"
