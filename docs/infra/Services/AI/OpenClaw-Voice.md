@@ -48,6 +48,7 @@ Caller (PSTN)
 | `twilio_account_sid` | `TWILIO_ACCOUNT_SID` | Twilio Account SID |
 | `twilio_auth_token` | `TWILIO_AUTH_TOKEN` | Twilio Auth Token |
 | `elevenlabs_api_key` | `ELEVENLABS_API_KEY` | ElevenLabs TTS API key |
+| `openclaw_openai_api_key` | `OPENAI_API_KEY` | Required for Twilio Media Streams speech-to-text |
 
 These are defined in `config/stacks/ai.yaml` under the openclaw service's `secrets` block.
 
