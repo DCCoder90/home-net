@@ -50,6 +50,7 @@
           TWILIO_ACCOUNT_SID: "twilio_account_sid"
           TWILIO_AUTH_TOKEN: "twilio_auth_token"
           ELEVENLABS_API_KEY: "elevenlabs_api_key"
+          OPENAI_API_KEY: "openclaw_openai_api_key"
         service_name: "openclaw"
         image_name: "ghcr.io/openclaw/openclaw:latest"
         domain_name: "claw.dcapi.app"

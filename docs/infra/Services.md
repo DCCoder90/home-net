@@ -99,6 +99,7 @@ Below is a list of all services managed by Terraform via the `config/stacks/` an
 | --- | --- | --- | --- |
 | n8n | 192.168.5.49 | n8n.dcapi.app | No |
 | OpenClaw | 192.168.5.50 | claw.dcapi.app | Yes |
+| [OpenClaw Voice](Services/AI/OpenClaw-Voice.md) | 192.168.5.50:3334 | voice.dcapi.app | No |
 
 ## Standalone Services
 
