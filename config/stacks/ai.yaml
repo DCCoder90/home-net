@@ -57,6 +57,8 @@
           - "TAUTULLI_URL=https://mediastats.dcapi.app"
           - "RADARR_URL=http://192.168.5.24:7878"
           - "SONARR_URL=http://192.168.5.23:8989"
+          - "TZ=America/Chicago"
+          - "GENERIC_TIMEZONE=America/Chicago"
       ai_chat:
         dns:
           enabled: true
@@ -72,7 +74,7 @@
         secrets:
           GATEWAY_TOKEN: "ai_chat_gateway_token"
         service_name: "ai-chat"
-        image_name: "ghcr.io/dccoder90/ai-chat:37be0cd563ba6023bdc3c39a08049e9cda576d90"
+        image_name: "ghcr.io/dccoder90/ai-chat:0ead9a2b88ec2084ff71c66306c7968f93d782f7"
         domain_name: "chat.mallett.family"
         mounts:
           - "/mnt/user/appdata/ai-chat/config:/app/config"
