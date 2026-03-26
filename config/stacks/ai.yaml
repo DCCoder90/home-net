@@ -78,7 +78,7 @@
         secrets:
           GATEWAY_TOKEN: "ai_chat_gateway_token"
         service_name: "ai-chat"
-        image_name: "ghcr.io/dccoder90/ai-chat:0ead9a2b88ec2084ff71c66306c7968f93d782f7"
+        image_name: "ghcr.io/dccoder90/ai-chat:cbec8160a54880fd735ab531b0d264fb010ba6d7"
         domain_name: "chat.mallett.family"
         mounts:
           - "/mnt/user/appdata/ai-chat/config:/app/config"
@@ -105,7 +105,7 @@
           SONARR_API_KEY: "openclaw_sonarr_api_key"
           DISCORD_WEBHOOK_URL: "ai_chat_discord_webhook_url"
         service_name: "ai-chat-worker"
-        image_name: "ghcr.io/dccoder90/ai-chat:0ead9a2b88ec2084ff71c66306c7968f93d782f7"
+        image_name: "ghcr.io/dccoder90/home-net-temporal-workers:latest"
         mounts:
           - "/mnt/user/appdata/ai-chat/config:/app/config"
         env:
