@@ -112,7 +112,7 @@
           - "RADARR_URL=http://192.168.5.24:7878"
           - "SONARR_URL=http://192.168.5.23:8989"
           - "OPENCLAW_GATEWAY_URL=http://192.168.5.50:18789"
-          - "TEMPORAL_ADDRESS=temporal:7233"
+          - "TEMPORAL_ADDRESS=temporal_server:7233"
           - "TEMPORAL_NAMESPACE=default"
       ollama:
         dns:
