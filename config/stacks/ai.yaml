@@ -95,7 +95,7 @@
           service_port: 3000
           networks:
             - name: "br1"
-              ip_address: "192.168.5.58"
+              ip_address: "192.168.5.53"
         auth:
           enabled: false
         secrets:
