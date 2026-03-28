@@ -105,7 +105,8 @@
           OPENCLAW_GATEWAY_TOKEN: "openclaw_gateway_token"
           RADARR_API_KEY: "openclaw_radarr_api_key"
           SONARR_API_KEY: "openclaw_sonarr_api_key"
-          DISCORD_WEBHOOK_URL: "ai_chat_discord_webhook_url"
+          DISCORD_BOT_TOKEN: "openclaw_discord_bot_token"
+          DISCORD_CHANNEL_ID: "openclaw_discord_bot_channel_id"
         service_name: "ai-chat-worker"
         image_name: "ghcr.io/dccoder90/home-net-temporal-workers:latest"
         mounts:
