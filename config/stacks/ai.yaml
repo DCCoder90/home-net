@@ -4,29 +4,6 @@
     mounts:
       - "/etc/localtime:/etc/localtime:ro"
     services:
-      n8n:
-        dns:
-          enabled: true
-          domain_name: "n8n.dcapi.app"
-        network:
-          internal: true
-          service_port: 5678
-          networks:
-            - name: "br1"
-              ip_address: "192.168.5.49"
-        auth:
-          enabled: false
-          group: "AI"
-        icon: "https://cdn-icons-png.freepik.com/512/8246/8246323.png"
-        service_name: "n8n"
-        image_name: "n8nio/n8n:2.0.2"
-        domain_name: "n8n.dcapi.app"
-        mounts:
-          - "/mnt/cache/appdata/n8n:/home/node/.n8n"
-        env:
-          - "N8N_SECURE_COOKIE=false"
-          - "WEBHOOK_URL=https://n8n.dcapi.app/"
-          - "GENERIC_TIMEZONE=America/Chicago"
       openclaw:
         dns:
           enabled: true
