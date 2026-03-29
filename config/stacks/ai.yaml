@@ -108,7 +108,7 @@
           DISCORD_BOT_TOKEN: "openclaw_discord_bot_token"
           DISCORD_CHANNEL_ID: "openclaw_discord_bot_channel_id"
         service_name: "ai-chat-worker"
-        image_name: "ghcr.io/dccoder90/home-net-temporal-workers:latest"
+        image_name: "ghcr.io/dccoder90/home-net-temporal-workers:sha-81ee3a9"
         mounts:
           - "/mnt/user/appdata/ai-chat/config:/app/config"
         env:
