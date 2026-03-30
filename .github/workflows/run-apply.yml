@@ -1,4 +1,4 @@
-name: Terraform Apply
+name: Pulumi Apply
 
 on:
   push:
@@ -6,101 +6,35 @@ on:
       - main
     paths:
       - 'config/**'
-      - 'terraform/**'
+      - 'pulumi/**'
   workflow_dispatch:
 
 jobs:
-  apply_core:
+  pulumi_apply:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pull-requests: write
-    env:
-      TF_WORKSPACE: ${{ secrets.TF_WORKSPACE_CORE }}
-      CONFIG_DIRECTORY: "./"
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Upload Configuration
-        uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.3.2
-        id: upload-configuration
+      - name: Set up Go
+        uses: actions/setup-go@v5
         with:
-          workspace: ${{ env.TF_WORKSPACE }}
-          directory: ${{ env.CONFIG_DIRECTORY }}
-          token: ${{ secrets.TF_API_TOKEN }}
-          organization: ${{ secrets.TF_ORGANIZATION }}
+          go-version-file: pulumi/go.mod
+          cache-dependency-path: pulumi/go.sum
 
-      - name: Trigger Terraform Cloud Apply
-        uses: hashicorp/tfc-workflows-github/actions/create-run@v1.3.2
-        id: create-run
-        with:
-          token: ${{ secrets.TF_API_TOKEN }}
-          hostname: app.terraform.io
-          organization: ${{ secrets.TF_ORGANIZATION }}
-          workspace: ${{ env.TF_WORKSPACE }}
-          message: "Triggered by push to main (core): ${{ github.sha }}"
-          is_destroy: false
+      - name: Build custom providers
+        working-directory: pulumi
+        run: bash scripts/build-providers.sh
 
-      - name: Apply Run
-        uses: hashicorp/tfc-workflows-github/actions/apply-run@v1.3.2
-        id: apply
-        with:
-            hostname: app.terraform.io
-            token: ${{ secrets.TF_API_TOKEN }}
-            run: ${{ steps.create-run.outputs.run_id }}
-            comment: "Confirmed from GitHub Actions CI (core)"
+      - name: Install Pulumi CLI
+        uses: pulumi/actions@v6
 
-      - name: Check Terraform Cloud Run Status
+      - name: Run pulumi up
+        working-directory: pulumi
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
         run: |
-          echo "Terraform Cloud Apply ID: ${{ steps.apply.outputs.run_id }}"
-          echo "Terraform Cloud Apply URL: ${{ steps.apply.outputs.run_link }}"
-
-  apply_apps:
-    needs: apply_core
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
-    env:
-      TF_WORKSPACE: ${{ secrets.TF_WORKSPACE_APPS }}
-      CONFIG_DIRECTORY: "./"
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Upload Configuration
-        uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.3.2
-        id: upload-configuration
-        with:
-          workspace: ${{ env.TF_WORKSPACE }}
-          directory: ${{ env.CONFIG_DIRECTORY }}
-          token: ${{ secrets.TF_API_TOKEN }}
-          organization: ${{ secrets.TF_ORGANIZATION }}
-
-      - name: Trigger Terraform Cloud Apply
-        uses: hashicorp/tfc-workflows-github/actions/create-run@v1.3.2
-        id: create-run
-        with:
-          token: ${{ secrets.TF_API_TOKEN }}
-          hostname: app.terraform.io
-          organization: ${{ secrets.TF_ORGANIZATION }}
-          workspace: ${{ env.TF_WORKSPACE }}
-          message: "Triggered by push to main (apps): ${{ github.sha }}"
-          is_destroy: false
-
-      - name: Apply Run
-        uses: hashicorp/tfc-workflows-github/actions/apply-run@v1.3.2
-        id: apply
-        with:
-            hostname: app.terraform.io
-            token: ${{ secrets.TF_API_TOKEN }}
-            run: ${{ steps.create-run.outputs.run_id }}
-            comment: "Confirmed from GitHub Actions CI (apps)"
-
-      - name: Check Terraform Cloud Run Status
-        run: |
-          echo "Terraform Cloud Apply ID: ${{ steps.apply.outputs.run_id }}"
-          echo "Terraform Cloud Apply URL: ${{ steps.apply.outputs.run_link }}"
+          pulumi up --stack ${{ secrets.PULUMI_STACK }} --yes --non-interactive
