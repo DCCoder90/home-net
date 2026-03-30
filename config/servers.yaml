@@ -1,0 +1,8 @@
+servers:
+  tower:
+    networks:
+      primary: "br1"
+      secondary: "br0"
+  net1:
+    networks:
+      primary: "eth0"

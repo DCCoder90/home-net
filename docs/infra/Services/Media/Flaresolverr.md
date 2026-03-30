@@ -9,7 +9,7 @@ Last updated 3/18/2026
 - **Service Name:** FlareSolverr
 - **Purpose:** FlareSolverr runs a proxy server that utilizes Selenium with undetected-chromedriver to solve Cloudflare challenges. It returns the subsequent HTML and cookies, allowing other HTTP clients to bypass Cloudflare using these cookies. This is primarily used by other applications (like Prowlarr) to access indexer sites protected by Cloudflare.
 - **Status:** Production
-- **Managed By:** Terraform IaC (`config/services/flaresolverr.yaml`)
+- **Managed By:** Pulumi IaC (`config/services/flaresolverr.yaml`)
 
 ---
 

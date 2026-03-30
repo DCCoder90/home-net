@@ -1,0 +1,38 @@
+config:
+  # Infisical
+  home-net:infisicalProject: home-net-ln-sy
+  home-net:infisicalEnvironment: dev
+  home-net:infisicalSecretsFolder: /secrets
+
+  # Authentik
+  home-net:authentikHost: http://192.168.4.55:9000
+
+  # Networking
+  home-net:nginxProxyAddress: http://192.168.4.2:81
+  home-net:technitiumHost: http://192.168.4.53:5380
+  home-net:networkAdminUsername: DCCoder
+  home-net:tz: America/Chicago
+
+  # Core container volume paths (Tower-specific)
+  home-net:hostPathDnsConfig: /mnt/user/Networking/dns
+  home-net:hostPathNpmData: /mnt/user/appdata/NginxProxymanager-Latest/data
+  home-net:hostPathNpmLetsencrypt: /mnt/user/appdata/NginxProxymanager-Latest/letsencrypt
+  home-net:hostPathNpmLogs: /tmp/NginxProxymanager-Latest/var/log
+
+  # Container registry
+  home-net:ghcrUsername: DCCoder90
+
+  # Secrets — set these with: pulumi config set --secret <key> <value>
+  # home-net:infisicalClientId
+  # home-net:infisicalClientSecret
+  # home-net:nginxProxyUser
+  # home-net:nginxProxyPass
+  # home-net:cloudflareApiToken
+  # home-net:technitiumApiToken
+  # home-net:technitiumAdminPassword
+  # home-net:vpnUser
+  # home-net:vpnPass
+  # home-net:ghcrToken
+  # home-net:authentikToken
+  # home-net:networkAdminEmail
+  # home-net:publicFacingIp

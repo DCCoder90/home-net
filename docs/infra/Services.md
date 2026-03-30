@@ -6,13 +6,13 @@ Last updated 3/18/2026
 
 # **Documentation Standard:**
 
-Unless otherwise indicated on the specific service page, all services are hosted as Docker containers managed via Terraform on the server known as [Tower](Hardware/Servers/Tower.md). Service definitions are maintained as YAML configuration files in the `config/stacks/` and `config/services/` directories, and are deployed automatically through the GitOps pipeline.
+Unless otherwise indicated on the specific service page, all services are hosted as Docker containers managed via Pulumi on the server known as [Tower](Hardware/Servers/Tower.md). Service definitions are maintained as YAML configuration files in the `config/stacks/` and `config/services/` directories, and are deployed automatically through the GitOps pipeline.
 
 Documentation for services not following this standard will explicitly state their unique setup (e.g., cloud VPS, Raspberry Pi, dedicated VM).
 
 # Core Services
 
-These services are managed by the `terraform/core` workspace and must be applied before application services. They are not defined in `config/stacks/` or `config/services/` — instead they are provisioned directly in `terraform/core/infrastructure.tf`.
+These services are managed by the `core` Pulumi stack and must be applied before application services. They are not defined in `config/stacks/` or `config/services/` — instead they are provisioned directly in the `pulumi/` core program.
 
 | Service | IP Address | Notes |
 | --- | --- | --- |
@@ -21,7 +21,7 @@ These services are managed by the `terraform/core` workspace and must be applied
 
 # Non-IaC Services
 
-These services run on Tower but are not managed by Terraform. They are configured manually via the Unraid Docker UI.
+These services run on Tower but are not managed by Pulumi. They are configured manually via the Unraid Docker UI.
 
 | Service | IP Address | Notes |
 | --- | --- | --- |
@@ -33,7 +33,7 @@ These services run on Tower but are not managed by Terraform. They are configure
 
 # IaC-Managed Services
 
-Below is a list of all services managed by Terraform via the `config/stacks/` and `config/services/` YAML definitions. These try to follow the IP allocation of the [IP Pool (tower reserved)](Home/IP%20Pool%20%28tower%20reserved%29.md).
+Below is a list of all services managed by Pulumi via the `config/stacks/` and `config/services/` YAML definitions. These try to follow the IP allocation of the [IP Pool (tower reserved)](Home/IP%20Pool%20%28tower%20reserved%29.md).
 
 ## Stacks
 
