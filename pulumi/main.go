@@ -3,186 +3,195 @@ package main
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 
-	"github.com/DCCoder90/home-net/pulumi/pkg/core"
-	"github.com/DCCoder90/home-net/pulumi/pkg/infisical"
-	"github.com/DCCoder90/home-net/pulumi/pkg/npmconfig"
-	"github.com/DCCoder90/home-net/pulumi/pkg/servers"
-	"github.com/DCCoder90/home-net/pulumi/pkg/service"
-	"github.com/DCCoder90/home-net/pulumi/pkg/stack"
-	"github.com/DCCoder90/home-net/pulumi/pkg/types"
+	"github.com/DCCoder90/home-net/pulumi/pkg/config"
+	"github.com/DCCoder90/home-net/pulumi/pkg/npmproxy"
+	"github.com/DCCoder90/home-net/pulumi/pkg/resources"
+	"github.com/DCCoder90/home-net/pulumi/pkg/secrets"
+	"github.com/DCCoder90/home-net/pulumi/pkg/technitium"
+	dockerprovider "github.com/pulumi/pulumi-docker/sdk/v4/go/docker"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-	"github.com/pulumi/pulumi/sdk/v3/go/pulumi/config"
-	"gopkg.in/yaml.v3"
+	pulumiconfig "github.com/pulumi/pulumi/sdk/v3/go/pulumi/config"
 )
 
 func main() {
 	pulumi.Run(func(ctx *pulumi.Context) error {
-		cfg := config.New(ctx, "")
+		cfg := pulumiconfig.New(ctx, "")
 
-		// --- Load system.yaml ---
-		systemRaw, err := os.ReadFile("../config/system.yaml")
-		if err != nil {
-			return fmt.Errorf("reading system.yaml: %w", err)
-		}
-		var system types.SystemConfig
-		if err := yaml.Unmarshal(systemRaw, &system); err != nil {
-			return fmt.Errorf("parsing system.yaml: %w", err)
-		}
-
-		// Read config values as plain strings.
-		// Values stored with `pulumi config set --secret` are still decrypted here;
-		// using Require() (vs RequireSecret) means they won't be tagged as outputs,
-		// which is fine for values used only in API calls.
-		infisicalClientID := cfg.Require("infisicalClientId")
-		infisicalClientSecret := cfg.Require("infisicalClientSecret")
-		infisicalProject := cfg.Require("infisicalProject")
-		infisicalEnv := cfg.Get("infisicalEnvironment")
-		if infisicalEnv == "" {
-			infisicalEnv = system.Infisical.Environment
-		}
-
-		publicIP := cfg.Get("publicFacingIp")
-		cfApiToken := cfg.Require("cloudflareApiToken")
-		adminEmail := cfg.Require("networkAdminEmail")
-		adminUsername := cfg.Require("networkAdminUsername")
-
-		// --- Infisical client ---
-		infisicalClient, err := infisical.New(
-			infisicalClientID,
-			infisicalClientSecret,
-			infisicalProject,
-			infisicalEnv,
-		)
-		if err != nil {
-			return fmt.Errorf("creating Infisical client: %w", err)
-		}
-
-		// Pre-fetch all service-level secrets once.
-		allSecrets, err := infisicalClient.FetchAll(system.Infisical.Folder)
-		if err != nil {
-			return fmt.Errorf("fetching secrets from Infisical: %w", err)
-		}
-
-		// --- Server contexts (one Docker provider per host) ---
-		serverMap, err := servers.Load(ctx, infisicalClient)
-		if err != nil {
-			return fmt.Errorf("loading servers: %w", err)
-		}
-
-		// --- Core infrastructure (NPM + Technitium on tower) ---
-		towerSrv, err := servers.Require(serverMap, "tower")
+		// ── 1. Load all YAML config ────────────────────────────────────────────────
+		configRoot := "../config"
+		system, err := config.LoadSystem(configRoot)
 		if err != nil {
 			return err
 		}
-		if err := core.Deploy(ctx, towerSrv, &system); err != nil {
-			return fmt.Errorf("deploying core: %w", err)
+		serversFile, err := config.LoadServers(configRoot)
+		if err != nil {
+			return err
+		}
+		stacks, err := config.LoadStacks(configRoot)
+		if err != nil {
+			return err
+		}
+		services, err := config.LoadServices(configRoot)
+		if err != nil {
+			return err
+		}
+		flat := config.FlatServices(stacks, services)
+
+		// ── 2. Initialise Infisical client ─────────────────────────────────────────
+		clientID := cfg.Require("infisicalClientId")
+		clientSecret := cfg.Require("infisicalClientSecret")
+
+		infisicalClient, err := secrets.New(clientID, clientSecret,
+			system.Infisical.Project, system.Infisical.Environment)
+		if err != nil {
+			return fmt.Errorf("infisical: %w", err)
 		}
 
-		// --- NPM access lists ---
-		accessLists, err := npmconfig.Deploy(ctx)
+		// ── 3. Fetch secrets & server access ──────────────────────────────────────
+		allSecrets, err := infisicalClient.FetchAll(system.Infisical.Folder)
 		if err != nil {
-			return fmt.Errorf("deploying NPM access lists: %w", err)
+			return fmt.Errorf("fetching secrets: %w", err)
+		}
+		serverAccess, err := infisicalClient.FetchServerAccess()
+		if err != nil {
+			return fmt.Errorf("fetching server access: %w", err)
 		}
 
-		// --- Load and deploy stacks ---
-		stacks, err := loadStacks("../config/stacks")
-		if err != nil {
-			return fmt.Errorf("loading stacks: %w", err)
-		}
-		for stackName, stackCfg := range stacks {
-			cfg := stackCfg // capture
-			if err := stack.Deploy(ctx, &stack.DeployInput{
-				Name:           stackName,
-				Config:         &cfg,
-				Servers:        serverMap,
-				System:         &system,
-				AllSecrets:     allSecrets,
-				NPMAccessLists: accessLists,
-				PublicIP:       publicIP,
-				CFApiToken:     cfApiToken,
-				AdminEmail:     adminEmail,
-				AdminUsername:  adminUsername,
-			}); err != nil {
-				return fmt.Errorf("deploying stack %q: %w", stackName, err)
-			}
-		}
-
-		// --- Load and deploy standalone services ---
-		services, err := loadServices("../config/services")
-		if err != nil {
-			return fmt.Errorf("loading services: %w", err)
-		}
-		for svcName, svcCfg := range services {
-			cfg := svcCfg // capture
-			hostName := servers.ServiceHost(cfg.Host)
-			srv, err := servers.Require(serverMap, hostName)
+		// ── 4. Load import IDs (Option B import mechanism) ─────────────────────────
+		var importIDs map[string]string
+		if importFile := os.Getenv("PULUMI_IMPORT_IDS_FILE"); importFile != "" {
+			importIDs, err = config.LoadImportIDs(importFile)
 			if err != nil {
-				return fmt.Errorf("service %q: %w", svcName, err)
+				return fmt.Errorf("loading import IDs: %w", err)
 			}
-			if err := service.Deploy(ctx, &service.DeployInput{
-				Name:           svcName,
-				Config:         &cfg,
-				Server:         srv,
-				System:         &system,
-				AllSecrets:     allSecrets,
-				NPMAccessLists: accessLists,
-				PublicIP:       publicIP,
-				CFApiToken:     cfApiToken,
-				AdminEmail:     adminEmail,
-				AdminUsername:  adminUsername,
-			}); err != nil {
-				return fmt.Errorf("deploying service %q: %w", svcName, err)
+		}
+
+		// ── 5. Read generated secrets from Pulumi config ───────────────────────────
+		// These must be set before first run: pulumi config set --secret gs.<NAME> <value>
+		// See Pulumi.dev.yaml for the full list and scripts/generate-imports.sh for setup.
+		genSecretNames := config.CollectGeneratedSecretNames(stacks)
+		generatedSecrets := make(map[string]pulumi.StringOutput, len(genSecretNames))
+		for _, name := range genSecretNames {
+			generatedSecrets[name] = cfg.RequireSecret("gs." + name)
+		}
+
+		// ── 6. Build per-server Docker providers via SSH ───────────────────────────
+		dockerProviders := map[string]*dockerprovider.Provider{}
+		for serverName, serverCfg := range serversFile.Servers {
+			access, ok := serverAccess[serverName]
+			if !ok {
+				return fmt.Errorf("no server_access entry for server %q", serverName)
+			}
+			_ = serverCfg // server-level network names are used per-container in YAML
+
+			prov, err := dockerprovider.NewProvider(ctx, "docker-"+serverName, &dockerprovider.ProviderArgs{
+				Host: pulumi.String(fmt.Sprintf("ssh://%s@%s:%d", access.User, access.Host, access.Port)),
+				SshOpts: pulumi.StringArray{
+					pulumi.String("-i " + access.PrivKey),
+					pulumi.String("-o StrictHostKeyChecking=no"),
+					pulumi.String("-o BatchMode=yes"),
+				},
+				RegistryAuth: dockerprovider.ProviderRegistryAuthArray{
+					&dockerprovider.ProviderRegistryAuthArgs{
+						Address:  pulumi.String("ghcr.io"),
+						Username: pulumi.String(allSecrets["ghcr_username"]),
+						Password: pulumi.String(allSecrets["ghcr_token"]),
+					},
+				},
+			})
+			if err != nil {
+				return fmt.Errorf("docker provider for %q: %w", serverName, err)
+			}
+			dockerProviders[serverName] = prov
+		}
+
+		towerProvider, ok := dockerProviders["tower"]
+		if !ok {
+			return fmt.Errorf("required server 'tower' not found in servers.yaml")
+		}
+
+		// ── 7. Register core containers ────────────────────────────────────────────
+		_, err = resources.RegisterCoreContainers(ctx, system, allSecrets, towerProvider, importIDs)
+		if err != nil {
+			return fmt.Errorf("core containers: %w", err)
+		}
+
+		// ── 8. Register stack-internal Docker networks ─────────────────────────────
+		networks, err := resources.RegisterNetworks(ctx, stacks, system.ExistingNetworks, towerProvider, importIDs)
+		if err != nil {
+			return fmt.Errorf("networks: %w", err)
+		}
+
+		// ── 9. Register all service containers ────────────────────────────────────
+		containers, err := resources.RegisterContainers(ctx, flat, dockerProviders, networks,
+			allSecrets, generatedSecrets, importIDs)
+		if err != nil {
+			return fmt.Errorf("containers: %w", err)
+		}
+
+		// ── 9b. Prepend synthetic Authentik service so DNS/proxy pipelines handle it ─
+		if system.Authentik.DomainName != "" {
+			publicDNS := false
+			flat = append([]config.FlatService{{
+				ServiceName: "authentik-server",
+				Def: config.ServiceConfig{
+					ServiceName: "authentik-server",
+					DNS: config.ServiceDNS{
+						Enabled:    true,
+						DomainName: system.Authentik.DomainName,
+						Internal:   &publicDNS, // explicit false → public CF record
+					},
+					Network: &config.ServiceNetwork{
+						Internal:    false,
+						ServicePort: system.Authentik.Port,
+						Networks: []config.NetworkEntry{
+							{Name: "br1", IPAddress: system.Authentik.IPAddress},
+						},
+					},
+				},
+			}}, flat...)
+		}
+
+		// ── 10. Register NPM resources (access lists, certs, proxy hosts) ──────────
+		npmURL := cfg.Require("npmUrl")
+		npmUser := cfg.Require("npmUsername")
+		npmPass := cfg.Require("npmPassword")
+
+		npmProv, err := npmproxy.NewProvider(ctx, "npm-provider", npmURL, npmUser, npmPass)
+		if err != nil {
+			return fmt.Errorf("npm provider: %w", err)
+		}
+
+		err = resources.RegisterProxyResources(ctx, flat, system, allSecrets,
+			containers, npmProv, importIDs)
+		if err != nil {
+			return fmt.Errorf("proxy resources: %w", err)
+		}
+
+		// ── 11. Register Technitium DNS records ────────────────────────────────────
+		techURL := cfg.Require("technitiumUrl")
+		techToken := cfg.Require("technitiumToken")
+
+		techProv, err := technitium.NewProvider(ctx, "technitium-provider", techURL, techToken)
+		if err != nil {
+			return fmt.Errorf("technitium provider: %w", err)
+		}
+
+		publicFacingIP := cfg.Get("publicFacingIp")
+		err = resources.RegisterDNSRecords(ctx, flat, system, allSecrets, containers, techProv, publicFacingIP, importIDs)
+		if err != nil {
+			return fmt.Errorf("dns records: %w", err)
+		}
+
+		// ── 12. Register Authentik resources (phase-2 gate) ────────────────────────
+		if token := allSecrets["authentik_token"]; token != "" {
+			err = resources.RegisterAuthResources(ctx, flat, system, allSecrets, containers, importIDs)
+			if err != nil {
+				return fmt.Errorf("auth resources: %w", err)
 			}
 		}
 
 		return nil
 	})
-}
-
-// loadStacks reads all *.yaml files in dir and merges them into one map[stackName]StackConfig.
-func loadStacks(dir string) (map[string]types.StackConfig, error) {
-	result := map[string]types.StackConfig{}
-	entries, err := filepath.Glob(filepath.Join(dir, "*.yaml"))
-	if err != nil {
-		return nil, err
-	}
-	for _, f := range entries {
-		raw, err := os.ReadFile(f)
-		if err != nil {
-			return nil, fmt.Errorf("reading %s: %w", f, err)
-		}
-		var parsed map[string]types.StackConfig
-		if err := yaml.Unmarshal(raw, &parsed); err != nil {
-			return nil, fmt.Errorf("parsing %s: %w", f, err)
-		}
-		for k, v := range parsed {
-			result[k] = v
-		}
-	}
-	return result, nil
-}
-
-// loadServices reads all *.yaml files in dir and merges them into one map[svcName]ServiceConfig.
-func loadServices(dir string) (map[string]types.ServiceConfig, error) {
-	result := map[string]types.ServiceConfig{}
-	entries, err := filepath.Glob(filepath.Join(dir, "*.yaml"))
-	if err != nil {
-		return nil, err
-	}
-	for _, f := range entries {
-		raw, err := os.ReadFile(f)
-		if err != nil {
-			return nil, fmt.Errorf("reading %s: %w", f, err)
-		}
-		var parsed map[string]types.ServiceConfig
-		if err := yaml.Unmarshal(raw, &parsed); err != nil {
-			return nil, fmt.Errorf("parsing %s: %w", f, err)
-		}
-		for k, v := range parsed {
-			result[k] = v
-		}
-	}
-	return result, nil
 }

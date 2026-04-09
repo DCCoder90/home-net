@@ -1,8 +1,12 @@
 package resources
 
-// Config holds provider-level configuration passed via Pulumi stack config.
+// Config holds the provider-level configuration for the NPM Proxy Manager provider.
+// Field tags must match the property names used in ctx.RegisterResource for the provider.
 type Config struct {
-	URL      string `pulumi:"url"`
+	// URL is the base URL of the NPM instance (e.g. "http://192.168.4.2:81").
+	URL string `pulumi:"url"`
+	// Username is the NPM admin username.
 	Username string `pulumi:"username"`
-	Password string `pulumi:"password" provider:"secret"`
+	// Password is the NPM admin password.
+	Password string `pulumi:"password"`
 }

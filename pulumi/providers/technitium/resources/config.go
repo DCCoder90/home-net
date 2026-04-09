@@ -1,7 +1,10 @@
 package resources
 
-// Config holds provider-level configuration passed via Pulumi stack config.
+// Config holds the provider-level configuration for the Technitium provider.
+// Field tags must match the property names used in ctx.RegisterResource for the provider.
 type Config struct {
-	Host     string `pulumi:"host"`
-	APIToken string `pulumi:"apiToken" provider:"secret"`
+	// URL is the base URL of the Technitium DNS server (e.g. "http://192.168.4.53:5380").
+	URL string `pulumi:"url"`
+	// Token is the Technitium API token.
+	Token string `pulumi:"token"`
 }

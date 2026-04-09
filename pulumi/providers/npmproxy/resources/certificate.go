@@ -5,74 +5,79 @@ import (
 	"fmt"
 	"strconv"
 
-	npmclient "github.com/DCCoder90/home-net/pulumi/providers/npmproxy/client"
 	"github.com/pulumi/pulumi-go-provider/infer"
 )
 
-// Certificate manages an NPM Let's Encrypt certificate.
-type Certificate struct{}
-
-// CertificateArgs are the inputs for a Let's Encrypt certificate.
+// CertificateArgs are the inputs for an NPM Let's Encrypt certificate.
+// Tags must match the pulumi.Map keys used in the thin wrapper (npmproxy.go).
 type CertificateArgs struct {
-	DomainName         string `pulumi:"domainName"`
-	LetsEncryptEmail   string `pulumi:"letsEncryptEmail"`
-	CloudflareAPIToken string `pulumi:"cloudflareApiToken" provider:"secret"`
-	PropagationSeconds int    `pulumi:"propagationSeconds,optional"`
+	DomainNames []string `pulumi:"domainNames"`
+	Email       string   `pulumi:"email"`
+	CFAPIToken  string   `pulumi:"cfApiToken"`
 }
 
-// CertificateState is the stored state.
+// CertificateState is the persisted state for an NPM certificate.
 type CertificateState struct {
 	CertificateArgs
-	CertificateID int `pulumi:"certificateId"`
 }
 
-var _ infer.CustomResource[CertificateArgs, CertificateState] = (*Certificate)(nil)
-var _ infer.CustomDelete[CertificateState] = (*Certificate)(nil)
+// Certificate implements Create/Read/Delete for an NPM Let's Encrypt cert.
+// The resource ID is the numeric NPM certificate ID as a string.
+type Certificate struct{}
 
-func (cert *Certificate) Create(ctx context.Context, name string, input CertificateArgs, preview bool) (string, CertificateState, error) {
-	if preview {
-		return name, CertificateState{CertificateArgs: input}, nil
+var _ = (infer.CustomCreate[CertificateArgs, CertificateState])((*Certificate)(nil))
+var _ = (infer.CustomDelete[CertificateState])((*Certificate)(nil))
+var _ = (infer.CustomRead[CertificateArgs, CertificateState])((*Certificate)(nil))
+
+func (*Certificate) Create(ctx context.Context, req infer.CreateRequest[CertificateArgs]) (infer.CreateResponse[CertificateState], error) {
+	args := req.Inputs
+	if req.DryRun {
+		return infer.CreateResponse[CertificateState]{ID: "", Output: CertificateState{args}}, nil
 	}
-
-	cfg := infer.GetConfig[Config](ctx)
-
-	c := npmclient.New(cfg.URL, cfg.Username, cfg.Password)
-	if err := c.Authenticate(); err != nil {
-		return "", CertificateState{}, fmt.Errorf("NPM auth: %w", err)
-	}
-
-	propagation := input.PropagationSeconds
-	if propagation == 0 {
-		propagation = 10
-	}
-
-	id, err := c.CreateCertificate(npmclient.CertificateInput{
-		Provider:    "letsencrypt",
-		DomainNames: []string{input.DomainName},
-		Meta: map[string]interface{}{
-			"letsencrypt_email":        input.LetsEncryptEmail,
-			"letsencrypt_agree":        true,
-			"dns_challenge":            true,
-			"dns_provider":             "cloudflare",
-			"dns_provider_credentials": fmt.Sprintf("dns_cloudflare_api_token=%s", input.CloudflareAPIToken),
-			"propagation_seconds":      strconv.Itoa(propagation),
-		},
-	})
+	c, err := newNPMClient(ctx)
 	if err != nil {
-		return "", CertificateState{}, fmt.Errorf("creating NPM certificate: %w", err)
+		return infer.CreateResponse[CertificateState]{}, err
 	}
-
-	state := CertificateState{CertificateArgs: input, CertificateID: id}
-	return strconv.Itoa(id), state, nil
+	result, err := c.CreateCertificate(args.DomainNames, args.Email, args.CFAPIToken)
+	if err != nil {
+		return infer.CreateResponse[CertificateState]{}, err
+	}
+	return infer.CreateResponse[CertificateState]{ID: strconv.Itoa(result.ID), Output: CertificateState{args}}, nil
 }
 
-func (cert *Certificate) Delete(ctx context.Context, id string, props CertificateState) error {
-	cfg := infer.GetConfig[Config](ctx)
-
-	c := npmclient.New(cfg.URL, cfg.Username, cfg.Password)
-	if err := c.Authenticate(); err != nil {
-		return err
+func (*Certificate) Read(ctx context.Context, req infer.ReadRequest[CertificateArgs, CertificateState]) (infer.ReadResponse[CertificateArgs, CertificateState], error) {
+	id, args := req.ID, req.Inputs
+	numID, err := strconv.Atoi(id)
+	if err != nil {
+		return infer.ReadResponse[CertificateArgs, CertificateState]{ID: id, Inputs: args, State: CertificateState{args}}, fmt.Errorf("invalid certificate ID %q: %w", id, err)
 	}
+	c, err := newNPMClient(ctx)
+	if err != nil {
+		return infer.ReadResponse[CertificateArgs, CertificateState]{ID: id, Inputs: args, State: CertificateState{args}}, err
+	}
+	cert, err := c.GetCertificate(numID)
+	if err != nil {
+		// Signal to Pulumi that the resource no longer exists so it will recreate it.
+		return infer.ReadResponse[CertificateArgs, CertificateState]{ID: "", Inputs: args, State: CertificateState{args}}, nil
+	}
+	// Preserve credential inputs that the API does not return.
+	newArgs := CertificateArgs{
+		DomainNames: cert.DomainNames,
+		Email:       args.Email,
+		CFAPIToken:  args.CFAPIToken,
+	}
+	return infer.ReadResponse[CertificateArgs, CertificateState]{ID: id, Inputs: newArgs, State: CertificateState{newArgs}}, nil
+}
 
-	return c.DeleteCertificate(props.CertificateID)
+func (*Certificate) Delete(ctx context.Context, req infer.DeleteRequest[CertificateState]) (infer.DeleteResponse, error) {
+	id := req.ID
+	numID, err := strconv.Atoi(id)
+	if err != nil {
+		return infer.DeleteResponse{}, fmt.Errorf("invalid certificate ID %q: %w", id, err)
+	}
+	c, err := newNPMClient(ctx)
+	if err != nil {
+		return infer.DeleteResponse{}, err
+	}
+	return infer.DeleteResponse{}, c.DeleteCertificate(numID)
 }

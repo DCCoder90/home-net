@@ -12,6 +12,7 @@
         dns:
           enabled: true
           domain_name: "prowlarr.dcapi.app"
+          internal: true
         network:
           internal: true
           service_port: 9696
@@ -35,6 +36,7 @@
         dns:
           enabled: true
           domain_name: "sonarr.dcapi.app"
+          internal: true
         network:
           internal: true
           service_port: 8989
@@ -60,6 +62,7 @@
         dns:
           enabled: true
           domain_name: "radarr.dcapi.app"
+          internal: true
         network:
           internal: true
           service_port: 7878

@@ -5,127 +5,143 @@ import (
 	"fmt"
 	"strconv"
 
-	npmclient "github.com/DCCoder90/home-net/pulumi/providers/npmproxy/client"
+	"github.com/DCCoder90/home-net/pulumi/providers/npmproxy/client"
 	"github.com/pulumi/pulumi-go-provider/infer"
 )
 
-// ProxyHost manages an NPM reverse-proxy entry.
-type ProxyHost struct{}
-
 // ProxyHostArgs are the inputs for an NPM proxy host.
+// Tags must match the pulumi.Map keys used in the thin wrapper (npmproxy.go).
 type ProxyHostArgs struct {
-	DomainName            string `pulumi:"domainName"`
-	ForwardScheme         string `pulumi:"forwardScheme,optional"`
-	ForwardHost           string `pulumi:"forwardHost"`
-	ForwardPort           int    `pulumi:"forwardPort"`
-	AccessListID          int    `pulumi:"accessListId,optional"`
-	CertificateID         int    `pulumi:"certificateId,optional"`
-	CachingEnabled        bool   `pulumi:"cachingEnabled,optional"`
-	AllowWebsocketUpgrade bool   `pulumi:"allowWebsocketUpgrade,optional"`
-	BlockExploits         bool   `pulumi:"blockExploits,optional"`
-	HTTP2Support          bool   `pulumi:"http2Support,optional"`
-	SSLForced             bool   `pulumi:"sslForced,optional"`
-	HSTSEnabled           bool   `pulumi:"hstsEnabled,optional"`
-	HSTSSubdomains        bool   `pulumi:"hstsSubdomains,optional"`
+	DomainNames           []string `pulumi:"domainNames"`
+	ForwardHost           string   `pulumi:"forwardHost"`
+	ForwardPort           int      `pulumi:"forwardPort"`
+	ForwardScheme         string   `pulumi:"forwardScheme"`
+	CertificateID         string   `pulumi:"certificateId"`
+	AccessListID          string   `pulumi:"accessListId"`
+	SSLForced             bool     `pulumi:"sslForced"`
+	HTTP2Support          bool     `pulumi:"http2Support"`
+	BlockExploits         bool     `pulumi:"blockExploits"`
+	AllowWebsocketUpgrade bool     `pulumi:"allowWebsocketUpgrade"`
 }
 
-// ProxyHostState is the stored state.
+// ProxyHostState is the persisted state for an NPM proxy host.
 type ProxyHostState struct {
 	ProxyHostArgs
-	ProxyHostID int `pulumi:"proxyHostId"`
 }
 
-var _ infer.CustomResource[ProxyHostArgs, ProxyHostState] = (*ProxyHost)(nil)
-var _ infer.CustomUpdate[ProxyHostArgs, ProxyHostState] = (*ProxyHost)(nil)
-var _ infer.CustomDelete[ProxyHostState] = (*ProxyHost)(nil)
+// ProxyHost implements CRUD for an NPM proxy host entry.
+// The resource ID is the numeric NPM proxy host ID as a string.
+type ProxyHost struct{}
 
-func (ph *ProxyHost) Create(ctx context.Context, name string, input ProxyHostArgs, preview bool) (string, ProxyHostState, error) {
-	if preview {
-		return name, ProxyHostState{ProxyHostArgs: input}, nil
+var _ = (infer.CustomCreate[ProxyHostArgs, ProxyHostState])((*ProxyHost)(nil))
+var _ = (infer.CustomDelete[ProxyHostState])((*ProxyHost)(nil))
+var _ = (infer.CustomRead[ProxyHostArgs, ProxyHostState])((*ProxyHost)(nil))
+var _ = (infer.CustomUpdate[ProxyHostArgs, ProxyHostState])((*ProxyHost)(nil))
+
+func (*ProxyHost) Create(ctx context.Context, req infer.CreateRequest[ProxyHostArgs]) (infer.CreateResponse[ProxyHostState], error) {
+	args := req.Inputs
+	if req.DryRun {
+		return infer.CreateResponse[ProxyHostState]{ID: "", Output: ProxyHostState{args}}, nil
 	}
-
-	cfg := infer.GetConfig[Config](ctx)
-
-	c := npmclient.New(cfg.URL, cfg.Username, cfg.Password)
-	if err := c.Authenticate(); err != nil {
-		return "", ProxyHostState{}, fmt.Errorf("NPM auth: %w", err)
-	}
-
-	scheme := input.ForwardScheme
-	if scheme == "" {
-		scheme = "http"
-	}
-
-	id, err := c.CreateProxyHost(npmclient.ProxyHostInput{
-		DomainNames:           []string{input.DomainName},
-		ForwardScheme:         scheme,
-		ForwardHost:           input.ForwardHost,
-		ForwardPort:           input.ForwardPort,
-		AccessListID:          input.AccessListID,
-		CertificateID:         input.CertificateID,
-		CachingEnabled:        input.CachingEnabled,
-		AllowWebsocketUpgrade: input.AllowWebsocketUpgrade,
-		BlockExploits:         input.BlockExploits,
-		HTTP2Support:          input.HTTP2Support,
-		SSLForced:             input.SSLForced,
-		HSTSEnabled:           input.HSTSEnabled,
-		HSTSSubdomains:        input.HSTSSubdomains,
-		Enabled:               true,
-	})
+	c, err := newNPMClient(ctx)
 	if err != nil {
-		return "", ProxyHostState{}, fmt.Errorf("creating NPM proxy host: %w", err)
+		return infer.CreateResponse[ProxyHostState]{}, err
 	}
-
-	state := ProxyHostState{ProxyHostArgs: input, ProxyHostID: id}
-	return strconv.Itoa(id), state, nil
+	certID, err := strconv.Atoi(args.CertificateID)
+	if err != nil {
+		return infer.CreateResponse[ProxyHostState]{}, fmt.Errorf("invalid certificateId %q: %w", args.CertificateID, err)
+	}
+	ph := client.ProxyHost{
+		DomainNames:           args.DomainNames,
+		ForwardHost:           args.ForwardHost,
+		ForwardPort:           args.ForwardPort,
+		ForwardScheme:         args.ForwardScheme,
+		CertificateID:         certID,
+		SSLForced:             args.SSLForced,
+		HTTP2Support:          args.HTTP2Support,
+		BlockExploits:         args.BlockExploits,
+		AllowWebsocketUpgrade: args.AllowWebsocketUpgrade,
+	}
+	result, err := c.CreateProxyHost(ph)
+	if err != nil {
+		return infer.CreateResponse[ProxyHostState]{}, err
+	}
+	return infer.CreateResponse[ProxyHostState]{ID: strconv.Itoa(result.ID), Output: ProxyHostState{args}}, nil
 }
 
-func (ph *ProxyHost) Update(ctx context.Context, id string, olds ProxyHostState, news ProxyHostArgs, preview bool) (ProxyHostState, error) {
-	if preview {
-		return ProxyHostState{ProxyHostArgs: news, ProxyHostID: olds.ProxyHostID}, nil
+func (*ProxyHost) Read(ctx context.Context, req infer.ReadRequest[ProxyHostArgs, ProxyHostState]) (infer.ReadResponse[ProxyHostArgs, ProxyHostState], error) {
+	id, args := req.ID, req.Inputs
+	numID, err := strconv.Atoi(id)
+	if err != nil {
+		return infer.ReadResponse[ProxyHostArgs, ProxyHostState]{ID: id, Inputs: args, State: ProxyHostState{args}}, fmt.Errorf("invalid proxy host ID %q: %w", id, err)
 	}
-
-	cfg := infer.GetConfig[Config](ctx)
-
-	c := npmclient.New(cfg.URL, cfg.Username, cfg.Password)
-	if err := c.Authenticate(); err != nil {
-		return ProxyHostState{}, err
+	c, err := newNPMClient(ctx)
+	if err != nil {
+		return infer.ReadResponse[ProxyHostArgs, ProxyHostState]{ID: id, Inputs: args, State: ProxyHostState{args}}, err
 	}
-
-	scheme := news.ForwardScheme
-	if scheme == "" {
-		scheme = "http"
+	ph, err := c.GetProxyHost(numID)
+	if err != nil {
+		// Signal to Pulumi that the resource no longer exists so it will recreate it.
+		return infer.ReadResponse[ProxyHostArgs, ProxyHostState]{ID: "", Inputs: args, State: ProxyHostState{args}}, nil
 	}
-
-	if err := c.UpdateProxyHost(olds.ProxyHostID, npmclient.ProxyHostInput{
-		DomainNames:           []string{news.DomainName},
-		ForwardScheme:         scheme,
-		ForwardHost:           news.ForwardHost,
-		ForwardPort:           news.ForwardPort,
-		AccessListID:          news.AccessListID,
-		CertificateID:         news.CertificateID,
-		CachingEnabled:        news.CachingEnabled,
-		AllowWebsocketUpgrade: news.AllowWebsocketUpgrade,
-		BlockExploits:         news.BlockExploits,
-		HTTP2Support:          news.HTTP2Support,
-		SSLForced:             news.SSLForced,
-		HSTSEnabled:           news.HSTSEnabled,
-		HSTSSubdomains:        news.HSTSSubdomains,
-		Enabled:               true,
-	}); err != nil {
-		return ProxyHostState{}, err
+	newArgs := ProxyHostArgs{
+		DomainNames:           ph.DomainNames,
+		ForwardHost:           ph.ForwardHost,
+		ForwardPort:           ph.ForwardPort,
+		ForwardScheme:         ph.ForwardScheme,
+		CertificateID:         strconv.Itoa(ph.CertificateID),
+		SSLForced:             ph.SSLForced,
+		HTTP2Support:          ph.HTTP2Support,
+		BlockExploits:         ph.BlockExploits,
+		AllowWebsocketUpgrade: ph.AllowWebsocketUpgrade,
 	}
-
-	return ProxyHostState{ProxyHostArgs: news, ProxyHostID: olds.ProxyHostID}, nil
+	return infer.ReadResponse[ProxyHostArgs, ProxyHostState]{ID: id, Inputs: newArgs, State: ProxyHostState{newArgs}}, nil
 }
 
-func (ph *ProxyHost) Delete(ctx context.Context, id string, props ProxyHostState) error {
-	cfg := infer.GetConfig[Config](ctx)
-
-	c := npmclient.New(cfg.URL, cfg.Username, cfg.Password)
-	if err := c.Authenticate(); err != nil {
-		return err
+func (*ProxyHost) Update(ctx context.Context, req infer.UpdateRequest[ProxyHostArgs, ProxyHostState]) (infer.UpdateResponse[ProxyHostState], error) {
+	id, args := req.ID, req.Inputs
+	if req.DryRun {
+		return infer.UpdateResponse[ProxyHostState]{Output: ProxyHostState{args}}, nil
 	}
+	numID, err := strconv.Atoi(id)
+	if err != nil {
+		return infer.UpdateResponse[ProxyHostState]{Output: ProxyHostState{args}}, fmt.Errorf("invalid proxy host ID %q: %w", id, err)
+	}
+	c, err := newNPMClient(ctx)
+	if err != nil {
+		return infer.UpdateResponse[ProxyHostState]{Output: ProxyHostState{args}}, err
+	}
+	certID, err := strconv.Atoi(args.CertificateID)
+	if err != nil {
+		return infer.UpdateResponse[ProxyHostState]{Output: ProxyHostState{args}}, fmt.Errorf("invalid certificateId: %w", err)
+	}
+	ph := client.ProxyHost{
+		DomainNames:           args.DomainNames,
+		ForwardHost:           args.ForwardHost,
+		ForwardPort:           args.ForwardPort,
+		ForwardScheme:         args.ForwardScheme,
+		CertificateID:         certID,
+		SSLForced:             args.SSLForced,
+		HTTP2Support:          args.HTTP2Support,
+		BlockExploits:         args.BlockExploits,
+		AllowWebsocketUpgrade: args.AllowWebsocketUpgrade,
+	}
+	_, err = c.UpdateProxyHost(numID, ph)
+	if err != nil {
+		return infer.UpdateResponse[ProxyHostState]{Output: ProxyHostState{args}}, err
+	}
+	return infer.UpdateResponse[ProxyHostState]{Output: ProxyHostState{args}}, nil
+}
 
-	return c.DeleteProxyHost(props.ProxyHostID)
+func (*ProxyHost) Delete(ctx context.Context, req infer.DeleteRequest[ProxyHostState]) (infer.DeleteResponse, error) {
+	id := req.ID
+	numID, err := strconv.Atoi(id)
+	if err != nil {
+		return infer.DeleteResponse{}, fmt.Errorf("invalid proxy host ID %q: %w", id, err)
+	}
+	c, err := newNPMClient(ctx)
+	if err != nil {
+		return infer.DeleteResponse{}, err
+	}
+	return infer.DeleteResponse{}, c.DeleteProxyHost(numID)
 }

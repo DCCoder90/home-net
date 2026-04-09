@@ -63,41 +63,104 @@ Replace `<your-org>` with your Pulumi Cloud organization name (shown in the top-
 
 ## 4. Configure the stack
 
-The non-secret values are already committed in `Pulumi.dev.yaml` and are picked up automatically. You only need to set the secrets:
+All non-secret values are already committed in `Pulumi.dev.yaml` and are picked up automatically. The only values you need to set in Pulumi config are the two **bootstrap credentials** required to authenticate with Infisical before anything else can run:
 
 ```bash
-pulumi config set --secret infisicalClientId       <value>
-pulumi config set --secret infisicalClientSecret   <value>
-pulumi config set --secret nginxProxyUser          <value>
-pulumi config set --secret nginxProxyPass          <value>
-pulumi config set --secret cloudflareApiToken      <value>
-pulumi config set --secret technitiumApiToken      <value>
-pulumi config set --secret technitiumAdminPassword <value>
-pulumi config set --secret vpnUser                 <value>
-pulumi config set --secret vpnPass                 <value>
-pulumi config set --secret ghcrToken               <value>
-pulumi config set --secret authentikToken          <value>
-pulumi config set --secret networkAdminEmail       <value>
-pulumi config set --secret publicFacingIp          <value>
+pulumi config set --secret infisicalClientId     <value>
+pulumi config set --secret infisicalClientSecret <value>
 ```
 
-> Secrets are encrypted by Pulumi Cloud and never stored in plain text. Running `pulumi config` will show them as `[secret]`.
+> All other secrets (Cloudflare API token, provider credentials, admin email, etc.) are fetched automatically from Infisical at deploy time. Store them in your Infisical project under the `/secrets` path using the snake_case key names listed below.
+
+### Infisical secret keys (`/secrets` folder)
+
+These secrets are fetched from Infisical at runtime via the Universal Auth client ID/secret set in Pulumi config:
+
+| Infisical key | Required | Description |
+|---------------|----------|-------------|
+| `cloudflare_api_token` | Yes | Cloudflare API token with `Zone:Read` and `DNS:Edit` permissions |
+| `network_admin_email` | Yes | Email used for Let's Encrypt certificate requests |
+| `technitium_admin_password` | Yes | Admin password for the Technitium DNS container |
+| `ghcr_username` | Yes | GitHub Container Registry username |
+| `ghcr_token` | Yes | GitHub Container Registry personal access token |
+| `authentik_secret_key` | Yes | Authentik signing key (min 50 characters, generate with `openssl rand -hex 32`) |
+| `authentik_postgresql_password` | Yes | PostgreSQL password for Authentik's database |
+| `authentik_token` | **Phase 2 only** | Authentik API token — see two-phase workflow below |
+
+Per-service runtime secrets (e.g. VPN credentials) and per-server SSH access keys (`/server_access` folder) are documented separately in the service YAML files.
+
+### Additional Pulumi config values (beyond what's in `Pulumi.dev.yaml`)
+
+In addition to `infisicalClientId` and `infisicalClientSecret`, set these in Pulumi config — they are not stored in Infisical:
+
+```bash
+# NPM Proxy Manager credentials
+pulumi config set npmUsername <admin-email>
+pulumi config set --secret npmPassword <admin-password>
+
+# Technitium API token
+pulumi config set --secret technitiumToken <api-token>
+
+# Public-facing IP for external Cloudflare DNS records
+pulumi config set publicFacingIp <your-public-ip>
+```
+
+### Two-phase Authentik bootstrap
+
+Authentik cannot be configured via its API until it is running and initialized.
+The deployment handles this with a two-phase workflow:
+
+**Phase 1 — Deploy containers** (all secrets except `authentik_token` present):
+```bash
+pulumi up
+```
+This deploys all containers including the full Authentik stack (PostgreSQL, Redis, server, worker). Auth resources (groups, providers, policy bindings) are skipped. Services are deployed without auth protection.
+
+**Initialize Authentik** (manual, one-time):
+1. Navigate to `http://<authentik_ip>:9000` and complete initial setup
+2. Create a service account and generate an API token
+3. Add the token to Infisical as `authentik_token`
+
+**Phase 2 — Configure auth** (`authentik_token` now present):
+```bash
+pulumi up
+```
+This run creates all Authentik auth resources (groups, providers, policy bindings) and enables auth protection on services that require it.
 
 ---
 
 ## 5. Build the custom providers
 
-The three custom Pulumi providers (npmproxy, technitium, authentik) must be compiled and installed before running any Pulumi commands:
+The two custom Pulumi providers (npmproxy and technitium) must be compiled before running any Pulumi commands. From the `pulumi/` directory:
 
 ```bash
 bash scripts/build-providers.sh
 ```
 
-This builds each provider from source and installs the binaries to `~/.pulumi/plugins/`. Re-run this script any time you modify a provider under `pulumi/providers/`.
+This builds each provider binary and places it in `pulumi/bin/`, where `Pulumi.yaml` looks for local plugin overrides. The community Authentik provider (`OSMIT-GmbH/pulumi-authentik`) is fetched automatically by Pulumi from GitHub.
+
+Re-run this script any time you modify a provider under `pulumi/providers/`.
 
 ---
 
-## 6. Preview and apply
+## 6. First-run import (existing infrastructure only)
+
+If this is a **fresh Pulumi state** importing pre-existing infrastructure, fill in the import IDs first:
+
+```bash
+# Run the helper script to auto-populate most IDs from running services:
+export TOWER_HOST=<tower-ip> TOWER_SSH_USER=root \
+       NPM_URL=http://192.168.4.2:81 NPM_USER=<user> NPM_PASS=<pass> \
+       TECH_URL=http://192.168.4.53:5380 TECH_TOKEN=<token>
+bash scripts/generate-imports.sh > ../config/tf-imports.yaml
+
+# Then run with import mode enabled:
+PULUMI_IMPORT_IDS_FILE=config/tf-imports.yaml pulumi up
+```
+
+After a successful import run, the `config/tf-imports.yaml` file can be left in place — empty-string entries are ignored and real IDs are only applied once (Pulumi skips import if the resource is already in state).
+
+## 7. Preview and apply
 
 ```bash
 # Dry-run — shows what will be created/modified/destroyed
@@ -109,7 +172,7 @@ pulumi up
 
 ---
 
-## 7. Set up GitHub Actions (CI/CD)
+## 8. Set up GitHub Actions (CI/CD)
 
 The repository includes two workflows:
 
@@ -127,7 +190,7 @@ Add the following secrets to your GitHub repository under **Settings → Secrets
 
 ---
 
-## Adding a new service
+## 9. Adding a new service
 
 1. Add a YAML file to `config/stacks/` (for a group of services) or `config/services/` (for a standalone service).
 2. Follow the schema documented in:

@@ -53,6 +53,7 @@ media-servers:
       dns:
         enabled: true
         domain_name: "mediastats.dcapi.app"
+        internal: true
       network:
         internal: true
         service_port: 8181

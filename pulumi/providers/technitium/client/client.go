@@ -1,3 +1,5 @@
+// Package client provides a lightweight HTTP client for the Technitium DNS REST API.
+// Authentication uses a token query parameter on every request.
 package client
 
 import (
@@ -9,121 +11,128 @@ import (
 	"time"
 )
 
-// Client talks to the Technitium DNS Server HTTP API.
+// Client holds the base URL and API token for a Technitium DNS server.
 type Client struct {
-	baseURL    string
-	token      string
+	BaseURL    string
+	Token      string
 	httpClient *http.Client
 }
 
-// New creates an authenticated Technitium API client.
-// It logs in and stores the session token.
-func New(host, apiToken string) *Client {
+// New creates a Client. baseURL should be like "http://192.168.4.53:5380".
+func New(baseURL, token string) *Client {
 	return &Client{
-		baseURL:    host,
-		token:      apiToken,
-		httpClient: &http.Client{Timeout: 30 * time.Second},
+		BaseURL: baseURL,
+		Token:   token,
+		httpClient: &http.Client{
+			Timeout: 30 * time.Second,
+		},
 	}
 }
 
-// AddRecord creates an A or AAAA DNS record.
-func (c *Client) AddRecord(domain, zone, recordType, ipAddress string, ttl int) error {
-	params := url.Values{}
-	params.Set("token", c.token)
-	params.Set("domain", domain)
-	params.Set("zone", zone)
-	params.Set("type", recordType)
-	params.Set("ipAddress", ipAddress)
-	params.Set("ttl", fmt.Sprintf("%d", ttl))
-
-	resp, err := c.httpClient.Get(fmt.Sprintf("%s/api/zones/records/add?%s", c.baseURL, params.Encode()))
-	if err != nil {
-		return fmt.Errorf("adding DNS record: %w", err)
-	}
-	defer resp.Body.Close()
-
-	return c.checkResponse(resp, "add record")
+// RecordInfo holds a single DNS record returned by the API.
+// This type is populated manually in GetRecord — json tags are for reference only.
+type RecordInfo struct {
+	Domain    string
+	Zone      string
+	Type      string
+	TTL       int
+	IPAddress string
 }
 
-// DeleteRecord removes a DNS record by domain, type, and IP address.
-func (c *Client) DeleteRecord(domain, zone, recordType, ipAddress string) error {
-	params := url.Values{}
-	params.Set("token", c.token)
-	params.Set("domain", domain)
-	params.Set("zone", zone)
-	params.Set("type", recordType)
-	params.Set("ipAddress", ipAddress)
-
-	resp, err := c.httpClient.Get(fmt.Sprintf("%s/api/zones/records/delete?%s", c.baseURL, params.Encode()))
-	if err != nil {
-		return fmt.Errorf("deleting DNS record: %w", err)
-	}
-	defer resp.Body.Close()
-
-	return c.checkResponse(resp, "delete record")
+// apiResponse is the envelope returned by most Technitium endpoints.
+type apiResponse struct {
+	Status   string          `json:"status"`
+	Response json.RawMessage `json:"response"`
+	ErrorMessage string      `json:"errorMessage"`
 }
 
-// RecordExists checks whether a record exists by looking it up.
-func (c *Client) RecordExists(domain, zone, recordType string) (bool, string, error) {
-	params := url.Values{}
-	params.Set("token", c.token)
-	params.Set("domain", domain)
-	params.Set("zone", zone)
-	params.Set("type", recordType)
-
-	resp, err := c.httpClient.Get(fmt.Sprintf("%s/api/zones/records?%s", c.baseURL, params.Encode()))
+// get performs a GET request to path with the given query params (token is added automatically).
+func (c *Client) get(path string, params url.Values) ([]byte, error) {
+	if params == nil {
+		params = url.Values{}
+	}
+	params.Set("token", c.Token)
+	u := fmt.Sprintf("%s%s?%s", c.BaseURL, path, params.Encode())
+	resp, err := c.httpClient.Get(u)
 	if err != nil {
-		return false, "", fmt.Errorf("querying DNS record: %w", err)
+		return nil, fmt.Errorf("GET %s: %w", path, err)
 	}
 	defer resp.Body.Close()
-
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return false, "", err
+		return nil, fmt.Errorf("reading response: %w", err)
 	}
-
-	var result struct {
-		Status   string `json:"status"`
-		Response struct {
-			Records []struct {
-				Name  string `json:"name"`
-				Type  string `json:"type"`
-				RData struct {
-					IPAddress string `json:"ipAddress"`
-				} `json:"rData"`
-			} `json:"records"`
-		} `json:"response"`
+	var ar apiResponse
+	if err := json.Unmarshal(body, &ar); err != nil {
+		return nil, fmt.Errorf("parsing response: %w", err)
 	}
-	if err := json.Unmarshal(body, &result); err != nil {
-		return false, "", fmt.Errorf("parsing record response: %w", err)
+	if ar.Status != "ok" {
+		return nil, fmt.Errorf("API error: %s", ar.ErrorMessage)
 	}
-
-	if result.Status != "ok" {
-		return false, "", nil
-	}
-
-	for _, r := range result.Response.Records {
-		return true, r.RData.IPAddress, nil
-	}
-	return false, "", nil
+	return ar.Response, nil
 }
 
-func (c *Client) checkResponse(resp *http.Response, action string) error {
-	body, err := io.ReadAll(resp.Body)
+// AddRecord creates an A (or other type) record in the given zone.
+func (c *Client) AddRecord(zone, domain, recType string, ttl int, ipAddress string) error {
+	params := url.Values{
+		"zone":      {zone},
+		"domain":    {domain},
+		"type":      {recType},
+		"ttl":       {fmt.Sprintf("%d", ttl)},
+		"ipAddress": {ipAddress},
+		"overwrite": {"false"},
+	}
+	_, err := c.get("/api/zones/records/add", params)
+	return err
+}
+
+// DeleteRecord removes the matching record from the zone.
+func (c *Client) DeleteRecord(zone, domain, recType, ipAddress string) error {
+	params := url.Values{
+		"zone":      {zone},
+		"domain":    {domain},
+		"type":      {recType},
+		"ipAddress": {ipAddress},
+	}
+	_, err := c.get("/api/zones/records/delete", params)
+	return err
+}
+
+// GetRecord fetches the first matching record for domain+type in the zone.
+// Returns nil if no matching record is found.
+func (c *Client) GetRecord(zone, domain, recType string) (*RecordInfo, error) {
+	params := url.Values{
+		"zone":   {zone},
+		"domain": {domain},
+	}
+	raw, err := c.get("/api/zones/records/get", params)
 	if err != nil {
-		return fmt.Errorf("%s: reading response: %w", action, err)
+		return nil, err
 	}
 
-	var result struct {
-		Status  string `json:"status"`
-		ErrorMessage string `json:"errorMessage"`
+	var response struct {
+		Records []struct {
+			Name string `json:"name"`
+			Type string `json:"type"`
+			TTL  int    `json:"ttl"`
+			RData struct {
+				IPAddress string `json:"ipAddress"`
+			} `json:"rData"`
+		} `json:"records"`
 	}
-	if err := json.Unmarshal(body, &result); err != nil {
-		return fmt.Errorf("%s: parsing response: %w", action, err)
+	if err := json.Unmarshal(raw, &response); err != nil {
+		return nil, fmt.Errorf("parsing records: %w", err)
 	}
-
-	if result.Status != "ok" {
-		return fmt.Errorf("%s failed: %s", action, result.ErrorMessage)
+	for _, r := range response.Records {
+		if r.Type == recType {
+			return &RecordInfo{
+				Domain:    r.Name,
+				Zone:      zone,
+				Type:      r.Type,
+				TTL:       r.TTL,
+				IPAddress: r.RData.IPAddress,
+			}, nil
+		}
 	}
-	return nil
+	return nil, nil
 }
