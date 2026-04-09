@@ -1,38 +1,47 @@
 #!/usr/bin/env bash
-# Build all three custom Pulumi provider binaries and install them to ~/.pulumi/plugins/
-# Run this script once before `pulumi up`, and again whenever a provider changes.
+# build-providers.sh — compiles the custom Pulumi provider binaries and places
+# them in pulumi/bin/ where Pulumi.yaml's plugins block can find them.
+#
+# Usage: run from the repo root or the pulumi/ directory.
+#   ./pulumi/scripts/build-providers.sh
+#
+# Requirements: Go 1.22+ must be on PATH.
+
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROVIDERS_DIR="$SCRIPT_DIR/../providers"
-PLUGINS_DIR="${HOME}/.pulumi/plugins"
+PULUMI_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+BIN_DIR="$PULUMI_DIR/bin"
+
+mkdir -p "$BIN_DIR"
 
 build_provider() {
-  local name="$1"
-  local version="${2:-0.0.1}"
-  local dir="$PROVIDERS_DIR/$name"
-  local dest="$PLUGINS_DIR/resource-${name}-v${version}"
+  local name="$1"           # e.g. "technitium"
+  local src="$PULUMI_DIR/providers/$name"
 
-  echo "==> Building provider: $name v$version"
-  (
-    cd "$dir"
-    go mod tidy
-    go build -o "pulumi-resource-${name}" .
-  )
+  echo "==> Building pulumi-resource-$name"
+  pushd "$src" > /dev/null
 
-  echo "==> Installing $name to $dest"
-  mkdir -p "$dest"
-  cp "$dir/pulumi-resource-${name}" "$dest/"
-  echo "    Installed: $dest/pulumi-resource-${name}"
+  # Resolve dependencies on first build.
+  go mod tidy
+
+  # Build the provider binary for Linux (Pulumi runs in WSL).
+  GOOS=linux GOARCH=amd64 \
+    go build -o "$BIN_DIR/pulumi-resource-$name" .
+
+  popd > /dev/null
+  echo "    -> $BIN_DIR/pulumi-resource-$name"
 }
 
-mkdir -p "$PLUGINS_DIR"
+build_provider technitium
+build_provider npmproxy
 
-build_provider "npmproxy"
-build_provider "technitium"
-build_provider "authentik"
+# Also run go mod tidy for the main pulumi module so all dependencies are locked.
+echo "==> Tidying main pulumi module"
+pushd "$PULUMI_DIR" > /dev/null
+go mod tidy
+popd > /dev/null
 
 echo ""
-echo "All providers built and installed successfully."
-echo "Installed plugins:"
-ls "$PLUGINS_DIR" | grep -E "^resource-(npmproxy|technitium|authentik)"
+echo "All providers built successfully."
+echo "You can now run: cd pulumi && pulumi up"
