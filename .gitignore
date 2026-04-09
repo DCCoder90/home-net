@@ -8,3 +8,4 @@ pulumi/pulumi-resource-npmproxy
 pulumi/providers/npmproxy/pulumi-resource-npmproxy
 pulumi/providers/authentik/pulumi-resource-authentik
 pulumi/providers/technitium/pulumi-resource-technitium
+pulumi/providers/pulumi-resource-npmproxy
