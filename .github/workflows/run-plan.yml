@@ -31,10 +31,12 @@ jobs:
           TOKEN=$(infisical login --method=universal-auth --client-id="$INFISICAL_CLIENT_ID" --client-secret="$INFISICAL_CLIENT_SECRET" --plain --silent)
           TS_KEY=$(INFISICAL_TOKEN="$TOKEN" infisical secrets get TAILSCALE_AUTH_KEY --plain --projectId "bdb8c859-f6b3-4cca-9e8d-dccc12607ff4" --env dev --path /server_access)
           PULUMI_TOKEN=$(INFISICAL_TOKEN="$TOKEN" infisical secrets get PULUMI_ACCESS_TOKEN --plain --projectId "bdb8c859-f6b3-4cca-9e8d-dccc12607ff4" --env dev --path /server_access)
+          PULUMI_STACK=$(INFISICAL_TOKEN="$TOKEN" infisical secrets get PULUMI_STACK --plain --projectId "bdb8c859-f6b3-4cca-9e8d-dccc12607ff4" --env dev --path /server_access)
           echo "::add-mask::$TS_KEY"
           echo "::add-mask::$PULUMI_TOKEN"
           echo "authkey=$TS_KEY" >> $GITHUB_OUTPUT
           echo "PULUMI_ACCESS_TOKEN=$PULUMI_TOKEN" >> $GITHUB_ENV
+          echo "PULUMI_STACK=$PULUMI_STACK" >> $GITHUB_ENV
 
       - name: Connect to Tailscale
         uses: tailscale/github-action@v3
@@ -58,7 +60,7 @@ jobs:
         id: preview
         working-directory: pulumi
         run: |
-          pulumi preview --stack ${{ secrets.PULUMI_STACK }} --non-interactive 2>&1 | tee preview-output.txt
+          pulumi preview --stack "$PULUMI_STACK" --non-interactive 2>&1 | tee preview-output.txt
           echo "exit_code=${PIPESTATUS[0]}" >> $GITHUB_OUTPUT
 
       - name: Post preview to PR
