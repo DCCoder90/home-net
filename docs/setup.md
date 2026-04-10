@@ -85,7 +85,8 @@ These secrets are fetched from Infisical at runtime via the Universal Auth clien
 | `ghcr_token` | Yes | GitHub Container Registry personal access token |
 | `authentik_secret_key` | Yes | Authentik signing key (min 50 characters, generate with `openssl rand -hex 32`) |
 | `authentik_postgresql_password` | Yes | PostgreSQL password for Authentik's database |
-| `authentik_token` | **Phase 2 only** | Authentik API token — see two-phase workflow below |
+| `authentik_token` | **Phase 2 only** | Authentik API token — see bootstrap workflow below |
+| `authentik_outpost_token` | **Phase 3 only** | Authentik proxy outpost token — see bootstrap workflow below |
 
 Per-service runtime secrets (e.g. VPN credentials) and per-server SSH access keys (`/server_access` folder) are documented separately in the service YAML files.
 
@@ -105,27 +106,39 @@ pulumi config set --secret technitiumToken <api-token>
 pulumi config set publicFacingIp <your-public-ip>
 ```
 
-### Two-phase Authentik bootstrap
+### Authentik bootstrap
 
-Authentik cannot be configured via its API until it is running and initialized.
-The deployment handles this with a two-phase workflow:
+Authentik cannot be configured via its API until it is running and initialized. Services that use proxy authentication also require a dedicated outpost container that connects back to Authentik. The deployment handles this with a three-phase workflow.
 
-**Phase 1 — Deploy containers** (all secrets except `authentik_token` present):
+**Phase 1 — Deploy containers** (no `authentik_token` present):
 ```bash
 pulumi up
 ```
-This deploys all containers including the full Authentik stack (PostgreSQL, Redis, server, worker). Auth resources (groups, providers, policy bindings) are skipped. Services are deployed without auth protection.
+Deploys all containers including the full Authentik stack (PostgreSQL, Redis, server, worker). Auth resources are skipped. Services are accessible without authentication.
 
 **Initialize Authentik** (manual, one-time):
-1. Navigate to `http://<authentik_ip>:9000` and complete initial setup
+1. Navigate to `http://<authentik_ip>:9000` and complete the initial setup wizard
 2. Create a service account and generate an API token
 3. Add the token to Infisical as `authentik_token`
 
-**Phase 2 — Configure auth** (`authentik_token` now present):
+**Phase 2 — Configure auth** (`authentik_token` present):
 ```bash
 pulumi up
 ```
-This run creates all Authentik auth resources (groups, providers, policy bindings) and enables auth protection on services that require it.
+Creates all Authentik resources: groups, proxy providers, OAuth2 providers, applications, policy bindings, and the "Pulumi Proxy Outpost" outpost record. Services that use `auth.proxy` now have NPM routing their traffic through the outpost IP.
+
+If any services use `auth.proxy`, complete these steps before phase 3:
+1. In the Authentik UI, go to **Applications → Outposts**
+2. Open **"Pulumi Proxy Outpost"** and click **View Tokens**
+3. Copy the token and store it in Infisical as `authentik_outpost_token`
+
+**Phase 3 — Deploy outpost container** (`authentik_outpost_token` present):
+```bash
+pulumi up
+```
+Deploys the `ghcr.io/goauthentik/proxy` outpost container. It connects to Authentik using the token and begins serving proxy authentication for all services with `auth.proxy.enabled: true`.
+
+> Phase 3 is only needed if you have services using `auth.proxy`. If you only use `auth.oauth`, phases 1 and 2 are sufficient.
 
 ---
 
