@@ -8,6 +8,8 @@ authentik:
   postgresql_user: "dccoder"
   postgresql_name: "authentik"
   redis_host: "192.168.4.115"
+  outpost_ip_address: "192.168.4.56"
+  outpost_port: 9000
 proxy_ip: "192.168.4.2"
 dns_ip: "192.168.4.53"
 zones:
