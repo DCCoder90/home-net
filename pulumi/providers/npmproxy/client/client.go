@@ -176,7 +176,11 @@ func (c *Client) UpdateAccessList(id int, name string, passAuth, satisfyAny bool
 }
 
 func (c *Client) DeleteAccessList(id int) error {
-	return c.request("DELETE", fmt.Sprintf("/api/nginx/access-lists/%d", id), nil, nil)
+	err := c.request("DELETE", fmt.Sprintf("/api/nginx/access-lists/%d", id), nil, nil)
+	if isNotFound(err) {
+		return nil
+	}
+	return err
 }
 
 // ── Certificates ─────────────────────────────────────────────────────────────
@@ -231,7 +235,11 @@ func (c *Client) GetCertificate(id int) (*Certificate, error) {
 }
 
 func (c *Client) DeleteCertificate(id int) error {
-	return c.request("DELETE", fmt.Sprintf("/api/nginx/certificates/%d", id), nil, nil)
+	err := c.request("DELETE", fmt.Sprintf("/api/nginx/certificates/%d", id), nil, nil)
+	if isNotFound(err) {
+		return nil
+	}
+	return err
 }
 
 // ── Proxy Hosts ───────────────────────────────────────────────────────────────
@@ -276,5 +284,15 @@ func (c *Client) UpdateProxyHost(id int, ph ProxyHost) (*ProxyHost, error) {
 }
 
 func (c *Client) DeleteProxyHost(id int) error {
-	return c.request("DELETE", fmt.Sprintf("/api/nginx/proxy-hosts/%d", id), nil, nil)
+	err := c.request("DELETE", fmt.Sprintf("/api/nginx/proxy-hosts/%d", id), nil, nil)
+	if isNotFound(err) {
+		return nil
+	}
+	return err
+}
+
+// isNotFound returns true when err is an HTTP 404 response from the NPM API,
+// meaning the resource was already deleted and the operation can be treated as a no-op.
+func isNotFound(err error) bool {
+	return err != nil && strings.Contains(err.Error(), "HTTP 404")
 }
