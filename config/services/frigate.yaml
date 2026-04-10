@@ -1,0 +1,23 @@
+frigate:
+  host: "tower"
+  service_name: "frigate"
+  image_name: "ghcr.io/blakeblackshear/frigate:stable"
+  description: "Real-time AI object detection NVR for IP cameras."
+  icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/frigate.png"
+  dns:
+    enabled: true
+    domain_name: "cameras.mallett.family"
+  network:
+    internal: true
+    service_port: 5000
+    networks:
+      - name: "br1"
+        ip_address: "192.168.5.47"
+  auth:
+    enabled: false
+  mounts:
+    - "/etc/localtime:/etc/localtime:ro"
+    - "/mnt/user/appdata/frigate:/config"
+    - "/mnt/user/frigate/media:/media/frigate"
+  env:
+    - "TZ=America/Chicago"
