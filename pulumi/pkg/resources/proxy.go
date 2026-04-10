@@ -37,6 +37,15 @@ func RegisterProxyResources(
 			port = svc.Def.Network.ServicePort
 		}
 
+		// When proxy auth is enabled, NPM forwards to the Authentik outpost, which
+		// handles authentication and proxies authenticated requests to the service.
+		forwardHost := ip
+		forwardPort := port
+		if svc.Def.Auth != nil && svc.Def.Auth.Proxy != nil && svc.Def.Auth.Proxy.Enabled {
+			forwardHost = system.Authentik.IPAddress
+			forwardPort = system.Authentik.Port
+		}
+
 		var depOpts []pulumi.ResourceOption
 		if c, ok := containers[svc.ServiceName]; ok {
 			depOpts = append(depOpts, pulumi.DependsOn([]pulumi.Resource{c}))
@@ -55,8 +64,8 @@ func RegisterProxyResources(
 		proxyName := svc.ServiceName + "-proxy"
 		_, err = npmproxy.NewProxyHost(ctx, proxyName, npmproxy.ProxyHostArgs{
 			DomainNames:           []string{domain},
-			ForwardHost:           ip,
-			ForwardPort:           port,
+			ForwardHost:           forwardHost,
+			ForwardPort:           forwardPort,
 			ForwardScheme:         "http",
 			CertificateID:         cert.ID(),
 			SSLForced:             true,
