@@ -1,6 +1,7 @@
 package resources
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -48,6 +49,9 @@ func RegisterAuthResources(
 	if err != nil {
 		return fmt.Errorf("lookup invalidation flow: %w", err)
 	}
+
+	// Collects numeric IDs of all proxy providers created in this run, for the outpost.
+	var proxyProviderIDs pulumi.IntArray
 
 	// Deduplicate groups — multiple services can share the same Authentik group.
 	// Key is lowercased group name to prevent case-variation duplicates.
@@ -104,6 +108,13 @@ func RegisterAuthResources(
 			if err != nil {
 				return fmt.Errorf("proxy provider %q: %w", svc.ServiceName, err)
 			}
+			proxyProviderIDs = append(proxyProviderIDs, proxyProv.ID().ApplyT(func(id string) (int, error) {
+				var n int
+				if _, err := fmt.Sscanf(id, "%d", &n); err != nil {
+					return 0, fmt.Errorf("parsing provider ID %q: %w", id, err)
+				}
+				return n, nil
+			}).(pulumi.IntOutput))
 
 			appName := svc.ServiceName + "-app"
 			app, err := authentik.NewApplication(ctx, appName, &authentik.ApplicationArgs{
@@ -206,5 +217,36 @@ func RegisterAuthResources(
 			ctx.Export(svc.ServiceName+"-oauth-issuer-url", pulumi.String(authentikURL+"/application/o/"+appSlug+"/"))
 		}
 	}
+
+	// ── Dedicated proxy outpost ──────────────────────────────────────────────────
+	// Creates a Pulumi-managed outpost record in Authentik with all proxy providers
+	// attached. No service connection is set — the outpost container is deployed
+	// separately by RegisterOutpostContainer and connects back to Authentik using
+	// the token retrieved from the Authentik UI (phase 3).
+	if len(proxyProviderIDs) > 0 {
+		authentikHost := "https://" + system.Authentik.DomainName
+		if system.Authentik.DomainName == "" {
+			authentikHost = fmt.Sprintf("http://%s:%d", system.Authentik.IPAddress, system.Authentik.Port)
+		}
+		outpostConfig, err := json.Marshal(map[string]any{
+			"authentik_host":          authentikHost,
+			"authentik_host_insecure": false,
+		})
+		if err != nil {
+			return fmt.Errorf("marshalling outpost config: %w", err)
+		}
+
+		_, err = authentik.NewOutpost(ctx, "proxy-outpost",
+			&authentik.OutpostArgs{
+				Name:              pulumi.String("Pulumi Proxy Outpost"),
+				Type:              pulumi.String("proxy"),
+				ProtocolProviders: proxyProviderIDs,
+				Config:            pulumi.String(string(outpostConfig)),
+			}, append([]pulumi.ResourceOption{authOpt}, importOpts("proxy-outpost", importIDs)...)...)
+		if err != nil {
+			return fmt.Errorf("authentik proxy outpost: %w", err)
+		}
+	}
+
 	return nil
 }

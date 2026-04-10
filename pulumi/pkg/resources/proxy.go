@@ -39,11 +39,19 @@ func RegisterProxyResources(
 
 		// When proxy auth is enabled, NPM forwards to the Authentik outpost, which
 		// handles authentication and proxies authenticated requests to the service.
+		// If a dedicated outpost IP is configured, use that; otherwise fall back to
+		// the Authentik server (embedded outpost).
 		forwardHost := ip
 		forwardPort := port
 		if svc.Def.Auth != nil && svc.Def.Auth.Proxy != nil && svc.Def.Auth.Proxy.Enabled {
 			forwardHost = system.Authentik.IPAddress
 			forwardPort = system.Authentik.Port
+			if system.Authentik.OutpostIPAddress != "" {
+				forwardHost = system.Authentik.OutpostIPAddress
+				if system.Authentik.OutpostPort > 0 {
+					forwardPort = system.Authentik.OutpostPort
+				}
+			}
 		}
 
 		var depOpts []pulumi.ResourceOption
