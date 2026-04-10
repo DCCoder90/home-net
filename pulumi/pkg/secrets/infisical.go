@@ -152,11 +152,17 @@ func (c *Client) EnsureGenerated(names []string) (map[string]string, error) {
 	return result, nil
 }
 
-// writeTempKey writes a PEM private key to a temp file with 0600 permissions.
+// writeTempKey writes a PEM private key to a file with 0600 permissions.
+// The file is written to the current working directory (where pulumi up runs)
+// so that it remains accessible to provider subprocesses throughout the run.
 // Strips Windows CRLF line endings before writing so OpenSSH can parse the key.
-// Returns the file path.
+// Returns the absolute file path.
 func writeTempKey(serverName, privKeyPEM string) (string, error) {
-	path := filepath.Join(os.TempDir(), "pulumi-ssh-key-"+serverName)
+	dir, err := os.Getwd()
+	if err != nil {
+		dir = os.TempDir()
+	}
+	path := filepath.Join(dir, "pulumi-ssh-key-"+serverName)
 	cleaned := strings.ReplaceAll(privKeyPEM, "\r\n", "\n")
 	cleaned = strings.ReplaceAll(cleaned, "\r", "\n")
 	if !strings.HasSuffix(cleaned, "\n") {
