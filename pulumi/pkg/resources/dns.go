@@ -27,7 +27,7 @@ func RegisterDNSRecords(
 
 	// Create the Cloudflare provider once — used for all external DNS records.
 	cfProvider, err := cloudflare.NewProvider(ctx, "cloudflare-provider", &cloudflare.ProviderArgs{
-		ApiToken: pulumi.String(cfApiToken),
+		ApiToken: pulumi.ToSecret(pulumi.String(cfApiToken)).(pulumi.StringOutput),
 	})
 	if err != nil {
 		return err
