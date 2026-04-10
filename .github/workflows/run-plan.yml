@@ -104,7 +104,7 @@ jobs:
         id: preview
         working-directory: pulumi
         run: |
-          pulumi preview --stack "$PULUMI_STACK" --non-interactive 2>&1 | tee preview-output.txt
+          pulumi preview --stack "$PULUMI_STACK" --non-interactive --parallel 3 2>&1 | tee preview-output.txt
           echo "exit_code=${PIPESTATUS[0]}" >> $GITHUB_OUTPUT
 
       - name: Post preview to PR

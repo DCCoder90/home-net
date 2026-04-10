@@ -102,4 +102,4 @@ jobs:
       - name: Run pulumi up
         working-directory: pulumi
         run: |
-          pulumi up --stack "$PULUMI_STACK" --yes --non-interactive
+          pulumi up --stack "$PULUMI_STACK" --yes --non-interactive --parallel 3
