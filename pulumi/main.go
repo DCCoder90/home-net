@@ -196,6 +196,11 @@ func main() {
 			}
 		}
 
+		// ── 13. Deploy Authentik proxy outpost container (phase-3 gate) ────────────
+		if _, err = resources.RegisterOutpostContainer(ctx, system, allSecrets, towerProvider, importIDs); err != nil {
+			return fmt.Errorf("authentik outpost container: %w", err)
+		}
+
 		return nil
 	})
 }

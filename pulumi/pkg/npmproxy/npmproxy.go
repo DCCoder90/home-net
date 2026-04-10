@@ -17,7 +17,7 @@ func NewProvider(ctx *pulumi.Context, name, url, username, password string, opts
 	err := ctx.RegisterResource("pulumi:providers:npmproxy", name, pulumi.Map{
 		"url":      pulumi.String(url),
 		"username": pulumi.String(username),
-		"password": pulumi.String(password),
+		"password": pulumi.ToSecret(pulumi.String(password)),
 	}, &p, opts...)
 	return &p, err
 }

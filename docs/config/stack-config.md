@@ -157,10 +157,62 @@ your_stack_name:
     *   **`dns.enabled`**: If `true`, Pulumi will create a DNS record and an Nginx Proxy Manager host for this service.
     *   **`dns.domain_name`**: The full domain name for the service (e.g., `sonarr.dcapi.app`).
     *   **`dns.access_list_id`**: This field is **not set directly**. The module automatically assigns the "Internal Only" access list for internal services and the "CloudFlare Only" access list for external services.
-    *   **`auth.enabled`**: If `true`, authentication is configured for this service.
-    *   **`auth.proxy`**: If enabled, Nginx Proxy Manager will forward authentication requests to Authentik. Includes `user_secret` and `pass_secret` for Infisical credential lookup.
-    *   **`auth.group`**: The name of the group in Authentik to associate with the created application.
+    *   **`auth.enabled`**: If `true`, authentication is configured for this service in Authentik (group, application, policy binding).
+    *   **`auth.group`**: The name of the Authentik group to associate with the application. Multiple services can share a group. Defaults to the service name.
+    *   **`auth.proxy`**: Enables Authentik forward-auth proxy for this service. When enabled, NPM routes all traffic for this service's domain through the Authentik proxy outpost instead of directly to the service. The outpost checks authentication and forwards authenticated requests on to the service. Requires the three-phase Authentik bootstrap — see [Authentik bootstrap](../setup.md#authentik-bootstrap).
+    *   **`auth.oauth`**: Configures an Authentik OAuth2/OIDC provider for this service. The client ID, client secret, and issuer URL are exported as Pulumi stack outputs and can be read by the service via `auth.oauth.keys`.
     *   **`auth.oauth.enabled`**: If `true`, an Authentik OAuth2 provider and application are created for this service.
     *   **`auth.oauth.keys`**: Maps desired environment variable names (e.g., `OAUTH_CLIENT_ID`) to Authentik OAuth provider output attributes. Common values are `client_id`, `client_secret`, and `provider_info_url`.
     *   **`auth.oauth.scopes`**: A list of OAuth scopes to request from Authentik (e.g., `openid`, `profile`, `email`).
     *   **`auth.oauth.redirect_uris`**: A list of additional relative paths (e.g., `/oauth/callback`) that will be appended to the service's domain name to form the complete, valid OAuth redirect URIs required by Authentik.
+
+---
+
+## Proxy authentication outpost
+
+When one or more services use `auth.proxy`, Pulumi manages a dedicated Authentik proxy outpost. The outpost is a separate container (`ghcr.io/goauthentik/proxy`) that sits between NPM and your services, handling authentication before forwarding traffic.
+
+### How it works
+
+```
+Browser → NPM → Authentik Proxy Outpost → Service
+                      ↑
+               checks auth with Authentik
+```
+
+1. NPM receives a request for a protected domain
+2. NPM forwards the request to the outpost (instead of directly to the service)
+3. The outpost checks whether the user is authenticated with Authentik
+4. If not authenticated, the user is redirected to the Authentik login page
+5. If authenticated, the outpost proxies the request to the actual service
+
+### Configuration in `system.yaml`
+
+Add the following to the `authentik` block:
+
+```yaml
+authentik:
+  ip_address: "192.168.4.55"
+  port: 9000
+  domain_name: "auth.example.com"
+  # ... existing fields ...
+
+  # Dedicated proxy outpost
+  outpost_ip_address: "192.168.4.56"  # an unused IP on br1 — required
+  outpost_port: 9000                   # optional, defaults to 9000
+  outpost_image: "ghcr.io/goauthentik/proxy:2024.10.x"  # optional, defaults to :latest
+```
+
+- **`outpost_ip_address`** — A static IP on `br1` for the outpost container. Must be set to enable the outpost. NPM will forward proxy-auth traffic here.
+- **`outpost_port`** — The port the outpost listens on. Defaults to `9000`.
+- **`outpost_image`** — The outpost container image. Pin this to match your Authentik server version (e.g., `ghcr.io/goauthentik/proxy:2024.10.3`). Defaults to `:latest`.
+
+### Setup
+
+See [Authentik bootstrap](../setup.md#authentik-bootstrap) for the full three-phase deploy sequence. In summary:
+
+1. Set `outpost_ip_address` in `system.yaml` and add a service with `auth.proxy.enabled: true`
+2. Run `pulumi up` twice (phases 1 and 2) to deploy Authentik and create the outpost record
+3. In the Authentik UI: **Applications → Outposts → "Pulumi Proxy Outpost" → View Tokens** — copy the token
+4. Store the token in Infisical as `authentik_outpost_token`
+5. Run `pulumi up` (phase 3) to deploy the outpost container

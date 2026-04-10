@@ -12,6 +12,12 @@ type SystemConfig struct {
 		PostgreSQLUser string `yaml:"postgresql_user"`
 		PostgreSQLName string `yaml:"postgresql_name"`
 		RedisHost      string `yaml:"redis_host"`
+		// Dedicated proxy outpost — optional. When OutpostIPAddress is set, Pulumi
+		// deploys a standalone ghcr.io/goauthentik/proxy container and NPM routes
+		// proxy-auth traffic through it instead of the embedded Authentik outpost.
+		OutpostIPAddress string `yaml:"outpost_ip_address"`
+		OutpostPort      int    `yaml:"outpost_port"`  // defaults to 9000
+		OutpostImage     string `yaml:"outpost_image"` // defaults to ghcr.io/goauthentik/proxy:latest
 	} `yaml:"authentik"`
 	ProxyIP          string            `yaml:"proxy_ip"`
 	DNSIP            string            `yaml:"dns_ip"`

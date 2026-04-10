@@ -239,3 +239,71 @@ func RegisterCoreContainers(
 		AuthentikWorker: authentikWorker,
 	}, nil
 }
+
+// RegisterOutpostContainer deploys the standalone Authentik proxy outpost container.
+// It is a no-op unless both authentik_outpost_token is present in secrets and
+// outpost_ip_address is set in system.yaml (phase 3 of the Authentik bootstrap).
+//
+// After phase 2 (RegisterAuthResources), retrieve the outpost token from the
+// Authentik UI under Outposts → "Pulumi Proxy Outpost" → View Token, then store
+// it in Infisical as authentik_outpost_token and run pulumi up again.
+func RegisterOutpostContainer(
+	ctx *pulumi.Context,
+	system *config.SystemConfig,
+	secrets map[string]string,
+	towerProvider *dockerprovider.Provider,
+	importIDs map[string]string,
+) (*dockerprovider.Container, error) {
+	token := secrets["authentik_outpost_token"]
+	if token == "" || system.Authentik.OutpostIPAddress == "" {
+		return nil, nil
+	}
+
+	image := system.Authentik.OutpostImage
+	if image == "" {
+		image = "ghcr.io/goauthentik/proxy:latest"
+	}
+
+	authentikHost := "https://" + system.Authentik.DomainName
+	if system.Authentik.DomainName == "" {
+		authentikHost = fmt.Sprintf("http://%s:%d", system.Authentik.IPAddress, system.Authentik.Port)
+	}
+
+	provOpt := pulumi.Provider(towerProvider)
+
+	outpostImage, err := dockerprovider.NewRemoteImage(ctx, "authentik-outpost-image", &dockerprovider.RemoteImageArgs{
+		Name:        pulumi.String(image),
+		KeepLocally: pulumi.Bool(true),
+	}, provOpt)
+	if err != nil {
+		return nil, fmt.Errorf("authentik outpost image: %w", err)
+	}
+
+	return dockerprovider.NewContainer(ctx, "authentik-outpost",
+		&dockerprovider.ContainerArgs{
+			Name:    pulumi.String("authentik-outpost"),
+			Image:   outpostImage.RepoDigest,
+			Restart: pulumi.String("unless-stopped"),
+			Envs: pulumi.StringArray{
+				pulumi.String("AUTHENTIK_HOST=" + authentikHost),
+				pulumi.String("AUTHENTIK_TOKEN=" + token),
+				pulumi.String("AUTHENTIK_INSECURE=false"),
+			},
+			NetworksAdvanced: dockerprovider.ContainerNetworksAdvancedArray{
+				&dockerprovider.ContainerNetworksAdvancedArgs{
+					Name:        pulumi.String("br1"),
+					Ipv4Address: pulumi.String(system.Authentik.OutpostIPAddress),
+				},
+			},
+			Labels: dockerprovider.ContainerLabelArray{
+				&dockerprovider.ContainerLabelArgs{
+					Label: pulumi.String("net.unraid.docker.icon"),
+					Value: pulumi.String("https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/authentik.png"),
+				},
+			},
+		},
+		append([]pulumi.ResourceOption{provOpt,
+			pulumi.IgnoreChanges([]string{"image", "labels", "logOpts"}),
+		}, importOpts("authentik-outpost", importIDs)...)...,
+	)
+}

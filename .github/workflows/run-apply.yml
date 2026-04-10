@@ -39,17 +39,11 @@ jobs:
           export NPM_USER=$(fetch nginx_proxy_user /secrets)
           export NPM_PASS=$(fetch nginx_proxy_pass /secrets)
           export TECH_TOKEN=$(fetch technitium_api_token /secrets)
-          export PAPERLESS_DB_PASS=$(fetch PAPERLESS_DB_PASS /secrets)
-          export PAPERLESS_SECRET_KEY=$(fetch PAPERLESS_SECRET_KEY /secrets)
-          export TEMPORAL_DB_PASS=$(fetch TEMPORAL_DB_PASS /secrets)
 
           echo "::add-mask::$TS_KEY"
           echo "::add-mask::$PULUMI_TOKEN"
           echo "::add-mask::$NPM_PASS"
           echo "::add-mask::$TECH_TOKEN"
-          echo "::add-mask::$PAPERLESS_DB_PASS"
-          echo "::add-mask::$PAPERLESS_SECRET_KEY"
-          echo "::add-mask::$TEMPORAL_DB_PASS"
 
           echo "authkey=$TS_KEY" >> $GITHUB_OUTPUT
           echo "PULUMI_ACCESS_TOKEN=$PULUMI_TOKEN" >> $GITHUB_ENV
@@ -65,9 +59,6 @@ jobs:
               'home-net:technitiumToken':            os.environ['TECH_TOKEN'],
               'home-net:publicFacingIp':             os.environ['PUBLIC_IP'],
               'home-net:infisicalProjectId':         'bdb8c859-f6b3-4cca-9e8d-dccc12607ff4',
-              'home-net:gs.PAPERLESS_DB_PASS':       os.environ['PAPERLESS_DB_PASS'],
-              'home-net:gs.PAPERLESS_SECRET_KEY':    os.environ['PAPERLESS_SECRET_KEY'],
-              'home-net:gs.TEMPORAL_DB_PASS':        os.environ['TEMPORAL_DB_PASS'],
               'home-net:npmUrl':                     'http://192.168.4.2:81',
               'home-net:technitiumUrl':              'http://192.168.4.53:5380',
               'home-net:authentikUrl':               'http://192.168.4.55:9000',
@@ -102,4 +93,4 @@ jobs:
       - name: Run pulumi up
         working-directory: pulumi
         run: |
-          pulumi up --stack "$PULUMI_STACK" --yes --non-interactive
+          pulumi up --stack "$PULUMI_STACK" --yes --non-interactive --parallel 3
