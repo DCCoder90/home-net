@@ -46,6 +46,18 @@ jobs:
           echo "::add-mask::$NPM_PASS"
           echo "::add-mask::$TECH_TOKEN"
 
+          # Write SSH private keys so the Docker provider gRPC binary can find them
+          mkdir -p "$HOME/.ssh"
+          chmod 700 "$HOME/.ssh"
+          TOWER_KEY=$(fetch server_tower_private_key /server_access)
+          echo "::add-mask::$TOWER_KEY"
+          printf '%s\n' "$TOWER_KEY" | tr -d '\r' > "$HOME/.ssh/pulumi-key-tower"
+          chmod 600 "$HOME/.ssh/pulumi-key-tower"
+          NET1_KEY=$(fetch server_net1_private_key /server_access)
+          echo "::add-mask::$NET1_KEY"
+          printf '%s\n' "$NET1_KEY" | tr -d '\r' > "$HOME/.ssh/pulumi-key-net1"
+          chmod 600 "$HOME/.ssh/pulumi-key-net1"
+
           echo "authkey=$TS_KEY" >> $GITHUB_OUTPUT
           echo "PULUMI_ACCESS_TOKEN=$PULUMI_TOKEN" >> $GITHUB_ENV
           echo "PULUMI_STACK=$PULUMI_STACK_VAL" >> $GITHUB_ENV
