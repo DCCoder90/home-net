@@ -36,11 +36,3 @@ config:
   home-net:hostPathNpmLetsencrypt: /mnt/user/appdata/nginx-proxy-manager/letsencrypt
   home-net:hostPathNpmLogs: /mnt/user/appdata/nginx-proxy-manager/logs
 
-  # Generated stack secrets — set these before first `pulumi up`
-  # Run: pulumi config set --secret gs.PAPERLESS_DB_PASS $(openssl rand -hex 16)
-  # home-net:gs.PAPERLESS_DB_PASS:
-  #   secure: REPLACE_ME
-  # home-net:gs.PAPERLESS_SECRET_KEY:
-  #   secure: REPLACE_ME
-  # home-net:gs.TEMPORAL_DB_PASS:
-  #   secure: REPLACE_ME

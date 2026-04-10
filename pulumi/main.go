@@ -67,13 +67,17 @@ func main() {
 			}
 		}
 
-		// ── 5. Read generated secrets from Pulumi config ───────────────────────────
-		// These must be set before first run: pulumi config set --secret gs.<NAME> <value>
-		// See Pulumi.dev.yaml for the full list and scripts/generate-imports.sh for setup.
+		// ── 5. Ensure generated secrets exist in Infisical /generated folder ─────────
 		genSecretNames := config.CollectGeneratedSecretNames(stacks)
-		generatedSecrets := make(map[string]pulumi.StringOutput, len(genSecretNames))
-		for _, name := range genSecretNames {
-			generatedSecrets[name] = cfg.RequireSecret("gs." + name)
+		plainGenSecrets, err := infisicalClient.EnsureGenerated(genSecretNames)
+		if err != nil {
+			return fmt.Errorf("ensuring generated secrets: %w", err)
+		}
+		generatedSecrets := make(map[string]pulumi.StringOutput, len(plainGenSecrets))
+		for name, value := range plainGenSecrets {
+			generatedSecrets[name] = pulumi.ToSecret(pulumi.String(value)).ApplyT(func(v any) (string, error) {
+				return v.(string), nil
+			}).(pulumi.StringOutput)
 		}
 
 		// ── 6. Build per-server Docker providers via SSH ───────────────────────────

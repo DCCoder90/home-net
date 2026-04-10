@@ -2,6 +2,8 @@ package secrets
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/hex"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -111,6 +113,41 @@ func (c *Client) FetchServerAccess() (map[string]SSHConfig, error) {
 			Port:    port,
 			PrivKey: keyPath,
 		}
+	}
+	return result, nil
+}
+
+// EnsureGenerated ensures each name in names exists as a secret under the /generated
+// folder in Infisical. Missing secrets are created with a cryptographically random
+// 32-character hex value. Returns the final map[name]value for all names.
+func (c *Client) EnsureGenerated(names []string) (map[string]string, error) {
+	existing, err := c.FetchAll("/generated")
+	if err != nil {
+		// Folder may not exist yet; treat as empty and let Create establish it.
+		existing = map[string]string{}
+	}
+
+	result := make(map[string]string, len(names))
+	for _, name := range names {
+		if val, ok := existing[name]; ok {
+			result[name] = val
+			continue
+		}
+		b := make([]byte, 16)
+		if _, err := rand.Read(b); err != nil {
+			return nil, fmt.Errorf("generating random value for secret %q: %w", name, err)
+		}
+		value := hex.EncodeToString(b)
+		if _, err := c.inner.Secrets().Create(infisical.CreateSecretOptions{
+			ProjectID:   c.projectID,
+			Environment: c.env,
+			SecretPath:  "/generated",
+			SecretKey:   name,
+			SecretValue: value,
+		}); err != nil {
+			return nil, fmt.Errorf("creating generated secret %q in Infisical: %w", name, err)
+		}
+		result[name] = value
 	}
 	return result, nil
 }
