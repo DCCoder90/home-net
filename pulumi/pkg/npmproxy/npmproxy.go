@@ -70,7 +70,7 @@ func NewCertificate(ctx *pulumi.Context, name string, domainNames []string, emai
 	err := ctx.RegisterResource("npmproxy:index:Certificate", name, pulumi.Map{
 		"domainNames": domains,
 		"email":       pulumi.String(email),
-		"cfApiToken":  pulumi.String(cloudflareToken),
+		"cfApiToken":  pulumi.ToSecret(pulumi.String(cloudflareToken)),
 	}, &cert, opts...)
 	return &cert, err
 }
