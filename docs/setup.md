@@ -190,7 +190,53 @@ Add the following secrets to your GitHub repository under **Settings → Secrets
 
 ---
 
-## 9. Adding a new service
+## 9. Adding a new server
+
+Any Linux host running Docker can be added as a managed server.
+
+### Step 1 — Add it to `config/servers.yaml`
+
+```yaml
+servers:
+  tower:
+    networks:
+      primary: "br1"
+      secondary: "br0"
+  myserver:           # new entry
+    networks:
+      primary: "eth0" # primary network interface name on that host
+```
+
+The `primary` interface name is used when attaching containers to networks. Run `ip link` on the target host to find the right name.
+
+### Step 2 — Add SSH credentials to Infisical under `/server_access`
+
+Pulumi connects to each server over SSH to run Docker commands. Add the following keys to your Infisical project (replace `myserver` with the name used in `servers.yaml`):
+
+| Infisical key | Description |
+|---|---|
+| `server_myserver_ip` | IP address of the host |
+| `server_myserver_ssh_user` | SSH user (e.g. `root`) |
+| `server_myserver_private_key` | PEM-encoded private key |
+| `server_myserver_ssh_port` | SSH port — optional, defaults to `22` |
+
+### Step 3 — Assign services to the new server
+
+Set `host: myserver` in a stack or service config. See [Stack Configuration Guide](config/stack-config.md) for details.
+
+### Step 4 — Apply
+
+```bash
+pulumi up
+```
+
+Pulumi will build a Docker provider for the new server and deploy any services assigned to it.
+
+> **Note:** `tower` is required and must always be present in `servers.yaml` — it hosts the core infrastructure containers (NPM, Technitium, Authentik).
+
+---
+
+## 10. Adding a new service
 
 1. Add a YAML file to `config/stacks/` (for a group of services) or `config/services/` (for a standalone service).
 2. Follow the schema documented in:

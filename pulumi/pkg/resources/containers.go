@@ -208,28 +208,23 @@ func registerContainer(
 	return container, nil
 }
 
-// buildEnvOutput returns a StringArrayOutput that resolves ${KEY} placeholders
-// in staticEnvs using values from generatedSecrets (Pulumi config outputs).
-// If no generated secrets are referenced, returns a resolved static array.
+// buildEnvOutput returns a StringArrayOutput that:
+//  1. Injects every key in neededKeys as KEY=value into the env list.
+//  2. Also substitutes any ${KEY} placeholders in staticEnvs (for cases where
+//     the env var name differs from the generated secret key name).
+//
+// If there are no generated secrets, returns a resolved static array.
 func buildEnvOutput(staticEnvs []string, neededKeys []string, generatedSecrets map[string]pulumi.StringOutput) pulumi.StringArrayOutput {
-	// Collect which generated secret keys are actually referenced in this service's envs.
-	var usedKeys []string
-	var usedOutputs []interface{}
+	var keys []string
+	var outputs []any
 	for _, key := range neededKeys {
-		placeholder := "${" + key + "}"
-		for _, e := range staticEnvs {
-			if strings.Contains(e, placeholder) {
-				if out, ok := generatedSecrets[key]; ok {
-					usedKeys = append(usedKeys, key)
-					usedOutputs = append(usedOutputs, out)
-				}
-				break
-			}
+		if out, ok := generatedSecrets[key]; ok {
+			keys = append(keys, key)
+			outputs = append(outputs, out)
 		}
 	}
 
-	if len(usedKeys) == 0 {
-		// No async resolution needed.
+	if len(keys) == 0 {
 		arr := make(pulumi.StringArray, len(staticEnvs))
 		for i, e := range staticEnvs {
 			arr[i] = pulumi.String(e)
@@ -237,16 +232,17 @@ func buildEnvOutput(staticEnvs []string, neededKeys []string, generatedSecrets m
 		return arr.ToStringArrayOutput()
 	}
 
-	// Wait for all needed generated secrets, then substitute.
-	return pulumi.All(usedOutputs...).ApplyT(func(vals []interface{}) ([]string, error) {
-		resolved := make(map[string]string, len(usedKeys))
-		for i, k := range usedKeys {
+	return pulumi.All(outputs...).ApplyT(func(vals []any) ([]string, error) {
+		resolved := make(map[string]string, len(keys))
+		for i, k := range keys {
 			s, ok := vals[i].(string)
 			if !ok {
 				return nil, fmt.Errorf("generated secret %q resolved to non-string type %T", k, vals[i])
 			}
 			resolved[k] = s
 		}
+
+		// Substitute any ${KEY} placeholders in existing env entries.
 		result := make([]string, len(staticEnvs))
 		for i, e := range staticEnvs {
 			v := e
@@ -255,6 +251,12 @@ func buildEnvOutput(staticEnvs []string, neededKeys []string, generatedSecrets m
 			}
 			result[i] = v
 		}
+
+		// Auto-inject each generated secret as KEY=value.
+		for _, k := range keys {
+			result = append(result, k+"="+resolved[k])
+		}
+
 		return result, nil
 	}).(pulumi.StringArrayOutput)
 }
