@@ -13,6 +13,9 @@ Each stack configuration file should define a top-level key that represents the 
 
 ```yaml
 your_stack_name:
+  # Optional: Server to deploy all services in this stack to. Defaults to "tower".
+  # Must match a name defined in config/servers.yaml.
+  host: "myserver"
   # Optional: Global environment variables for all services in this stack
   env:
     - "GLOBAL_ENV_VAR=value"
@@ -22,7 +25,9 @@ your_stack_name:
   # Optional: Global Docker volumes for all services in this stack
   volumes:
     - "my_volume:/data"
-  # Optional: List of secret names for Pulumi to generate as stable random passwords (stored in Pulumi state)
+  # Optional: List of secret names to auto-generate as stable random values.
+  # On first deploy, each name is created as a secret in Infisical under /generated.
+  # The value is then injected into every service in this stack as KEY=value.
   generated_secrets:
     - "API_KEY"
     - "DATABASE_PASSWORD"
@@ -37,6 +42,8 @@ your_stack_name:
     service_one_key: # Unique key for the service within this stack
       # Required: Display name of the service
       service_name: "My Awesome Service"
+      # Optional: Override the stack-level host for this specific service.
+      host: "myserver"
       # Required: Docker image name and tag
       image_name: "myrepo/my-service:latest"
       # Optional: Docker network mode (e.g., "host", "bridge")
@@ -124,11 +131,12 @@ your_stack_name:
 
 ### Field Meanings and Usage
 
+*   **`host` (Stack/Service Level)**: The server to deploy to. Must match a name in `config/servers.yaml`. Defaults to `tower`. Set at the stack level to deploy all services in the stack to one host, or per-service to override. See [Adding a new server](../setup.md#9-adding-a-new-server).
 *   **`env` (Stack/Service Level)**: A list of `KEY=VALUE` strings for environment variables. Service-level `env` is merged with stack-level `env`. Values like `${SECRET_NAME}` will be replaced by the corresponding `generated_secrets` value at deploy time.
 *   **`mounts` (Stack/Service Level)**: A list of bind mount strings in `host_path:container_path[:ro]`. Service-level `mounts` are merged with stack-level `mounts`.
 *   **`commands` (Service Level)**: A list of strings representing the command to run in the container, overriding the image's default command.
 *   **`volumes` (Stack/Service Level)**: A list of Docker volume configurations.
-*   **`generated_secrets`**: A list of string names (e.g., `"DB_PASSWORD"`) for secrets that Pulumi will generate as stable random passwords and store in Pulumi state. Referenced in `env` using `${SECRET_NAME}` syntax (e.g., `"DB_PASS=${DB_PASSWORD}"`). The same value is used across `pulumi up` runs, making it safe for stateful services like databases.
+*   **`generated_secrets`**: A list of string names (e.g., `"DB_PASSWORD"`) for secrets that are auto-generated on first deploy and stored in Infisical under `/generated`. Each secret is automatically injected into every service in the stack as `KEY=value`. You can also reference a generated secret inside another env var using `${SECRET_NAME}` syntax (e.g., `"DB_PASS=${DB_PASSWORD}"`) if you need the env var name to differ from the key name. Values persist across runs, making them safe for stateful services like databases.
 *   **`networks` (Stack Level)**: Defines custom Docker networks to be created for this stack. These are separate from `br0` and `br1`.
 *   **`services`**: The core of the stack, defining individual Docker containers.
     *   **`service_name`**: The name of the Docker container and the base for Authentik application names.
