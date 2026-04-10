@@ -34,6 +34,7 @@ temporal:
       dns:
         enabled: true
         domain_name: "temporal-server.dcapi.app"
+        internal: true
       auth:
         enabled: false
       network:
@@ -56,6 +57,7 @@ temporal:
       dns:
         enabled: true
         domain_name: "temporal.dcapi.app"
+        internal: true
       network:
         internal: true
         service_port: 8080

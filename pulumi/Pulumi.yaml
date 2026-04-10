@@ -1,0 +1,14 @@
+name: home-net
+runtime: go
+description: Home network infrastructure managed with Pulumi
+backend:
+  url: https://api.pulumi.com
+
+plugins:
+  providers:
+    - name: npmproxy
+      version: 0.0.1
+      path: ./bin
+    - name: technitium
+      version: 0.0.1
+      path: ./bin

@@ -1,11 +1,11 @@
 
 ## ⚙️ Stack Configuration Files
 
-Stack configuration files define groups of related services and their specific settings. These files are written in YAML and are automatically discovered and loaded by Terraform.
+Stack configuration files define groups of related services and their specific settings. These files are written in YAML and are automatically discovered and loaded by Pulumi.
 
 ### File Location
 
-All stack configuration files must be placed in the `config/stacks/` directory. Each file should have a `.yaml` extension. Terraform will merge all `.yaml` files found in this directory into a single configuration object.
+All stack configuration files must be placed in the `config/stacks/` directory. Each file should have a `.yaml` extension. Pulumi will merge all `.yaml` files found in this directory into a single configuration object.
 
 ### Structure
 
@@ -22,7 +22,7 @@ your_stack_name:
   # Optional: Global Docker volumes for all services in this stack
   volumes:
     - "my_volume:/data"
-  # Optional: List of secret names to be generated/fetched by Terraform for this stack
+  # Optional: List of secret names for Pulumi to generate as stable random passwords (stored in Pulumi state)
   generated_secrets:
     - "API_KEY"
     - "DATABASE_PASSWORD"
@@ -124,11 +124,11 @@ your_stack_name:
 
 ### Field Meanings and Usage
 
-*   **`env` (Stack/Service Level)**: A list of `KEY=VALUE` strings for environment variables. Service-level `env` is merged with stack-level `env`. Values like `${SECRET_NAME}` will be replaced by dynamically generated secrets.
+*   **`env` (Stack/Service Level)**: A list of `KEY=VALUE` strings for environment variables. Service-level `env` is merged with stack-level `env`. Values like `${SECRET_NAME}` will be replaced by the corresponding `generated_secrets` value at deploy time.
 *   **`mounts` (Stack/Service Level)**: A list of bind mount strings in `host_path:container_path[:ro]`. Service-level `mounts` are merged with stack-level `mounts`.
 *   **`commands` (Service Level)**: A list of strings representing the command to run in the container, overriding the image's default command.
 *   **`volumes` (Stack/Service Level)**: A list of Docker volume configurations.
-*   **`generated_secrets`**: A list of string names (e.g., `"API_KEY"`) for secrets that Terraform will fetch from Infisical and inject as environment variables. Referenced in `env` using `${SECRET_NAME}` syntax.
+*   **`generated_secrets`**: A list of string names (e.g., `"DB_PASSWORD"`) for secrets that Pulumi will generate as stable random passwords and store in Pulumi state. Referenced in `env` using `${SECRET_NAME}` syntax (e.g., `"DB_PASS=${DB_PASSWORD}"`). The same value is used across `pulumi up` runs, making it safe for stateful services like databases.
 *   **`networks` (Stack Level)**: Defines custom Docker networks to be created for this stack. These are separate from `br0` and `br1`.
 *   **`services`**: The core of the stack, defining individual Docker containers.
     *   **`service_name`**: The name of the Docker container and the base for Authentik application names.
@@ -146,7 +146,7 @@ your_stack_name:
     > - Use `br0` for services that need to be directly accessible on your primary LAN (e.g., for network discovery protocols like mDNS or for devices that need to connect directly).
     > - Use `br1` for most standard services that will be accessed via the reverse proxy. This isolates their traffic from the main LAN.
 
-    *   **`dns.enabled`**: If `true`, Terraform will create a DNS record and an Nginx Proxy Manager host for this service.
+    *   **`dns.enabled`**: If `true`, Pulumi will create a DNS record and an Nginx Proxy Manager host for this service.
     *   **`dns.domain_name`**: The full domain name for the service (e.g., `sonarr.dcapi.app`).
     *   **`dns.access_list_id`**: This field is **not set directly**. The module automatically assigns the "Internal Only" access list for internal services and the "CloudFlare Only" access list for external services.
     *   **`auth.enabled`**: If `true`, authentication is configured for this service.

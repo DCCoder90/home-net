@@ -1,0 +1,46 @@
+secretsProvider: default
+config:
+  # Infisical credentials (bootstrap — everything else fetched from Infisical at runtime)
+  home-net:infisicalClientId:
+    secure: REPLACE_ME
+  home-net:infisicalClientSecret:
+    secure: REPLACE_ME
+
+  # NPM Proxy Manager credentials
+  home-net:npmUrl: http://192.168.4.2:81
+  home-net:npmUsername: REPLACE_ME
+  home-net:npmPassword:
+    secure: REPLACE_ME
+
+  # Technitium DNS credentials
+  home-net:technitiumUrl: http://192.168.4.53:5380
+  home-net:technitiumToken:
+    secure: REPLACE_ME
+
+  # Authentik credentials
+  home-net:authentikUrl: http://192.168.4.55:9000
+  home-net:authentikToken:
+    secure: REPLACE_ME
+
+  # Cloudflare
+  home-net:cloudflareApiToken:
+    secure: REPLACE_ME
+
+  # Public IP for external DNS records
+  home-net:publicFacingIp: REPLACE_ME
+
+  # Core container config
+  home-net:tz: America/Chicago
+  home-net:hostPathDnsConfig: /mnt/cache/technitium
+  home-net:hostPathNpmData: /mnt/user/appdata/nginx-proxy-manager/data
+  home-net:hostPathNpmLetsencrypt: /mnt/user/appdata/nginx-proxy-manager/letsencrypt
+  home-net:hostPathNpmLogs: /mnt/user/appdata/nginx-proxy-manager/logs
+
+  # Generated stack secrets — set these before first `pulumi up`
+  # Run: pulumi config set --secret gs.PAPERLESS_DB_PASS $(openssl rand -hex 16)
+  # home-net:gs.PAPERLESS_DB_PASS:
+  #   secure: REPLACE_ME
+  # home-net:gs.PAPERLESS_SECRET_KEY:
+  #   secure: REPLACE_ME
+  # home-net:gs.TEMPORAL_DB_PASS:
+  #   secure: REPLACE_ME

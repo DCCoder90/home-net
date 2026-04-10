@@ -8,6 +8,7 @@
         dns:
           enabled: true
           domain_name: "claw.dcapi.app"
+          internal: true
         network:
           internal: true
           service_port: 18789

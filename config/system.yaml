@@ -1,6 +1,13 @@
 authentik:
   ip_address: "192.168.4.55"
   port: 9000
+  domain_name: "auth.dcapi.app"
+  image: "ghcr.io/goauthentik/server:latest"
+  data_path: "/mnt/cache/authentik"
+  postgresql_host: "192.168.4.105"
+  postgresql_user: "dccoder"
+  postgresql_name: "authentik"
+  redis_host: "192.168.4.115"
 proxy_ip: "192.168.4.2"
 dns_ip: "192.168.4.53"
 zones:
@@ -11,6 +18,6 @@ existing_networks:
  - "br1"
  - "br0"
 infisical:
-  project: "home-net-ln-sy"
+  project: "bdb8c859-f6b3-4cca-9e8d-dccc12607ff4"
   environment: "dev"
   folder: "/secrets"

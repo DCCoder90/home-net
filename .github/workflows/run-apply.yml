@@ -1,4 +1,4 @@
-name: Terraform Apply
+name: Pulumi Apply
 
 on:
   push:
@@ -6,101 +6,100 @@ on:
       - main
     paths:
       - 'config/**'
-      - 'terraform/**'
+      - 'pulumi/**'
   workflow_dispatch:
 
 jobs:
-  apply_core:
+  pulumi_apply:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pull-requests: write
-    env:
-      TF_WORKSPACE: ${{ secrets.TF_WORKSPACE_CORE }}
-      CONFIG_DIRECTORY: "./"
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Upload Configuration
-        uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.3.2
-        id: upload-configuration
-        with:
-          workspace: ${{ env.TF_WORKSPACE }}
-          directory: ${{ env.CONFIG_DIRECTORY }}
-          token: ${{ secrets.TF_API_TOKEN }}
-          organization: ${{ secrets.TF_ORGANIZATION }}
-
-      - name: Trigger Terraform Cloud Apply
-        uses: hashicorp/tfc-workflows-github/actions/create-run@v1.3.2
-        id: create-run
-        with:
-          token: ${{ secrets.TF_API_TOKEN }}
-          hostname: app.terraform.io
-          organization: ${{ secrets.TF_ORGANIZATION }}
-          workspace: ${{ env.TF_WORKSPACE }}
-          message: "Triggered by push to main (core): ${{ github.sha }}"
-          is_destroy: false
-
-      - name: Apply Run
-        uses: hashicorp/tfc-workflows-github/actions/apply-run@v1.3.2
-        id: apply
-        with:
-            hostname: app.terraform.io
-            token: ${{ secrets.TF_API_TOKEN }}
-            run: ${{ steps.create-run.outputs.run_id }}
-            comment: "Confirmed from GitHub Actions CI (core)"
-
-      - name: Check Terraform Cloud Run Status
+      - name: Get secrets from Infisical
+        id: ts-key
+        env:
+          INFISICAL_CLIENT_ID: ${{ secrets.INFISICAL_CLIENT_ID }}
+          INFISICAL_CLIENT_SECRET: ${{ secrets.INFISICAL_CLIENT_SECRET }}
         run: |
-          echo "Terraform Cloud Apply ID: ${{ steps.apply.outputs.run_id }}"
-          echo "Terraform Cloud Apply URL: ${{ steps.apply.outputs.run_link }}"
+          curl -1sLf 'https://dl.cloudsmith.io/public/infisical/infisical-cli/setup.deb.sh' | sudo -E bash
+          sudo apt install -y infisical
 
-  apply_apps:
-    needs: apply_core
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
-    env:
-      TF_WORKSPACE: ${{ secrets.TF_WORKSPACE_APPS }}
-      CONFIG_DIRECTORY: "./"
+          TOKEN=$(infisical login --method=universal-auth --client-id="$INFISICAL_CLIENT_ID" --client-secret="$INFISICAL_CLIENT_SECRET" --plain --silent)
+          fetch() { INFISICAL_TOKEN="$TOKEN" infisical secrets get "$1" --plain --projectId "bdb8c859-f6b3-4cca-9e8d-dccc12607ff4" --env dev --path "$2"; }
 
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+          export TS_KEY=$(fetch TAILSCALE_AUTH_KEY /server_access)
+          export PULUMI_TOKEN=$(fetch PULUMI_ACCESS_TOKEN /server_access)
+          export PULUMI_STACK_VAL=$(fetch PULUMI_STACK /server_access)
+          export PUBLIC_IP=$(fetch PUBLIC_IP /server_access)
 
-      - name: Upload Configuration
-        uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.3.2
-        id: upload-configuration
+          export NPM_USER=$(fetch nginx_proxy_user /secrets)
+          export NPM_PASS=$(fetch nginx_proxy_pass /secrets)
+          export TECH_TOKEN=$(fetch technitium_api_token /secrets)
+          export PAPERLESS_DB_PASS=$(fetch PAPERLESS_DB_PASS /secrets)
+          export PAPERLESS_SECRET_KEY=$(fetch PAPERLESS_SECRET_KEY /secrets)
+          export TEMPORAL_DB_PASS=$(fetch TEMPORAL_DB_PASS /secrets)
+
+          echo "::add-mask::$TS_KEY"
+          echo "::add-mask::$PULUMI_TOKEN"
+          echo "::add-mask::$NPM_PASS"
+          echo "::add-mask::$TECH_TOKEN"
+          echo "::add-mask::$PAPERLESS_DB_PASS"
+          echo "::add-mask::$PAPERLESS_SECRET_KEY"
+          echo "::add-mask::$TEMPORAL_DB_PASS"
+
+          echo "authkey=$TS_KEY" >> $GITHUB_OUTPUT
+          echo "PULUMI_ACCESS_TOKEN=$PULUMI_TOKEN" >> $GITHUB_ENV
+          echo "PULUMI_STACK=$PULUMI_STACK_VAL" >> $GITHUB_ENV
+
+          python3 - <<'EOF'
+          import yaml, os
+          config = {
+              'home-net:infisicalClientId':          os.environ['INFISICAL_CLIENT_ID'],
+              'home-net:infisicalClientSecret':      os.environ['INFISICAL_CLIENT_SECRET'],
+              'home-net:npmUsername':                os.environ['NPM_USER'],
+              'home-net:npmPassword':                os.environ['NPM_PASS'],
+              'home-net:technitiumToken':            os.environ['TECH_TOKEN'],
+              'home-net:publicFacingIp':             os.environ['PUBLIC_IP'],
+              'home-net:infisicalProjectId':         'bdb8c859-f6b3-4cca-9e8d-dccc12607ff4',
+              'home-net:gs.PAPERLESS_DB_PASS':       os.environ['PAPERLESS_DB_PASS'],
+              'home-net:gs.PAPERLESS_SECRET_KEY':    os.environ['PAPERLESS_SECRET_KEY'],
+              'home-net:gs.TEMPORAL_DB_PASS':        os.environ['TEMPORAL_DB_PASS'],
+              'home-net:npmUrl':                     'http://192.168.4.2:81',
+              'home-net:technitiumUrl':              'http://192.168.4.53:5380',
+              'home-net:authentikUrl':               'http://192.168.4.55:9000',
+              'home-net:tz':                         'America/Chicago',
+              'home-net:hostPathDnsConfig':          '/mnt/cache/technitium',
+              'home-net:hostPathNpmData':            '/mnt/user/appdata/nginx-proxy-manager/data',
+              'home-net:hostPathNpmLetsencrypt':     '/mnt/user/appdata/nginx-proxy-manager/letsencrypt',
+              'home-net:hostPathNpmLogs':            '/mnt/user/appdata/nginx-proxy-manager/logs',
+          }
+          with open('pulumi/Pulumi.prod.yaml', 'w') as f:
+              yaml.dump({'config': config}, f, default_flow_style=False, allow_unicode=True)
+          EOF
+
+      - name: Connect to Tailscale
+        uses: tailscale/github-action@v3
         with:
-          workspace: ${{ env.TF_WORKSPACE }}
-          directory: ${{ env.CONFIG_DIRECTORY }}
-          token: ${{ secrets.TF_API_TOKEN }}
-          organization: ${{ secrets.TF_ORGANIZATION }}
+          authkey: ${{ steps.ts-key.outputs.authkey }}
 
-      - name: Trigger Terraform Cloud Apply
-        uses: hashicorp/tfc-workflows-github/actions/create-run@v1.3.2
-        id: create-run
+      - name: Set up Go
+        uses: actions/setup-go@v5
         with:
-          token: ${{ secrets.TF_API_TOKEN }}
-          hostname: app.terraform.io
-          organization: ${{ secrets.TF_ORGANIZATION }}
-          workspace: ${{ env.TF_WORKSPACE }}
-          message: "Triggered by push to main (apps): ${{ github.sha }}"
-          is_destroy: false
+          go-version-file: pulumi/go.mod
+          cache-dependency-path: pulumi/go.sum
 
-      - name: Apply Run
-        uses: hashicorp/tfc-workflows-github/actions/apply-run@v1.3.2
-        id: apply
-        with:
-            hostname: app.terraform.io
-            token: ${{ secrets.TF_API_TOKEN }}
-            run: ${{ steps.create-run.outputs.run_id }}
-            comment: "Confirmed from GitHub Actions CI (apps)"
+      - name: Build custom providers
+        working-directory: pulumi
+        run: bash scripts/build-providers.sh
 
-      - name: Check Terraform Cloud Run Status
+      - name: Install Pulumi CLI
+        uses: pulumi/actions@v6
+
+      - name: Run pulumi up
+        working-directory: pulumi
         run: |
-          echo "Terraform Cloud Apply ID: ${{ steps.apply.outputs.run_id }}"
-          echo "Terraform Cloud Apply URL: ${{ steps.apply.outputs.run_link }}"
+          pulumi up --stack "$PULUMI_STACK" --yes --non-interactive

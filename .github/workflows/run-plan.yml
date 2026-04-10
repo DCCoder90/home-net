@@ -1,4 +1,4 @@
-name: Terraform Plan
+name: Pulumi Preview
 
 on:
   pull_request:
@@ -6,95 +6,141 @@ on:
       - main
     paths:
       - 'config/**'
-      - 'terraform/**'
+      - 'pulumi/**'
   workflow_dispatch:
 
 jobs:
-  terraform_plan:
+  pulumi_preview:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       pull-requests: write
-    strategy:
-      matrix:
-        include:
-          - name: core
-          - name: apps
-    env:
-        TF_WORKSPACE: ${{ matrix.name == 'core' && secrets.TF_WORKSPACE_CORE || secrets.TF_WORKSPACE_APPS }}
-        CONFIG_DIRECTORY: "./"
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Upload Configuration
-        uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.3.2
-        id: upload-configuration
-        with:
-          workspace: ${{ env.TF_WORKSPACE }}
-          directory: ${{ env.CONFIG_DIRECTORY }}
-          token: ${{ secrets.TF_API_TOKEN }}
-          organization: ${{ secrets.TF_ORGANIZATION }}
+      - name: Get secrets from Infisical
+        id: ts-key
+        env:
+          INFISICAL_CLIENT_ID: ${{ secrets.INFISICAL_CLIENT_ID }}
+          INFISICAL_CLIENT_SECRET: ${{ secrets.INFISICAL_CLIENT_SECRET }}
+        run: |
+          curl -1sLf 'https://dl.cloudsmith.io/public/infisical/infisical-cli/setup.deb.sh' | sudo -E bash
+          sudo apt install -y infisical
 
-      - name: Trigger Terraform Cloud Plan
-        uses: hashicorp/tfc-workflows-github/actions/create-run@v1.3.2
-        id: create-run
-        with:
-          token: ${{ secrets.TF_API_TOKEN }}
-          hostname: app.terraform.io
-          organization: ${{ secrets.TF_ORGANIZATION }}
-          workspace: ${{ env.TF_WORKSPACE }}
-          message: "Triggered by PR (${{ matrix.name }}): ${{ github.event.pull_request.head.ref }}"
-          plan_only: true
+          TOKEN=$(infisical login --method=universal-auth --client-id="$INFISICAL_CLIENT_ID" --client-secret="$INFISICAL_CLIENT_SECRET" --plain --silent)
+          fetch() { INFISICAL_TOKEN="$TOKEN" infisical secrets get "$1" --plain --projectId "bdb8c859-f6b3-4cca-9e8d-dccc12607ff4" --env dev --path "$2"; }
 
-      - uses: hashicorp/tfc-workflows-github/actions/plan-output@v1.3.2
-        id: plan-output
-        with:
-          plan: ${{ steps.create-run.outputs.plan_id }}
-          token: ${{ secrets.TF_API_TOKEN }}
-          organization: ${{ secrets.TF_ORGANIZATION }}
+          export TS_KEY=$(fetch TAILSCALE_AUTH_KEY /server_access)
+          export PULUMI_TOKEN=$(fetch PULUMI_ACCESS_TOKEN /server_access)
+          export PULUMI_STACK_VAL=$(fetch PULUMI_STACK /server_access)
+          export PUBLIC_IP=$(fetch PUBLIC_IP /server_access)
 
-      - uses: actions/github-script@v6
+          export NPM_USER=$(fetch nginx_proxy_user /secrets)
+          export NPM_PASS=$(fetch nginx_proxy_pass /secrets)
+          export TECH_TOKEN=$(fetch technitium_api_token /secrets)
+          export PAPERLESS_DB_PASS=$(fetch PAPERLESS_DB_PASS /secrets)
+          export PAPERLESS_SECRET_KEY=$(fetch PAPERLESS_SECRET_KEY /secrets)
+          export TEMPORAL_DB_PASS=$(fetch TEMPORAL_DB_PASS /secrets)
+
+          echo "::add-mask::$TS_KEY"
+          echo "::add-mask::$PULUMI_TOKEN"
+          echo "::add-mask::$NPM_PASS"
+          echo "::add-mask::$TECH_TOKEN"
+          echo "::add-mask::$PAPERLESS_DB_PASS"
+          echo "::add-mask::$PAPERLESS_SECRET_KEY"
+          echo "::add-mask::$TEMPORAL_DB_PASS"
+
+          echo "authkey=$TS_KEY" >> $GITHUB_OUTPUT
+          echo "PULUMI_ACCESS_TOKEN=$PULUMI_TOKEN" >> $GITHUB_ENV
+          echo "PULUMI_STACK=$PULUMI_STACK_VAL" >> $GITHUB_ENV
+
+          python3 - <<'EOF'
+          import yaml, os
+          config = {
+              'home-net:infisicalClientId':          os.environ['INFISICAL_CLIENT_ID'],
+              'home-net:infisicalClientSecret':      os.environ['INFISICAL_CLIENT_SECRET'],
+              'home-net:npmUsername':                os.environ['NPM_USER'],
+              'home-net:npmPassword':                os.environ['NPM_PASS'],
+              'home-net:technitiumToken':            os.environ['TECH_TOKEN'],
+              'home-net:publicFacingIp':             os.environ['PUBLIC_IP'],
+              'home-net:infisicalProjectId':         'bdb8c859-f6b3-4cca-9e8d-dccc12607ff4',
+              'home-net:gs.PAPERLESS_DB_PASS':       os.environ['PAPERLESS_DB_PASS'],
+              'home-net:gs.PAPERLESS_SECRET_KEY':    os.environ['PAPERLESS_SECRET_KEY'],
+              'home-net:gs.TEMPORAL_DB_PASS':        os.environ['TEMPORAL_DB_PASS'],
+              'home-net:npmUrl':                     'http://192.168.4.2:81',
+              'home-net:technitiumUrl':              'http://192.168.4.53:5380',
+              'home-net:authentikUrl':               'http://192.168.4.55:9000',
+              'home-net:tz':                         'America/Chicago',
+              'home-net:hostPathDnsConfig':          '/mnt/cache/technitium',
+              'home-net:hostPathNpmData':            '/mnt/user/appdata/nginx-proxy-manager/data',
+              'home-net:hostPathNpmLetsencrypt':     '/mnt/user/appdata/nginx-proxy-manager/letsencrypt',
+              'home-net:hostPathNpmLogs':            '/mnt/user/appdata/nginx-proxy-manager/logs',
+          }
+          with open('pulumi/Pulumi.prod.yaml', 'w') as f:
+              yaml.dump({'config': config}, f, default_flow_style=False, allow_unicode=True)
+          EOF
+
+      - name: Connect to Tailscale
+        uses: tailscale/github-action@v3
+        with:
+          authkey: ${{ steps.ts-key.outputs.authkey }}
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: pulumi/go.mod
+          cache-dependency-path: pulumi/go.sum
+
+      - name: Build custom providers
+        working-directory: pulumi
+        run: bash scripts/build-providers.sh
+
+      - name: Install Pulumi CLI
+        uses: pulumi/actions@v6
+
+      - name: Run pulumi preview
+        id: preview
+        working-directory: pulumi
+        run: |
+          pulumi preview --stack "$PULUMI_STACK" --non-interactive 2>&1 | tee preview-output.txt
+          echo "exit_code=${PIPESTATUS[0]}" >> $GITHUB_OUTPUT
+
+      - name: Post preview to PR
         if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const workspaceName = '${{ matrix.name }}';
+            const fs = require('fs');
+            const output = fs.readFileSync('pulumi/preview-output.txt', 'utf8');
+            const body = `#### Pulumi Preview\n\`\`\`\n${output.slice(-65000)}\n\`\`\``;
+
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-            })
-            const botComment = comments.find(comment => {
-              return comment.user.type === 'Bot' && comment.body.includes(`HCP Terraform Plan Output - ${workspaceName}`)
-            })
-            const output = `#### HCP Terraform Plan Output - ${workspaceName}
-               \`\`\`\n
-               Plan: ${{ steps.plan-output.outputs.add }} to add, ${{ steps.plan-output.outputs.change }} to change, ${{ steps.plan-output.outputs.destroy }} to destroy.
-               \`\`\`
-               [HCP Terraform Plan](${{ steps.create-run.outputs.run_link }})
-               `
-            if (botComment) {
-              github.rest.issues.updateComment({
+            });
+            const existing = comments.find(c =>
+              c.user.type === 'Bot' && c.body.includes('#### Pulumi Preview')
+            );
+            if (existing) {
+              await github.rest.issues.updateComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                comment_id: botComment.id,
-                body: output
-              })
+                comment_id: existing.id,
+                body,
+              });
             } else {
-              github.rest.issues.createComment({
+              await github.rest.issues.createComment({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                body: output
-              })
+                body,
+              });
             }
 
-      - id: terraform-cloud-check-run-status
-        if: ${{ steps.create-run.outputs.run_status != 'planned_and_finished'}}
-        run: |
-          echo "HCP Terraform Run Failed or Requires Further Attention"
-          echo "Run Status: '${{ steps.create-run.outputs.run_status }}'"
-          echo "${{ steps.create-run.outputs.run_link }}"
-          exit 1
+      - name: Fail if preview errored
+        if: steps.preview.outputs.exit_code != '0'
+        run: exit 1

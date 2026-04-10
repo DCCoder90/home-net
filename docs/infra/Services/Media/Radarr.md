@@ -9,7 +9,7 @@ Last Updated 3/18/2026
 - **Service Name:** Radarr
 - **Description:** Movie collection manager. Automatically searches for movies, manages downloads, and organizes media files.
 - **Status:** Production
-- **Managed By:** Terraform IaC (`config/stacks/arr.yaml`)
+- **Managed By:** Pulumi IaC (`config/stacks/arr.yaml`)
 
 ## II. Docker & Network Configuration
 

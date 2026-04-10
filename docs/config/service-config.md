@@ -4,7 +4,7 @@ Standalone service definition files provide a flexible way to define individual 
 
 ### File Location
 
-All standalone service definition files must be placed in the `config/services/` directory. Each file should have a `.yaml` extension. Terraform will merge all top-level keys from all files found in this directory into a single `local.services` object.
+All standalone service definition files must be placed in the `config/services/` directory. Each file should have a `.yaml` extension. Pulumi will merge all top-level keys from all files found in this directory into a single services map.
 
 ### Structure
 
@@ -70,7 +70,7 @@ deluge-vpn:
 *   **`service_name`**: (Required) The human-readable name of the service, often used as the Docker container name.
 *   **`image_name`**: (Required) The Docker image to pull, including its tag (e.g., `binhex/arch-delugevpn:2.2`).
 *   **`dns`**: DNS and proxy configuration for the service.
-    *   **`dns.enabled`**: If `true`, Terraform creates a DNS record and Nginx Proxy Manager host.
+    *   **`dns.enabled`**: If `true`, Pulumi creates a DNS record and Nginx Proxy Manager host.
     *   **`dns.domain_name`**: The full domain name for the service (required if `dns.enabled` is true).
 *   **`network`**: Network configuration for the service.
     *   **`network.internal`**: If `true`, the service is only accessible internally (not exposed via the internet).
@@ -79,7 +79,7 @@ deluge-vpn:
         *   `name`: The network name (e.g., `"br1"`).
         *   `ip_address`: (Optional) A static IP to assign on that network.
 *   **`auth`**: Authentication configuration. See [stack-config.md](stack-config.md) for full auth options.
-*   **`secrets`**: A map of environment variable names to Infisical secret names. Terraform fetches these secrets and injects them as environment variables.
+*   **`secrets`**: A map of environment variable names to Infisical secret names. Pulumi fetches these secrets from Infisical and injects them as environment variables.
 *   **`env`**: (Optional) A list of `KEY=VALUE` strings that will be set as environment variables inside the container.
 *   **`mounts`**: (Optional) A list of bind mount strings in the format `host_path:container_path[:ro]`.
 *   **`capabilities.add`**: (Optional) A list of Linux capabilities to add to the container (e.g., `CAP_NET_ADMIN`).

@@ -124,7 +124,7 @@ Restart the container after installation.
 
 ---
 
-## **4. Manual Networking Setup (NOT managed by Terraform)**
+## **4. Manual Networking Setup (NOT managed by Pulumi)**
 
 The voice webhook must be reachable from the internet for Twilio to deliver call events. To avoid exposing the main OpenClaw Gateway (port 18789), a separate domain (`voice.dcapi.app`) routes only to the voice listener (port 3334).
 
