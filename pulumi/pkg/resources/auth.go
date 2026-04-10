@@ -166,6 +166,7 @@ func RegisterAuthResources(
 			providerName := svc.ServiceName + "-oauth-provider"
 			oauthProvArgs := &authentik.ProviderOauth2Args{
 				Name:              pulumi.String(svc.ServiceName),
+				ClientId:          pulumi.String(svc.ServiceName),
 				AuthorizationFlow: pulumi.String(authorizationFlow.Id),
 				InvalidationFlow:  pulumi.String(invalidationFlow.Id),
 			}
