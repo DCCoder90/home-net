@@ -92,7 +92,8 @@ func main() {
 			prov, err := dockerprovider.NewProvider(ctx, "docker-"+serverName, &dockerprovider.ProviderArgs{
 				Host: pulumi.String(fmt.Sprintf("ssh://%s@%s:%d", access.User, access.Host, access.Port)),
 				SshOpts: pulumi.StringArray{
-					pulumi.String("-i " + access.PrivKey),
+					pulumi.String("-i"),
+					pulumi.String(access.PrivKey),
 					pulumi.String("-o StrictHostKeyChecking=no"),
 					pulumi.String("-o BatchMode=yes"),
 				},
