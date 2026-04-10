@@ -10,3 +10,4 @@ pulumi/providers/authentik/pulumi-resource-authentik
 pulumi/providers/technitium/pulumi-resource-technitium
 pulumi/providers/pulumi-resource-npmproxy
 pulumi/pulumi-ssh-key-*
+pulumi/pulumi-key-*
