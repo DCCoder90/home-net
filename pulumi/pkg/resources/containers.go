@@ -129,12 +129,28 @@ func registerContainer(
 		command = append(command, pulumi.String(cmd))
 	}
 
-	// Build GPU device request.
+	// Build device list — GPU shorthand plus any explicit devices from YAML.
 	var devices dockerprovider.ContainerDeviceArray
 	if svc.Def.EnableGPU {
 		devices = append(devices, &dockerprovider.ContainerDeviceArgs{
 			HostPath:      pulumi.String("/dev/dri"),
 			ContainerPath: pulumi.String("/dev/dri"),
+		})
+	}
+	if svc.Def.ExposeUSB {
+		devices = append(devices, &dockerprovider.ContainerDeviceArgs{
+			HostPath:      pulumi.String("/dev/bus/usb"),
+			ContainerPath: pulumi.String("/dev/bus/usb"),
+		})
+	}
+	for _, d := range svc.Def.Devices {
+		parts := strings.SplitN(d, ":", 2)
+		if len(parts) != 2 {
+			continue
+		}
+		devices = append(devices, &dockerprovider.ContainerDeviceArgs{
+			HostPath:      pulumi.String(parts[0]),
+			ContainerPath: pulumi.String(parts[1]),
 		})
 	}
 

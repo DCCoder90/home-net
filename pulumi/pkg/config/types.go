@@ -74,7 +74,9 @@ type ServiceConfig struct {
 	Commands     []string          `yaml:"commands,omitempty"`
 	NetworkMode  string            `yaml:"network_mode,omitempty"`
 	EnableGPU    bool              `yaml:"enable_gpu,omitempty"`
+	ExposeUSB    bool              `yaml:"expose_usb,omitempty"`
 	Capabilities *Capabilities     `yaml:"capabilities,omitempty"`
+	Devices      []string          `yaml:"devices,omitempty"`
 	Mounts       []string          `yaml:"mounts,omitempty"`
 	Volumes      []string          `yaml:"volumes,omitempty"`
 	Env          []string          `yaml:"env,omitempty"`
