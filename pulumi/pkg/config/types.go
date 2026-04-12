@@ -73,8 +73,8 @@ type ServiceConfig struct {
 	Icon         string            `yaml:"icon,omitempty"`
 	Commands     []string          `yaml:"commands,omitempty"`
 	NetworkMode  string            `yaml:"network_mode,omitempty"`
-	EnableGPU    bool              `yaml:"enable_gpu,omitempty"`
-	Capabilities *Capabilities     `yaml:"capabilities,omitempty"`
+	Capabilities *Capabilities  `yaml:"capabilities,omitempty"`
+	Devices      *DevicesConfig `yaml:"devices,omitempty"`
 	Mounts       []string          `yaml:"mounts,omitempty"`
 	Volumes      []string          `yaml:"volumes,omitempty"`
 	Env          []string          `yaml:"env,omitempty"`
@@ -135,6 +135,13 @@ type OAuthAuth struct {
 type Capabilities struct {
 	Add  []string `yaml:"add,omitempty"`
 	Drop []string `yaml:"drop,omitempty"`
+}
+
+// DevicesConfig controls device passthrough into the container.
+type DevicesConfig struct {
+	GPU   bool     `yaml:"gpu,omitempty"`
+	USB   bool     `yaml:"usb,omitempty"`
+	Paths []string `yaml:"paths,omitempty"`
 }
 
 // FlatService is a pre-merged service definition ready for resource registration.

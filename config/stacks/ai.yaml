@@ -110,7 +110,8 @@
         description: "Ollama is a local large language model runner."
         image_name: "ollama/ollama:latest"
         icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/ollama.png"
-        enable_gpu: true
+        devices:
+          gpu: true
         env:
           - "NVIDIA_DRIVER_CAPABILITIES=all"
           - "NVIDIA_VISIBLE_DEVICES=GPU-465cc8f0-4775-edd3-5402-87cca1022307"

@@ -129,13 +129,31 @@ func registerContainer(
 		command = append(command, pulumi.String(cmd))
 	}
 
-	// Build GPU device request.
+	// Build device list from the devices config block.
 	var devices dockerprovider.ContainerDeviceArray
-	if svc.Def.EnableGPU {
-		devices = append(devices, &dockerprovider.ContainerDeviceArgs{
-			HostPath:      pulumi.String("/dev/dri"),
-			ContainerPath: pulumi.String("/dev/dri"),
-		})
+	if d := svc.Def.Devices; d != nil {
+		if d.GPU {
+			devices = append(devices, &dockerprovider.ContainerDeviceArgs{
+				HostPath:      pulumi.String("/dev/dri"),
+				ContainerPath: pulumi.String("/dev/dri"),
+			})
+		}
+		if d.USB {
+			devices = append(devices, &dockerprovider.ContainerDeviceArgs{
+				HostPath:      pulumi.String("/dev/bus/usb"),
+				ContainerPath: pulumi.String("/dev/bus/usb"),
+			})
+		}
+		for _, path := range d.Paths {
+			parts := strings.SplitN(path, ":", 2)
+			if len(parts) != 2 {
+				continue
+			}
+			devices = append(devices, &dockerprovider.ContainerDeviceArgs{
+				HostPath:      pulumi.String(parts[0]),
+				ContainerPath: pulumi.String(parts[1]),
+			})
+		}
 	}
 
 	// Build labels.
@@ -178,12 +196,7 @@ func registerContainer(
 	if caps != nil {
 		args.Capabilities = caps
 	}
-	if svc.Def.EnableGPU {
-		// Pass NVIDIA runtime via env (the env vars are already in the YAML).
-		// Docker GPU runtime is configured via daemon default-runtime or via
-		// --runtime=nvidia, which maps to DeviceRequests in newer Docker API.
-		// For Unraid with nvidia plugin, the env vars suffice.
-	}
+
 
 	// Determine which network-related changes to ignore on existing containers.
 	ignoreFields := []string{"image", "labels", "logOpts"}
