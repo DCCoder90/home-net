@@ -54,8 +54,12 @@ your_stack_name:
       icon: "https://example.com/icon.png"
       # Optional: Full domain name for the service (used by some modules alongside dns.domain_name)
       domain_name: "service.yourdomain.com"
-      # Optional: Enable GPU passthrough for the container
-      enable_gpu: true
+      # Optional: Device passthrough for the container
+      devices:
+        gpu: true         # Passes /dev/dri (GPU/hardware transcoding)
+        usb: true         # Passes /dev/bus/usb (e.g. Coral TPU)
+        paths:            # Explicit host:container device paths
+          - "/dev/ttyUSB0:/dev/ttyUSB0"
       # Optional: Service-specific environment variables
       env:
         - "SERVICE_ENV_VAR=value"
@@ -142,7 +146,10 @@ your_stack_name:
     *   **`service_name`**: The name of the Docker container and the base for Authentik application names.
     *   **`image_name`**: The Docker image to pull (e.g., `linuxserver/sonarr:4.0.16`).
     *   **`network_mode`**: The Docker network mode to set (e.g., `"host"` for services like Plex that need host networking).
-    *   **`enable_gpu`**: If `true`, enables GPU passthrough to the container (used for hardware transcoding in media servers).
+    *   **`devices`**: Controls device passthrough into the container.
+        *   **`devices.gpu`**: If `true`, passes `/dev/dri` into the container (used for hardware transcoding in media servers).
+        *   **`devices.usb`**: If `true`, passes `/dev/bus/usb` into the container (used for USB accelerators such as a Coral TPU).
+        *   **`devices.paths`**: A list of explicit `host_path:container_path` device strings for any other device passthrough needs.
     *   **`secrets`**: A map of environment variable names to Infisical secret names. Unlike `generated_secrets` (which are stack-level and referenced via `${}`), these are per-service and directly injected as environment variables.
     *   **`network.internal`**: If `true`, the service is not exposed externally via Nginx Proxy Manager.
     *   **`network.service_port`**: The port the service listens on *inside* the container.

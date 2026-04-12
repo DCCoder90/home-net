@@ -69,6 +69,7 @@ deluge-vpn:
 *   **`your_service_identifier`**: The top-level key in your YAML file (e.g., `flaresolverr`, `deluge-vpn`). It acts as a unique identifier for this specific service configuration within the `local.services` map.
 *   **`service_name`**: (Required) The human-readable name of the service, often used as the Docker container name.
 *   **`image_name`**: (Required) The Docker image to pull, including its tag (e.g., `binhex/arch-delugevpn:2.2`).
+*   **`host`**: (Optional) The server to deploy to. Must match a name in `config/servers.yaml`. Defaults to `tower`.
 *   **`dns`**: DNS and proxy configuration for the service.
     *   **`dns.enabled`**: If `true`, Pulumi creates a DNS record and Nginx Proxy Manager host.
     *   **`dns.domain_name`**: The full domain name for the service (required if `dns.enabled` is true).
@@ -83,4 +84,8 @@ deluge-vpn:
 *   **`env`**: (Optional) A list of `KEY=VALUE` strings that will be set as environment variables inside the container.
 *   **`mounts`**: (Optional) A list of bind mount strings in the format `host_path:container_path[:ro]`.
 *   **`capabilities.add`**: (Optional) A list of Linux capabilities to add to the container (e.g., `CAP_NET_ADMIN`).
+*   **`devices`**: (Optional) Device passthrough configuration.
+    *   **`devices.gpu`**: If `true`, passes `/dev/dri` into the container (hardware transcoding).
+    *   **`devices.usb`**: If `true`, passes `/dev/bus/usb` into the container (e.g. Coral TPU).
+    *   **`devices.paths`**: A list of explicit `host_path:container_path` strings for other devices.
 *   **`icon`**: (Optional) A URL to an icon for the service, often used by UI tools like Unraid.
