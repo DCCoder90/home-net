@@ -15,6 +15,7 @@ frigate:
         ip_address: "192.168.5.47"
   auth:
     enabled: false
+  privileged: true
   devices:
     usb: true
   mounts:
