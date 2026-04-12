@@ -1,0 +1,48 @@
+surveillance:
+  env:
+    - "TZ=America/Chicago"
+  mounts:
+    - "/etc/localtime:/etc/localtime:ro"
+  services:
+    frigate:
+      service_name: "frigate"
+      image_name: "ghcr.io/blakeblackshear/frigate:stable"
+      host: "tower"
+      description: "Real-time AI object detection NVR for IP cameras."
+      icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/frigate.png"
+      dns:
+        enabled: true
+        domain_name: "cameras.mallett.family"
+      network:
+        internal: true
+        service_port: 5000
+        networks:
+          - name: "br1"
+            ip_address: "192.168.5.47"
+      auth:
+        enabled: false
+      privileged: true
+      devices:
+        usb: true
+      mounts:
+        - "/mnt/user/appdata/frigate:/config"
+        - "/mnt/user/frigate/media:/media/frigate"
+    scrypted:
+      service_name: "scrypted"
+      image_name: "ghcr.io/koush/scrypted:latest"
+      host: "tower"
+      description: "Scrypted is a home video integration and automation platform."
+      icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/scrypted.png"
+      dns:
+        enabled: true
+        domain_name: "scrypted.mallett.family"
+      network:
+        internal: true
+        service_port: 11080
+        networks:
+          - name: "br1"
+            ip_address: "192.168.5.48"
+      auth:
+        enabled: false
+      mounts:
+        - "/mnt/user/appdata/scrypted:/server/volume"
