@@ -83,6 +83,7 @@ deluge-vpn:
 *   **`secrets`**: A map of environment variable names to Infisical secret names. Pulumi fetches these secrets from Infisical and injects them as environment variables.
 *   **`env`**: (Optional) A list of `KEY=VALUE` strings that will be set as environment variables inside the container.
 *   **`mounts`**: (Optional) A list of bind mount strings in the format `host_path:container_path[:ro]`.
+*   **`privileged`**: (Optional) If `true`, runs the container in privileged mode (`--privileged`). Use only when capabilities or device passthrough are insufficient.
 *   **`capabilities.add`**: (Optional) A list of Linux capabilities to add to the container (e.g., `CAP_NET_ADMIN`).
 *   **`devices`**: (Optional) Device passthrough configuration.
     *   **`devices.gpu`**: If `true`, passes `/dev/dri` into the container (hardware transcoding).

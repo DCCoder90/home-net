@@ -186,6 +186,10 @@ func registerContainer(
 		Devices:          devices,
 	}
 
+	if svc.Def.Privileged {
+		args.Privileged = pulumi.Bool(true)
+	}
+
 	if svc.Def.NetworkMode != "" {
 		args.NetworkMode = pulumi.String(svc.Def.NetworkMode)
 		// When using host mode, clear networksAdvanced.

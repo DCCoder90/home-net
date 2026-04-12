@@ -71,6 +71,8 @@ your_stack_name:
       volumes: [] # List of volume objects (see docker module variables for structure)
       # Optional: List of commands to run in the container.
       commands: ["--some-flag", "value"]
+      # Optional: Run the container in privileged mode
+      privileged: true
       # Optional: Linux capabilities to add/drop for the container
       capabilities:
         add: ["NET_ADMIN"]
@@ -146,6 +148,7 @@ your_stack_name:
     *   **`service_name`**: The name of the Docker container and the base for Authentik application names.
     *   **`image_name`**: The Docker image to pull (e.g., `linuxserver/sonarr:4.0.16`).
     *   **`network_mode`**: The Docker network mode to set (e.g., `"host"` for services like Plex that need host networking).
+    *   **`privileged`**: If `true`, runs the container in privileged mode (`--privileged`). Grants full host device access and disables most security isolation — use only when capabilities or device passthrough are insufficient.
     *   **`devices`**: Controls device passthrough into the container.
         *   **`devices.gpu`**: If `true`, passes `/dev/dri` into the container (used for hardware transcoding in media servers).
         *   **`devices.usb`**: If `true`, passes `/dev/bus/usb` into the container (used for USB accelerators such as a Coral TPU).

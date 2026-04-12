@@ -73,6 +73,7 @@ type ServiceConfig struct {
 	Icon         string            `yaml:"icon,omitempty"`
 	Commands     []string          `yaml:"commands,omitempty"`
 	NetworkMode  string            `yaml:"network_mode,omitempty"`
+	Privileged   bool           `yaml:"privileged,omitempty"`
 	Capabilities *Capabilities  `yaml:"capabilities,omitempty"`
 	Devices      *DevicesConfig `yaml:"devices,omitempty"`
 	Mounts       []string          `yaml:"mounts,omitempty"`
