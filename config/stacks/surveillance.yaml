@@ -15,12 +15,16 @@ surveillance:
         domain_name: "cameras.mallett.family"
       network:
         internal: true
-        service_port: 5000
+        service_port: 8971
         networks:
           - name: "br1"
             ip_address: "192.168.5.47"
       auth:
-        enabled: false
+        enabled: true
+        group: "Surveillance"
+        proxy:
+          enabled: true
+          auth_secret_name: "frigate_proxy_secret"
       privileged: true
       devices:
         usb: true
