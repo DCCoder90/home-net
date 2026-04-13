@@ -189,6 +189,9 @@ func registerContainer(
 	if svc.Def.Privileged {
 		args.Privileged = pulumi.Bool(true)
 	}
+	if svc.Def.ShmSize > 0 {
+		args.ShmSize = pulumi.Int(svc.Def.ShmSize * 1024 * 1024)
+	}
 
 	if svc.Def.NetworkMode != "" {
 		args.NetworkMode = pulumi.String(svc.Def.NetworkMode)

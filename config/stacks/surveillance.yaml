@@ -28,6 +28,7 @@ surveillance:
           enabled: true
           auth_secret_name: "frigate_proxy_secret"
       privileged: true
+      shm_size: 256
       devices:
         usb: true
       mounts:
