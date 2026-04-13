@@ -92,6 +92,7 @@ type ProxyHostArgs struct {
 	HTTP2Support          bool
 	BlockExploits         bool
 	AllowWebsocketUpgrade bool
+	AdvancedConfig        string // raw nginx config injected into the server block
 }
 
 // NewProxyHost creates an NPM proxy host with TLS termination.
@@ -105,7 +106,7 @@ func NewProxyHost(ctx *pulumi.Context, name string, args ProxyHostArgs, opts ...
 		scheme = "http"
 	}
 	var ph ProxyHost
-	err := ctx.RegisterResource("npmproxy:index:ProxyHost", name, pulumi.Map{
+	inputs := pulumi.Map{
 		"domainNames":           domains,
 		"forwardHost":           pulumi.String(args.ForwardHost),
 		"forwardPort":           pulumi.Int(args.ForwardPort),
@@ -116,6 +117,10 @@ func NewProxyHost(ctx *pulumi.Context, name string, args ProxyHostArgs, opts ...
 		"http2Support":          pulumi.Bool(args.HTTP2Support),
 		"blockExploits":         pulumi.Bool(args.BlockExploits),
 		"allowWebsocketUpgrade": pulumi.Bool(args.AllowWebsocketUpgrade),
-	}, &ph, opts...)
+	}
+	if args.AdvancedConfig != "" {
+		inputs["advancedConfig"] = pulumi.String(args.AdvancedConfig)
+	}
+	err := ctx.RegisterResource("npmproxy:index:ProxyHost", name, inputs, &ph, opts...)
 	return &ph, err
 }

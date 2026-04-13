@@ -1,6 +1,8 @@
 package resources
 
 import (
+	"fmt"
+
 	"github.com/DCCoder90/home-net/pulumi/pkg/config"
 	"github.com/DCCoder90/home-net/pulumi/pkg/npmproxy"
 	dockerprovider "github.com/pulumi/pulumi-docker/sdk/v4/go/docker"
@@ -68,6 +70,14 @@ func RegisterProxyResources(
 			return err
 		}
 
+		// Build advanced_config for X-Proxy-Secret header if configured.
+		var advancedConfig string
+		if svc.Def.Auth != nil && svc.Def.Auth.Proxy != nil && svc.Def.Auth.Proxy.AuthSecretName != "" {
+			if secret, ok := secrets[svc.Def.Auth.Proxy.AuthSecretName]; ok && secret != "" {
+				advancedConfig = fmt.Sprintf("proxy_set_header X-Proxy-Secret \"%s\";", secret)
+			}
+		}
+
 		// Proxy host
 		proxyName := svc.ServiceName + "-proxy"
 		_, err = npmproxy.NewProxyHost(ctx, proxyName, npmproxy.ProxyHostArgs{
@@ -80,6 +90,7 @@ func RegisterProxyResources(
 			HTTP2Support:          true,
 			BlockExploits:         true,
 			AllowWebsocketUpgrade: true,
+			AdvancedConfig:        advancedConfig,
 		}, append(append([]pulumi.ResourceOption{npmOpt}, depOpts...), importOpts(proxyName, importIDs)...)...)
 		if err != nil {
 			return err
