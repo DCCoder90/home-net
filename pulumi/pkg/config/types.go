@@ -111,10 +111,11 @@ type ServiceDNS struct {
 
 // ServiceAuth configures Authentik SSO for a service.
 type ServiceAuth struct {
-	Enabled bool       `yaml:"enabled"`
-	Group   string     `yaml:"group,omitempty"`
-	Proxy   *ProxyAuth `yaml:"proxy,omitempty"`
-	OAuth   *OAuthAuth `yaml:"oauth,omitempty"`
+	Enabled          bool       `yaml:"enabled"`
+	Group            string     `yaml:"group,omitempty"`
+	AdditionalGroups []string   `yaml:"additional_groups,omitempty"`
+	Proxy            *ProxyAuth `yaml:"proxy,omitempty"`
+	OAuth            *OAuthAuth `yaml:"oauth,omitempty"`
 }
 
 // ProxyAuth configures Authentik forward-auth proxy.

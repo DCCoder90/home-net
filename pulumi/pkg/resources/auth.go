@@ -144,6 +144,31 @@ func RegisterAuthResources(
 			if err != nil {
 				return fmt.Errorf("policy binding %q: %w", svc.ServiceName, err)
 			}
+
+			// Create additional groups and their policy bindings.
+			for i, extraName := range svc.Def.Auth.AdditionalGroups {
+				extraKey := strings.ToLower(extraName)
+				if _, exists := groups[extraKey]; !exists {
+					resourceName := extraKey + "-group"
+					grp, err := authentik.NewGroup(ctx, resourceName, &authentik.GroupArgs{
+						Name: pulumi.String(extraName),
+					}, append([]pulumi.ResourceOption{authOpt}, importOpts(resourceName, importIDs)...)...)
+					if err != nil {
+						return fmt.Errorf("authentik group %q: %w", extraName, err)
+					}
+					groups[extraKey] = grp
+				}
+				extraBindingName := fmt.Sprintf("%s-proxy-binding-%d", svc.ServiceName, i+1)
+				_, err = authentik.NewPolicyBinding(ctx, extraBindingName, &authentik.PolicyBindingArgs{
+					Target:  app.Uuid,
+					Group:   groups[extraKey].ID(),
+					Order:   pulumi.Int(i + 1),
+					Enabled: pulumi.Bool(true),
+				}, append([]pulumi.ResourceOption{authOpt}, importOpts(extraBindingName, importIDs)...)...)
+				if err != nil {
+					return fmt.Errorf("policy binding %q: %w", extraName, err)
+				}
+			}
 		}
 
 		// ── OAuth2 Provider ──────────────────────────────────────────────────────
