@@ -22,6 +22,7 @@ type ProxyHostArgs struct {
 	HTTP2Support          bool     `pulumi:"http2Support"`
 	BlockExploits         bool     `pulumi:"blockExploits"`
 	AllowWebsocketUpgrade bool     `pulumi:"allowWebsocketUpgrade"`
+	AdvancedConfig        string   `pulumi:"advancedConfig,optional"`
 }
 
 // ProxyHostState is the persisted state for an NPM proxy host.
@@ -61,6 +62,7 @@ func (*ProxyHost) Create(ctx context.Context, req infer.CreateRequest[ProxyHostA
 		HTTP2Support:          args.HTTP2Support,
 		BlockExploits:         args.BlockExploits,
 		AllowWebsocketUpgrade: args.AllowWebsocketUpgrade,
+		AdvancedConfig:        args.AdvancedConfig,
 	}
 	result, err := c.CreateProxyHost(ph)
 	if err != nil {
@@ -94,6 +96,7 @@ func (*ProxyHost) Read(ctx context.Context, req infer.ReadRequest[ProxyHostArgs,
 		HTTP2Support:          ph.HTTP2Support,
 		BlockExploits:         ph.BlockExploits,
 		AllowWebsocketUpgrade: ph.AllowWebsocketUpgrade,
+		AdvancedConfig:        ph.AdvancedConfig,
 	}
 	return infer.ReadResponse[ProxyHostArgs, ProxyHostState]{ID: id, Inputs: newArgs, State: ProxyHostState{newArgs}}, nil
 }
@@ -125,6 +128,7 @@ func (*ProxyHost) Update(ctx context.Context, req infer.UpdateRequest[ProxyHostA
 		HTTP2Support:          args.HTTP2Support,
 		BlockExploits:         args.BlockExploits,
 		AllowWebsocketUpgrade: args.AllowWebsocketUpgrade,
+		AdvancedConfig:        args.AdvancedConfig,
 	}
 	_, err = c.UpdateProxyHost(numID, ph)
 	if err != nil {

@@ -257,6 +257,7 @@ type ProxyHost struct {
 	HTTP2Support          bool     `json:"http2_support"`
 	BlockExploits         bool     `json:"block_exploits"`
 	AllowWebsocketUpgrade bool     `json:"allow_websocket_upgrade"`
+	AdvancedConfig        string   `json:"advanced_config,omitempty"`
 }
 
 func (c *Client) CreateProxyHost(ph ProxyHost) (*ProxyHost, error) {

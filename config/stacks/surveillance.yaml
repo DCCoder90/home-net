@@ -15,18 +15,25 @@ surveillance:
         domain_name: "cameras.mallett.family"
       network:
         internal: true
-        service_port: 5000
+        service_port: 8971
         networks:
           - name: "br1"
             ip_address: "192.168.5.47"
       auth:
-        enabled: false
+        enabled: true
+        group: "Surveillance"
+        additional_groups:
+          - "Surveillance Viewer"
+        proxy:
+          enabled: true
+          auth_secret_name: "frigate_proxy_secret"
       privileged: true
       devices:
         usb: true
       mounts:
         - "/mnt/user/appdata/frigate:/config"
         - "/mnt/user/frigate/media:/media/frigate"
+        - "/mnt/user/NVR:/recordings"
     scrypted:
       service_name: "scrypted"
       image_name: "ghcr.io/koush/scrypted:latest"
