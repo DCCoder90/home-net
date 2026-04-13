@@ -1,4 +1,5 @@
 homeassistant:
+  service_name: "homeassistant"
   host: "tower"
   image_name: "ghcr.io/home-assistant/home-assistant:stable"
   description: "Open source home automation platform."
