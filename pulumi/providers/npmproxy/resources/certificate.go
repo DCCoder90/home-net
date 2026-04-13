@@ -4,9 +4,14 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"sync"
 
 	"github.com/pulumi/pulumi-go-provider/infer"
 )
+
+// NPM only let's us create one cert at a time, so we'll through this in here
+// to play by it's rules.
+var certMu sync.Mutex
 
 // CertificateArgs are the inputs for an NPM Let's Encrypt certificate.
 // Tags must match the pulumi.Map keys used in the thin wrapper (npmproxy.go).
@@ -38,7 +43,9 @@ func (*Certificate) Create(ctx context.Context, req infer.CreateRequest[Certific
 	if err != nil {
 		return infer.CreateResponse[CertificateState]{}, err
 	}
+	certMu.Lock()
 	result, err := c.CreateCertificate(args.DomainNames, args.Email, args.CFAPIToken)
+	certMu.Unlock()
 	if err != nil {
 		return infer.CreateResponse[CertificateState]{}, err
 	}
