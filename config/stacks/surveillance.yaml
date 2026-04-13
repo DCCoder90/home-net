@@ -33,7 +33,7 @@ surveillance:
       mounts:
         - "/mnt/user/appdata/frigate:/config"
         - "/mnt/user/frigate/media:/media/frigate"
-        - "/mnt/user/NVR:/recordings"
+        - "/mnt/user/NVR:/media/frigate/recordings"
     scrypted:
       service_name: "scrypted"
       image_name: "ghcr.io/koush/scrypted:latest"
