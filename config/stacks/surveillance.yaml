@@ -15,7 +15,7 @@ surveillance:
         domain_name: "cameras.mallett.family"
       network:
         internal: true
-        service_port: 8971
+        service_port: 5000
         networks:
           - name: "br1"
             ip_address: "192.168.5.47"
