@@ -22,6 +22,8 @@ surveillance:
       auth:
         enabled: true
         group: "Surveillance"
+        additional_groups:
+          - "Surveillance Viewer"
         proxy:
           enabled: true
           auth_secret_name: "frigate_proxy_secret"
