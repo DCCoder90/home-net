@@ -1,0 +1,39 @@
+smarthome:
+  env:
+    - "TZ=America/Chicago"
+  mounts:
+    - "/etc/localtime:/etc/localtime:ro"
+  services:
+    homeassistant:
+      service_name: "homeassistant"
+      host: "tower"
+      image_name: "ghcr.io/home-assistant/home-assistant:stable"
+      description: "Open source home automation platform."
+      icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/home-assistant.png"
+      mounts:
+        - "/mnt/user/appdata/homeassistant:/config"
+      network:
+        service_port: 8123
+        networks:
+          - name: "br1"
+            ip_address: "192.168.5.49"
+      dns:
+        enabled: true
+        domain_name: "home.mallett.family"
+    mosquitto:
+      service_name: "mosquitto"
+      host: "tower"
+      image_name: "eclipse-mosquitto:2"
+      description: "MQTT broker for home automation."
+      icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/mosquitto.png"
+      mounts:
+        - "/mnt/user/appdata/mosquitto/config:/mosquitto/config"
+        - "/mnt/user/appdata/mosquitto/data:/mosquitto/data"
+        - "/mnt/user/appdata/mosquitto/log:/mosquitto/log"
+      network:
+        service_port: 1883
+        networks:
+          - name: "br1"
+            ip_address: "192.168.5.65"
+      dns:
+        enabled: false
