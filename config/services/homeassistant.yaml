@@ -1,0 +1,18 @@
+homeassistant:
+  host: "tower"
+  image_name: "ghcr.io/home-assistant/home-assistant:stable"
+  description: "Open source home automation platform."
+  icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/home-assistant.png"
+  env:
+    - "TZ=America/Chicago"
+  mounts:
+    - "/etc/localtime:/etc/localtime:ro"
+    - "/mnt/user/appdata/homeassistant:/config"
+  network:
+    service_port: 8123
+    networks:
+      - name: "br1"
+        ip_address: "192.168.5.49"
+  dns:
+    enabled: true
+    domain_name: "home.mallett.family"
