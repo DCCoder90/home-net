@@ -79,7 +79,7 @@ deluge-vpn:
     *   **`network.networks`**: A list of network objects to attach the container to. Each object has:
         *   `name`: The network name (e.g., `"br1"`).
         *   `ip_address`: (Optional) A static IP to assign on that network.
-*   **`auth`**: Authentication configuration. See [stack-config.md](stack-config.md) for full auth options.
+*   **`auth`**: Authentication configuration. See [stack-config.md](stack-config.md) for full auth options including `group`, `additional_groups`, `proxy.enabled`, and `proxy.auth_secret_name`.
 *   **`secrets`**: A map of environment variable names to Infisical secret names. Pulumi fetches these secrets from Infisical and injects them as environment variables.
 *   **`env`**: (Optional) A list of `KEY=VALUE` strings that will be set as environment variables inside the container.
 *   **`mounts`**: (Optional) A list of bind mount strings in the format `host_path:container_path[:ro]`.

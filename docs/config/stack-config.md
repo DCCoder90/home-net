@@ -104,13 +104,18 @@ your_stack_name:
       auth:
         # Optional: Enable authentication for this service. Default: false
         enabled: true
-        # Optional: The Authentik group to associate with the application. Default: "Uncategorized"
+        # Optional: The primary Authentik group — members get full/admin access. Default: service name
         group: "My App Group"
+        # Optional: Additional Authentik groups — each gets its own policy binding to the application.
+        # Useful for role-based access (e.g. a viewer group with read-only access).
+        additional_groups:
+          - "My App Viewers"
         # Optional: Enable proxy authentication (e.g., Authentik forward auth).
         proxy:
           enabled: true
           user_secret: "service_username"  # Infisical secret name for proxy username
           pass_secret: "service_password"  # Infisical secret name for proxy password
+          auth_secret_name: "infisical_key"  # Optional: Infisical key for X-Proxy-Secret header value
         # Optional: OAuth configuration for the service
         oauth:
           # Optional: Enable OAuth authentication. Default: false
@@ -168,8 +173,10 @@ your_stack_name:
     *   **`dns.domain_name`**: The full domain name for the service (e.g., `sonarr.dcapi.app`).
     *   **`dns.access_list_id`**: This field is **not set directly**. The module automatically assigns the "Internal Only" access list for internal services and the "CloudFlare Only" access list for external services.
     *   **`auth.enabled`**: If `true`, authentication is configured for this service in Authentik (group, application, policy binding).
-    *   **`auth.group`**: The name of the Authentik group to associate with the application. Multiple services can share a group. Defaults to the service name.
+    *   **`auth.group`**: The primary Authentik group for this application. Members of this group are granted access. Multiple services can share a group. Defaults to the service name.
+    *   **`auth.additional_groups`**: A list of extra Authentik group names. Pulumi creates each group and adds a policy binding for it to the application. Useful for role-based access — e.g. a viewer group alongside an admin group. Each service consuming the `x-forwarded-groups` header (like Frigate's `role_map`) can then map these groups to application-level roles.
     *   **`auth.proxy`**: Enables Authentik forward-auth proxy for this service. When enabled, NPM routes all traffic for this service's domain through the Authentik proxy outpost instead of directly to the service. The outpost checks authentication and forwards authenticated requests on to the service. Requires the three-phase Authentik bootstrap — see [Authentik bootstrap](../setup.md#authentik-bootstrap).
+    *   **`auth.proxy.auth_secret_name`**: Optional. The Infisical secret key whose value is injected as an `X-Proxy-Secret` header by NPM. The upstream service must validate this header to ensure requests arrive via the proxy. Generate the secret with `openssl rand -hex 32` and store it in Infisical.
     *   **`auth.oauth`**: Configures an Authentik OAuth2/OIDC provider for this service. The client ID, client secret, and issuer URL are exported as Pulumi stack outputs and can be read by the service via `auth.oauth.keys`.
     *   **`auth.oauth.enabled`**: If `true`, an Authentik OAuth2 provider and application are created for this service.
     *   **`auth.oauth.keys`**: Maps desired environment variable names (e.g., `OAUTH_CLIENT_ID`) to Authentik OAuth provider output attributes. Common values are `client_id`, `client_secret`, and `provider_info_url`.
@@ -223,6 +230,8 @@ See [Authentik bootstrap](../setup.md#authentik-bootstrap) for the full three-ph
 
 1. Set `outpost_ip_address` in `system.yaml` and add a service with `auth.proxy.enabled: true`
 2. Run `pulumi up` twice (phases 1 and 2) to deploy Authentik and create the outpost record
-3. In the Authentik UI: **Applications → Outposts → "Pulumi Proxy Outpost" → View Tokens** — copy the token
+3. In the Authentik UI: **Applications → Outposts → "Pulumi Proxy Outpost" → View Deployment Info** — copy the token
 4. Store the token in Infisical as `authentik_outpost_token`
 5. Run `pulumi up` (phase 3) to deploy the outpost container
+
+After the initial bootstrap, the outpost record is fully Pulumi-managed — proxy providers for new services are added to the outpost automatically on each `pulumi up`. No manual assignment in the Authentik UI is needed.
