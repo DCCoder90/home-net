@@ -28,7 +28,32 @@ flaresolverr:
   image_name: "flaresolverr/flaresolverr:v3.4.6"
 ```
 
-### Example 2: A Standalone Docker Service with Secrets and Capabilities (`deluge-vpn`)
+### Example 2: A Standalone Service with Config Files (`prometheus`)
+
+```yaml
+prometheus:
+  service_name: "prometheus"
+  image_name: "prom/prometheus:latest"
+  dns:
+    enabled: true
+    domain_name: "prometheus.example.com"
+  network:
+    service_port: 9090
+    networks:
+      - name: "br1"
+        ip_address: "192.168.5.40"
+  auth:
+    enabled: true
+    group: "Monitoring"
+  configfiles:
+    - path: "/mnt/user/appdata/prometheus/prometheus.yml"
+      key: "PROMETHEUS_CONFIG"    # Infisical key in /config folder
+      permissions: "0644"
+  mounts:
+    - "/mnt/user/appdata/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro"
+```
+
+### Example 3: A Standalone Docker Service with Secrets and Capabilities (`deluge-vpn`)
 
 ```yaml
 deluge-vpn:
@@ -81,6 +106,11 @@ deluge-vpn:
         *   `ip_address`: (Optional) A static IP to assign on that network.
 *   **`auth`**: Authentication configuration. See [stack-config.md](stack-config.md) for full auth options including `group`, `additional_groups`, `proxy.enabled`, and `proxy.auth_secret_name`.
 *   **`secrets`**: A map of environment variable names to Infisical secret names. Pulumi fetches these secrets from Infisical and injects them as environment variables.
+*   **`configfiles`**: (Optional) A list of application config files to write to the remote host before the container starts. Each entry has:
+    *   `path`: The absolute path on the remote host where the file will be written.
+    *   `key`: The Infisical secret key in the `/config` folder whose value becomes the file's content.
+    *   `permissions`: (Optional) Octal permission string (e.g., `"0644"`). Defaults to `"0600"`.
+    The file is only re-written when its content changes between deploys. Add a corresponding `mounts:` entry to make the file accessible inside the container. Fails hard if the Infisical key is not found in `/config`.
 *   **`env`**: (Optional) A list of `KEY=VALUE` strings that will be set as environment variables inside the container.
 *   **`mounts`**: (Optional) A list of bind mount strings in the format `host_path:container_path[:ro]`.
 *   **`privileged`**: (Optional) If `true`, runs the container in privileged mode (`--privileged`). Use only when capabilities or device passthrough are insufficient.

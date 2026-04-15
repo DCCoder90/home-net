@@ -90,6 +90,25 @@ These secrets are fetched from Infisical at runtime via the Universal Auth clien
 
 Per-service runtime secrets (e.g. VPN credentials) and per-server SSH access keys (`/server_access` folder) are documented separately in the service YAML files.
 
+### Infisical `/config` folder (application config files)
+
+Services that use the `configfiles:` field store their application config file contents as secrets in the Infisical `/config` folder. Pulumi fetches each key's value at deploy time and writes it as a file on the remote host before the container starts.
+
+**Example**: To store a Prometheus config, create a secret in Infisical:
+- **Path**: `/config`
+- **Key**: `PROMETHEUS_CONFIG`
+- **Value**: *(the full contents of your `prometheus.yml`)*
+
+Then reference it in the service YAML:
+```yaml
+configfiles:
+  - path: "/mnt/user/appdata/prometheus/prometheus.yml"
+    key: "PROMETHEUS_CONFIG"
+    permissions: "0644"
+```
+
+Files are only re-written when their content changes. See [Service Configuration Guide](config/service-config.md) for full field reference.
+
 ### Additional Pulumi config values (beyond what's in `Pulumi.dev.yaml`)
 
 In addition to `infisicalClientId` and `infisicalClientSecret`, set these in Pulumi config — they are not stored in Infisical:
