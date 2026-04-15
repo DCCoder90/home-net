@@ -16,10 +16,13 @@ type Provider struct {
 // token is the Technitium API token.
 func NewProvider(ctx *pulumi.Context, name, url, token string, opts ...pulumi.ResourceOption) (*Provider, error) {
 	var p Provider
+	// IgnoreChanges on token: the provider process receives the current value
+	// via gRPC config on every run, so state-level diffs are spurious.
+	credOpts := append(opts, pulumi.IgnoreChanges([]string{"token"}))
 	err := ctx.RegisterResource("pulumi:providers:technitium", name, pulumi.Map{
 		"url":   pulumi.String(url),
 		"token": pulumi.String(token),
-	}, &p, opts...)
+	}, &p, credOpts...)
 	return &p, err
 }
 
