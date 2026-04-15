@@ -18,7 +18,7 @@ func NewProvider(ctx *pulumi.Context, name, url, token string, opts ...pulumi.Re
 	var p Provider
 	err := ctx.RegisterResource("pulumi:providers:technitium", name, pulumi.Map{
 		"url":   pulumi.String(url),
-		"token": pulumi.ToSecret(pulumi.String(token)),
+		"token": pulumi.String(token),
 	}, &p, opts...)
 	return &p, err
 }
