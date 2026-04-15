@@ -6,6 +6,7 @@ require (
 	github.com/OSMIT-GmbH/pulumi-authentik/sdk/v2024 v2024.10.3
 	github.com/infisical/go-sdk v0.7.0
 	github.com/pulumi/pulumi-cloudflare/sdk/v5 v5.0.0
+	github.com/pulumi/pulumi-command/sdk v1.2.1
 	github.com/pulumi/pulumi-docker/sdk/v4 v4.11.2
 	github.com/pulumi/pulumi/sdk/v3 v3.226.0
 	gopkg.in/yaml.v3 v3.0.1

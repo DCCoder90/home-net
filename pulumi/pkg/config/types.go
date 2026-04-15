@@ -64,6 +64,13 @@ type NetworkDef struct {
 	Driver   string `yaml:"driver,omitempty"`
 }
 
+// ConfigFile defines a file to write to the remote host from an Infisical /config secret.
+type ConfigFile struct {
+	Path        string `yaml:"path"`
+	Key         string `yaml:"key"`
+	Permissions string `yaml:"permissions,omitempty"` // octal string, e.g. "0600"; defaults to "0600"
+}
+
 // ServiceConfig is the full definition of a single service.
 type ServiceConfig struct {
 	ServiceName  string            `yaml:"service_name"`
@@ -73,14 +80,15 @@ type ServiceConfig struct {
 	Icon         string            `yaml:"icon,omitempty"`
 	Commands     []string          `yaml:"commands,omitempty"`
 	NetworkMode  string            `yaml:"network_mode,omitempty"`
-	Privileged   bool           `yaml:"privileged,omitempty"`
-	ShmSize      int            `yaml:"shm_size,omitempty"` // /dev/shm size in MB
-	Capabilities *Capabilities  `yaml:"capabilities,omitempty"`
-	Devices      *DevicesConfig `yaml:"devices,omitempty"`
+	Privileged   bool              `yaml:"privileged,omitempty"`
+	ShmSize      int               `yaml:"shm_size,omitempty"` // /dev/shm size in MB
+	Capabilities *Capabilities     `yaml:"capabilities,omitempty"`
+	Devices      *DevicesConfig    `yaml:"devices,omitempty"`
 	Mounts       []string          `yaml:"mounts,omitempty"`
 	Volumes      []string          `yaml:"volumes,omitempty"`
 	Env          []string          `yaml:"env,omitempty"`
 	Secrets      map[string]string `yaml:"secrets,omitempty"`
+	ConfigFiles  []ConfigFile      `yaml:"configfiles,omitempty"`
 	Network      *ServiceNetwork   `yaml:"network,omitempty"`
 	DNS          ServiceDNS        `yaml:"dns"`
 	Auth         *ServiceAuth      `yaml:"auth,omitempty"`

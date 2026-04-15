@@ -19,11 +19,12 @@ func RegisterContainers(
 	secrets map[string]string,
 	generatedSecrets map[string]pulumi.StringOutput,
 	importIDs map[string]string,
+	configFileDeps map[string][]pulumi.Resource,
 ) (map[string]*dockerprovider.Container, error) {
 	result := make(map[string]*dockerprovider.Container, len(services))
 
 	for _, svc := range services {
-		container, err := registerContainer(ctx, svc, dockerProviders, networks, secrets, generatedSecrets, importIDs)
+		container, err := registerContainer(ctx, svc, dockerProviders, networks, secrets, generatedSecrets, importIDs, configFileDeps[svc.ServiceName])
 		if err != nil {
 			return nil, fmt.Errorf("service %q: %w", svc.ServiceName, err)
 		}
@@ -40,6 +41,7 @@ func registerContainer(
 	secrets map[string]string,
 	generatedSecrets map[string]pulumi.StringOutput,
 	importIDs map[string]string,
+	configFileDeps []pulumi.Resource,
 ) (*dockerprovider.Container, error) {
 	// Determine which Docker provider to use (defaults to "tower").
 	hostName := svc.Def.Host
@@ -219,6 +221,11 @@ func registerContainer(
 		if net, ok := networks[ne.Name]; ok {
 			opts = append(opts, pulumi.DependsOn([]pulumi.Resource{net}))
 		}
+	}
+
+	// Add config file dependencies so containers wait for their config files to be written.
+	if len(configFileDeps) > 0 {
+		opts = append(opts, pulumi.DependsOn(configFileDeps))
 	}
 
 	container, err := dockerprovider.NewContainer(ctx, svc.ServiceName, args, opts...)

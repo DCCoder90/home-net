@@ -58,6 +58,18 @@ func main() {
 			return fmt.Errorf("fetching server access: %w", err)
 		}
 
+		// ── 3b. Fetch /config secrets (only if any service defines configfiles) ──
+		configSecrets := map[string]string{}
+		for _, svc := range flat {
+			if len(svc.Def.ConfigFiles) > 0 {
+				configSecrets, err = infisicalClient.FetchAll("/config")
+				if err != nil {
+					return fmt.Errorf("fetching config secrets: %w", err)
+				}
+				break
+			}
+		}
+
 		// ── 4. Load import IDs (Option B import mechanism) ─────────────────────────
 		var importIDs map[string]string
 		if importFile := os.Getenv("PULUMI_IMPORT_IDS_FILE"); importFile != "" {
@@ -128,9 +140,15 @@ func main() {
 			return fmt.Errorf("networks: %w", err)
 		}
 
+		// ── 8b. Write config files to remote hosts ────────────────────────────────
+		configFileDeps, err := resources.RegisterConfigFiles(ctx, flat, configSecrets, serverAccess)
+		if err != nil {
+			return fmt.Errorf("config files: %w", err)
+		}
+
 		// ── 9. Register all service containers ────────────────────────────────────
 		containers, err := resources.RegisterContainers(ctx, flat, dockerProviders, networks,
-			allSecrets, generatedSecrets, importIDs)
+			allSecrets, generatedSecrets, importIDs, configFileDeps)
 		if err != nil {
 			return fmt.Errorf("containers: %w", err)
 		}

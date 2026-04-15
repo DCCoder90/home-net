@@ -22,10 +22,11 @@ type Client struct {
 
 // SSHConfig holds the credentials needed to open an SSH connection to a server.
 type SSHConfig struct {
-	Host    string
-	User    string
-	Port    int
-	PrivKey string // raw PEM content of the private key
+	Host           string
+	User           string
+	Port           int
+	PrivKey        string // path to the private key file (for Docker provider -i flag)
+	PrivKeyContent string // raw PEM content of the private key (for pulumi-command remote.Connection)
 }
 
 // New creates an authenticated Infisical client using Universal Auth.
@@ -107,11 +108,19 @@ func (c *Client) FetchServerAccess() (map[string]SSHConfig, error) {
 		if err != nil {
 			return nil, fmt.Errorf("writing SSH key for server %q: %w", name, err)
 		}
+		// Apply the same CRLF cleaning as writeTempKey so both consumers
+		// (Docker provider file path and pulumi-command raw PEM) get clean keys.
+		cleanedKey := strings.ReplaceAll(privKey, "\r\n", "\n")
+		cleanedKey = strings.ReplaceAll(cleanedKey, "\r", "\n")
+		if !strings.HasSuffix(cleanedKey, "\n") {
+			cleanedKey += "\n"
+		}
 		result[name] = SSHConfig{
-			Host:    ip,
-			User:    user,
-			Port:    port,
-			PrivKey: keyPath,
+			Host:           ip,
+			User:           user,
+			Port:           port,
+			PrivKey:        keyPath,
+			PrivKeyContent: cleanedKey,
 		}
 	}
 	return result, nil
