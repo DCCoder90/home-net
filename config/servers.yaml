@@ -6,3 +6,6 @@ servers:
   net1:
     networks:
       primary: "eth0"
+  net2:
+    networks:
+      primary: "eth0"

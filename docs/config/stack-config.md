@@ -82,6 +82,14 @@ your_stack_name:
       secrets:
         MY_API_KEY: "infisical_secret_name"
         DB_PASSWORD: "infisical_db_password"
+      # Optional: Application config files to write to the remote host before the container starts.
+      # Each entry fetches the Infisical key from the /config folder and writes it to the host path.
+      # The file is only re-written when its content changes. Add a corresponding entry to
+      # mounts: to make the file available inside the container.
+      configfiles:
+        - path: "/mnt/user/appdata/myapp/config.yaml"  # Absolute path on the remote host
+          key: "MYAPP_CONFIG"                           # Infisical key in /config folder
+          permissions: "0600"                           # Optional; defaults to "0600"
       # Optional: Network configuration for the service
       network:
         # Optional: Is this service internal-only (not accessible from the internet)? Default: false
@@ -159,6 +167,11 @@ your_stack_name:
         *   **`devices.usb`**: If `true`, passes `/dev/bus/usb` into the container (used for USB accelerators such as a Coral TPU).
         *   **`devices.paths`**: A list of explicit `host_path:container_path` device strings for any other device passthrough needs.
     *   **`secrets`**: A map of environment variable names to Infisical secret names. Unlike `generated_secrets` (which are stack-level and referenced via `${}`), these are per-service and directly injected as environment variables.
+    *   **`configfiles`**: A list of application config files to write to the remote host before the container starts. Each entry has:
+        *   `path`: The absolute path on the remote host where the file will be written (e.g., `/mnt/user/appdata/myapp/config.yaml`).
+        *   `key`: The Infisical secret key in the `/config` folder whose value becomes the file's content.
+        *   `permissions`: (Optional) Octal permission string for the file (e.g., `"0644"`). Defaults to `"0600"`.
+        The file is only re-written when its content changes between deploys. Running `pulumi destroy` removes the file. Add a corresponding `mounts:` entry to make the file available inside the container. Fails hard if the Infisical key is not found in `/config`.
     *   **`network.internal`**: If `true`, the service is not exposed externally via Nginx Proxy Manager.
     *   **`network.service_port`**: The port the service listens on *inside* the container.
     *   **`network.networks`**: A list of network objects to attach the container to. Each object has:

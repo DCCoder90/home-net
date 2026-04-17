@@ -8,5 +8,5 @@ type Config struct {
 	// Username is the NPM admin username.
 	Username string `pulumi:"username"`
 	// Password is the NPM admin password.
-	Password string `pulumi:"password"`
+	Password string `pulumi:"password" provider:"secret"`
 }

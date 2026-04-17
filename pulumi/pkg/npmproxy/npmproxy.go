@@ -14,11 +14,15 @@ type Provider struct {
 // NewProvider creates an NPM provider instance.
 func NewProvider(ctx *pulumi.Context, name, url, username, password string, opts ...pulumi.ResourceOption) (*Provider, error) {
 	var p Provider
+	// IgnoreChanges on credentials: the provider process receives the current
+	// values via gRPC config on every run, so state-level diffs on these fields
+	// are spurious and would otherwise cascade replacements to all NPM resources.
+	credOpts := append(opts, pulumi.IgnoreChanges([]string{"password", "username"}))
 	err := ctx.RegisterResource("pulumi:providers:npmproxy", name, pulumi.Map{
 		"url":      pulumi.String(url),
 		"username": pulumi.String(username),
-		"password": pulumi.ToSecret(pulumi.String(password)),
-	}, &p, opts...)
+		"password": pulumi.String(password),
+	}, &p, credOpts...)
 	return &p, err
 }
 
