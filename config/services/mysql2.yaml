@@ -1,5 +1,5 @@
 mysql2:
-  host: "net-2"
+  host: "net2"
   dns:
     enabled: false
     internal: true
