@@ -73,6 +73,14 @@ func registerContainer(
 			staticEnvs = append(staticEnvs, envVar+"="+val)
 		}
 	}
+	// 2b. Inject OAuth secret keys (auth.oauth.keys) into env vars.
+	if svc.Def.Auth != nil && svc.Def.Auth.OAuth != nil {
+		for envVar, secretKey := range svc.Def.Auth.OAuth.Keys {
+			if val, ok := secrets[secretKey]; ok {
+				staticEnvs = append(staticEnvs, envVar+"="+val)
+			}
+		}
+	}
 
 	// 3. Resolve ${GENERATED_SECRET} placeholders — requires async Pulumi outputs.
 	allEnvs := buildEnvOutput(staticEnvs, svc.GeneratedSecrets, generatedSecrets)
