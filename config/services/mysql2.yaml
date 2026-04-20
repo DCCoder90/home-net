@@ -3,11 +3,7 @@ mysql2:
   dns:
     enabled: false
     internal: true
-  network:
-    internal: true
-    service_port: 3306
-    networks:
-      - name: "host"
+  network_mode: "host"
   auth:
     enabled: false
   secrets:

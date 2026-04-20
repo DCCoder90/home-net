@@ -113,6 +113,7 @@ deluge-vpn:
     The file is only re-written when its content changes between deploys. Add a corresponding `mounts:` entry to make the file accessible inside the container. Fails hard if the Infisical key is not found in `/config`.
 *   **`env`**: (Optional) A list of `KEY=VALUE` strings that will be set as environment variables inside the container.
 *   **`mounts`**: (Optional) A list of bind mount strings in the format `host_path:container_path[:ro]`.
+*   **`network_mode`**: (Optional) Sets the container's network mode (e.g., `"host"`). When set to `"host"`, the container shares the host's network stack directly. **Cannot be combined with `network.networks` entries** — omit the `network` block entirely when using `network_mode: host`.
 *   **`privileged`**: (Optional) If `true`, runs the container in privileged mode (`--privileged`). Use only when capabilities or device passthrough are insufficient.
 *   **`capabilities.add`**: (Optional) A list of Linux capabilities to add to the container (e.g., `CAP_NET_ADMIN`).
 *   **`devices`**: (Optional) Device passthrough configuration.
