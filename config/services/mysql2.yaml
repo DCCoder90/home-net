@@ -16,7 +16,7 @@ mysql2:
     MYSQL_DATABASE: "tower_mysql_db_temp" 
     MYSQL_USER: "tower_mysql_user_temp" 
     MYSQL_PASSWORD: "tower_mysql_pass_temp" 
-  service_name: "mysql"
+  service_name: "mysql-net2"
   image_name: "mysql"
   mounts:
     - "/etc/localtime:/etc/localtime:ro"
