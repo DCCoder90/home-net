@@ -4,7 +4,9 @@ technitium-net2:
   image_name: "technitium/dns-server:latest"
   network_mode: "host"
   dns:
-    enabled: false
+    enabled: true
+    domain_name: "dns2.mallett.family"
+    internal: true
   auth:
     enabled: false
   secrets:
