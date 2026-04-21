@@ -1,0 +1,15 @@
+technitium-net2:
+  host: "net2"
+  service_name: "technitium_dns_net2"
+  image_name: "technitium/dns-server:latest"
+  network_mode: "host"
+  dns:
+    enabled: false
+  auth:
+    enabled: false
+  secrets:
+    DNS_SERVER_ADMIN_PASSWORD: "technitium_net2_admin_password"
+  mounts:
+    - "/mnt/data/technitium:/etc/dns"
+  env:
+    - "TZ=America/Chicago"
