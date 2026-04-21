@@ -7,6 +7,8 @@ technitium-net2:
     enabled: true
     domain_name: "dns2.mallett.family"
     internal: true
+    forward_host: "192.168.1.38"
+    forward_port: 5380
   auth:
     enabled: false
   secrets:

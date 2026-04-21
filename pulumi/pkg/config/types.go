@@ -111,6 +111,12 @@ type NetworkEntry struct {
 type ServiceDNS struct {
 	Enabled    bool   `yaml:"enabled"`
 	DomainName string `yaml:"domain_name,omitempty"`
+	// ForwardHost and ForwardPort override the NPM proxy destination for services
+	// that cannot supply a network.networks IP — e.g. host-networked containers
+	// on a separate subnet. When set, proxy.go uses these instead of serviceIP()
+	// and network.service_port.
+	ForwardHost string `yaml:"forward_host,omitempty"`
+	ForwardPort int    `yaml:"forward_port,omitempty"`
 	// Internal, when explicitly set, overrides the network.internal default.
 	// nil = not set (dns.go falls back to network.internal).
 	// true = internal-only (no Cloudflare record).
