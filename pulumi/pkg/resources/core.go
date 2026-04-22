@@ -85,7 +85,7 @@ func RegisterCoreContainers(
 
 	// ── Nginx Proxy Manager ─────────────────────────────────────────────────────
 	npmImage, err := dockerprovider.NewRemoteImage(ctx, "npm-image", &dockerprovider.RemoteImageArgs{
-		Name:        pulumi.String("jc21/nginx-proxy-manager:latest"),
+		Name:        pulumi.String("jc21/nginx-proxy-manager:2"),
 		KeepLocally: pulumi.Bool(true),
 	}, provOpt)
 	if err != nil {
