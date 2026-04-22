@@ -31,12 +31,23 @@ func RegisterProxyResources(
 
 		domain := svc.Def.DNS.DomainName
 		ip := serviceIP(svc.Def)
-		if ip == "" {
-			continue
-		}
 		port := 80
 		if svc.Def.Network != nil && svc.Def.Network.ServicePort > 0 {
 			port = svc.Def.Network.ServicePort
+		}
+
+		// dns.forward_host/forward_port override the NPM destination for services
+		// that have no network.networks entry (e.g. host-networked containers on
+		// a separate subnet).
+		if svc.Def.DNS.ForwardHost != "" {
+			ip = svc.Def.DNS.ForwardHost
+			if svc.Def.DNS.ForwardPort > 0 {
+				port = svc.Def.DNS.ForwardPort
+			}
+		}
+
+		if ip == "" {
+			continue
 		}
 
 		// When proxy auth is enabled, NPM forwards to the Authentik outpost, which
