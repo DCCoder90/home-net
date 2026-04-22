@@ -1,7 +1,7 @@
 technitium-net2:
   host: "net2"
   service_name: "technitium_dns_net2"
-  image_name: "technitium/dns-server:latest"
+  image_name: "technitium/dns-server:14.3.0"
   network_mode: "host"
   dns:
     enabled: true
