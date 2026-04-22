@@ -76,7 +76,7 @@ func RegisterCoreContainers(
 			},
 		},
 		append([]pulumi.ResourceOption{provOpt,
-			pulumi.IgnoreChanges([]string{"image", "labels", "logOpts"}),
+			pulumi.IgnoreChanges([]string{"labels", "logOpts"}),
 		}, importOpts("technitium_dns", importIDs)...)...,
 	)
 	if err != nil {
@@ -133,7 +133,7 @@ func RegisterCoreContainers(
 			},
 		},
 		append([]pulumi.ResourceOption{provOpt,
-			pulumi.IgnoreChanges([]string{"image", "labels", "envs", "logOpts", "ports", "volumes"}),
+			pulumi.IgnoreChanges([]string{"labels", "logOpts"}),
 		}, importOpts("nginx_proxy_manager", importIDs)...)...,
 	)
 	if err != nil {
@@ -196,7 +196,7 @@ func RegisterCoreContainers(
 			},
 		},
 		append([]pulumi.ResourceOption{provOpt,
-			pulumi.IgnoreChanges([]string{"image", "labels", "logOpts"}),
+			pulumi.IgnoreChanges([]string{"labels", "logOpts"}),
 		}, importOpts("authentik-server", importIDs)...)...,
 	)
 	if err != nil {
@@ -225,7 +225,7 @@ func RegisterCoreContainers(
 			},
 		},
 		append([]pulumi.ResourceOption{provOpt,
-			pulumi.IgnoreChanges([]string{"image", "logOpts"}),
+			pulumi.IgnoreChanges([]string{"logOpts"}),
 		}, importOpts("authentik-worker", importIDs)...)...,
 	)
 	if err != nil {
@@ -303,7 +303,7 @@ func RegisterOutpostContainer(
 			},
 		},
 		append([]pulumi.ResourceOption{provOpt,
-			pulumi.IgnoreChanges([]string{"image", "labels", "logOpts"}),
+			pulumi.IgnoreChanges([]string{"labels", "logOpts"}),
 		}, importOpts("authentik-outpost", importIDs)...)...,
 	)
 }

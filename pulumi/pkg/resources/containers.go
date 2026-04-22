@@ -216,7 +216,7 @@ func registerContainer(
 
 
 	// Determine which network-related changes to ignore on existing containers.
-	ignoreFields := []string{"image", "labels", "logOpts"}
+	ignoreFields := []string{"labels", "logOpts"}
 
 	opts := []pulumi.ResourceOption{
 		provOpt,
