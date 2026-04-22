@@ -40,7 +40,7 @@ func RegisterCoreContainers(
 
 	// ── Technitium DNS ──────────────────────────────────────────────────────────
 	dnsImage, err := dockerprovider.NewRemoteImage(ctx, "technitium-dns-image", &dockerprovider.RemoteImageArgs{
-		Name:        pulumi.String("technitium/dns-server:latest"),
+		Name:        pulumi.String("technitium/dns-server:14.3.0"),
 		KeepLocally: pulumi.Bool(true),
 	}, provOpt)
 	if err != nil {
