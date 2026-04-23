@@ -5,7 +5,7 @@ servers:
       secondary: "br0"
   net1:
     networks:
-      primary: "eth0"
+      primary: "macvlan"
   net2:
     networks:
-      primary: "eth0"
+      primary: "macvlan"

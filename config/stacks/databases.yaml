@@ -1,0 +1,25 @@
+mysql-net2:
+  generated_secrets:
+    - "NET2_MYSQL_ROOT_PASSWORD"
+    - "NET2_MYSQL_USER"
+    - "NET2_MYSQL_PASSWORD"
+  services:
+    mysql:
+      service_name: "mysql_net2"
+      host: "net2"
+      image_name: "mysql:8"
+      dns:
+        enabled: false
+      auth:
+        enabled: false
+      network:
+        service_port: 3306
+        networks:
+          - name: "macvlan"
+            ip_address: "192.168.5.84"
+      mounts:
+        - "/mnt/data/mysql:/var/lib/mysql"
+      env:
+        - "MYSQL_ROOT_PASSWORD=${NET2_MYSQL_ROOT_PASSWORD}"
+        - "MYSQL_USER=${NET2_MYSQL_USER}"
+        - "MYSQL_PASSWORD=${NET2_MYSQL_PASSWORD}"
