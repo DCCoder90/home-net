@@ -16,6 +16,7 @@ wikijs:
   mounts:
     - "/etc/localtime:/etc/localtime:ro"
     - "/mnt/user/appdata/wikijs:/config"
+    - "/mnt/user/appdata/wikijs/data:/data"
   env:
     - "PUID=1000"
     - "PGID=100"
