@@ -1,0 +1,26 @@
+wikijs:
+  service_name: "wikijs"
+  host: "tower"
+  image_name: "lscr.io/linuxserver/wikijs:latest"
+  dns:
+    enabled: true
+    domain_name: "home.mallett.family"
+  network:
+    service_port: 3000
+    networks:
+      - name: "br1"
+        ip_address: "192.168.5.85"
+  secrets:
+    DB_USER: "NET2_MYSQL_USER"
+    DB_PASS: "NET2_MYSQL_PASSWORD"
+  mounts:
+    - "/etc/localtime:/etc/localtime:ro"
+    - "/mnt/user/appdata/wikijs:/config"
+  env:
+    - "PUID=1000"
+    - "PGID=100"
+    - "TZ=America/Chicago"
+    - "DB_TYPE=mysql"
+    - "DB_HOST=192.168.5.84"
+    - "DB_PORT=3306"
+    - "DB_NAME=wiki"

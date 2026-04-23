@@ -90,6 +90,9 @@ func main() {
 			generatedSecrets[name] = pulumi.ToSecret(pulumi.String(value)).ApplyT(func(v any) (string, error) {
 				return v.(string), nil
 			}).(pulumi.StringOutput)
+			// Also expose generated secrets via the secrets: map so standalone
+			// services can reference them without needing to be in the same stack.
+			allSecrets[name] = value
 		}
 
 		// ── 6. Build per-server Docker providers via SSH ───────────────────────────

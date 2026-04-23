@@ -19,7 +19,7 @@ smarthome:
             ip_address: "192.168.5.49"
       dns:
         enabled: true
-        domain_name: "home.mallett.family"
+        domain_name: "assist.mallett.family"
     mosquitto:
       service_name: "mosquitto"
       host: "tower"
