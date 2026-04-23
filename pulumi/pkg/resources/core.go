@@ -133,7 +133,7 @@ func RegisterCoreContainers(
 			},
 		},
 		append([]pulumi.ResourceOption{provOpt,
-			pulumi.IgnoreChanges([]string{"labels", "logOpts"}),
+			pulumi.IgnoreChanges([]string{"labels", "logOpts", "ports"}),
 		}, importOpts("nginx_proxy_manager", importIDs)...)...,
 	)
 	if err != nil {
