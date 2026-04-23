@@ -5,11 +5,6 @@ wikijs:
   dns:
     enabled: true
     domain_name: "home.mallett.family"
-  auth:
-    enabled: true
-    group: "Wiki"
-    proxy:
-      enabled: true
   network:
     service_port: 3000
     networks:
