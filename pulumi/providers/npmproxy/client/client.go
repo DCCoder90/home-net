@@ -196,7 +196,6 @@ func (c *Client) CreateCertificate(domainNames []string, email, cfAPIToken strin
 	payload := map[string]interface{}{
 		"domain_names": domainNames,
 		"meta": map[string]interface{}{
-			"letsencrypt_email":        email,
 			"letsencrypt_agree":        true,
 			"dns_challenge":            true,
 			"dns_provider":             "cloudflare",
