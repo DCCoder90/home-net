@@ -170,18 +170,13 @@ monitoring:
         enabled: true
         domain_name: "portainer.dcapi.app"
       auth:
-        enabled: true
-        group: "Monitoring"
-        proxy:
-          enabled: true
-      secrets:
-        AGENT_SECRET: "portainer_agent_secret"
+        enabled: false
       mounts:
         - "/var/run/docker.sock:/var/run/docker.sock"
         - "/mnt/user/appdata/portainer:/data"
     portainer-agent-net1:
       host: "net1"
-      service_name: "portainer_agent"
+      service_name: "portainer_agent_net1"
       image_name: "portainer/agent:latest"
       description: "Portainer agent exposing net1 Docker daemon to the Portainer server on tower."
       network:
@@ -201,7 +196,7 @@ monitoring:
         - "/var/lib/docker/volumes:/var/lib/docker/volumes"
     portainer-agent-net2:
       host: "net2"
-      service_name: "portainer_agent"
+      service_name: "portainer_agent_net2"
       image_name: "portainer/agent:latest"
       description: "Portainer agent exposing net2 Docker daemon to the Portainer server on tower."
       network:
