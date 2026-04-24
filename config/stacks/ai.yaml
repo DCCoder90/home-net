@@ -73,7 +73,7 @@
           - "CONTEXT_MESSAGES=20"
           - "MYSQL_HOST=192.168.5.84"
           - "MYSQL_PORT=3306"
-          - "MYSQL_DB=ai_chat"
+          - "MYSQL_DATABASE=ai_chat"
       ai_chat_worker:
         dns:
           enabled: false
