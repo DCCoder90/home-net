@@ -157,7 +157,7 @@ monitoring:
         - "/mnt/user/appdata/prometheus/snmp.yml:/etc/snmp_exporter/snmp.yml"
     portainer:
       service_name: "portainer"
-      image_name: "portainer/portainer-ce:latest"
+      image_name: "portainer/portainer-ce:2.21.5"
       description: "Container management UI with multi-host visibility via agents on net1 and net2."
       icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/portainer.png"
       network:
@@ -171,13 +171,15 @@ monitoring:
         domain_name: "portainer.dcapi.app"
       auth:
         enabled: false
+      secrets:
+        AGENT_SECRET: "portainer_agent_secret"
       mounts:
         - "/var/run/docker.sock:/var/run/docker.sock"
         - "/mnt/user/appdata/portainer:/data"
     portainer-agent-net1:
       host: "net1"
       service_name: "portainer_agent_net1"
-      image_name: "portainer/agent:latest"
+      image_name: "portainer/agent:2.21.5"
       description: "Portainer agent exposing net1 Docker daemon to the Portainer server on tower."
       network:
         internal: true
@@ -197,7 +199,7 @@ monitoring:
     portainer-agent-net2:
       host: "net2"
       service_name: "portainer_agent_net2"
-      image_name: "portainer/agent:latest"
+      image_name: "portainer/agent:2.21.5"
       description: "Portainer agent exposing net2 Docker daemon to the Portainer server on tower."
       network:
         internal: true
