@@ -2,7 +2,11 @@ technitium-net2:
   host: "net2"
   service_name: "technitium_dns_net2"
   image_name: "technitium/dns-server:14.3.0"
-  network_mode: "host"
+  network:
+    service_port: 5380
+    networks:
+      - name: "macvlan"
+        ip_address: "192.168.4.54"
   dns:
     enabled: true
     domain_name: "dns2.mallett.family"
