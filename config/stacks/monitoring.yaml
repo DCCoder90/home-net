@@ -155,3 +155,67 @@ monitoring:
             ip_address: "192.168.5.64"
       mounts:
         - "/mnt/user/appdata/prometheus/snmp.yml:/etc/snmp_exporter/snmp.yml"
+    portainer:
+      service_name: "portainer"
+      image_name: "portainer/portainer-ce:latest"
+      description: "Container management UI with multi-host visibility via agents on net1 and net2."
+      icon: "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/portainer.png"
+      network:
+        internal: true
+        service_port: 9000
+        networks:
+          - name: "br1"
+            ip_address: "192.168.5.57"
+      dns:
+        enabled: true
+        domain_name: "portainer.dcapi.app"
+      auth:
+        enabled: true
+        group: "Monitoring"
+        proxy:
+          enabled: true
+      secrets:
+        AGENT_SECRET: "portainer_agent_secret"
+      mounts:
+        - "/var/run/docker.sock:/var/run/docker.sock"
+        - "/mnt/user/appdata/portainer:/data"
+    portainer-agent-net1:
+      host: "net1"
+      service_name: "portainer_agent"
+      image_name: "portainer/agent:latest"
+      description: "Portainer agent exposing net1 Docker daemon to the Portainer server on tower."
+      network:
+        internal: true
+        service_port: 9001
+        networks:
+          - name: "macvlan"
+            ip_address: "192.168.4.57"
+      dns:
+        enabled: false
+      auth:
+        enabled: false
+      secrets:
+        AGENT_SECRET: "portainer_agent_secret"
+      mounts:
+        - "/var/run/docker.sock:/var/run/docker.sock"
+        - "/var/lib/docker/volumes:/var/lib/docker/volumes"
+    portainer-agent-net2:
+      host: "net2"
+      service_name: "portainer_agent"
+      image_name: "portainer/agent:latest"
+      description: "Portainer agent exposing net2 Docker daemon to the Portainer server on tower."
+      network:
+        internal: true
+        service_port: 9001
+        networks:
+          - name: "macvlan"
+            ip_address: "192.168.4.58"
+      dns:
+        enabled: false
+      auth:
+        enabled: false
+      secrets:
+        AGENT_SECRET: "portainer_agent_secret"
+      mounts:
+        - "/var/run/docker.sock:/var/run/docker.sock"
+        - "/var/lib/docker/volumes:/var/lib/docker/volumes"
