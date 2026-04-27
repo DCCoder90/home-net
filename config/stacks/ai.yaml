@@ -60,7 +60,7 @@
           MYSQL_USER: "NET2_MYSQL_USER"
           MYSQL_PASSWORD: "NET2_MYSQL_PASSWORD"
         service_name: "ai-chat"
-        image_name: "ghcr.io/dccoder90/ai-chat:1fab553eb64745c26a6eb63e32242d9ff2ac02a7"
+        image_name: "ghcr.io/dccoder90/ai-chat:70fd8e33b0758ca36026e61859dfc0f3b0958946"
         domain_name: "chat.mallett.family"
         mounts:
           - "/mnt/user/appdata/ai-chat/config:/app/config"
