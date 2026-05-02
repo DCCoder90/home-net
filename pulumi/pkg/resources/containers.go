@@ -196,6 +196,9 @@ func registerContainer(
 		Devices:          devices,
 	}
 
+	if svc.Def.Devices != nil && svc.Def.Devices.GPU {
+		args.Gpus = pulumi.String("all")
+	}
 	if svc.Def.Privileged {
 		args.Privileged = pulumi.Bool(true)
 	}
