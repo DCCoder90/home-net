@@ -1,0 +1,21 @@
+nut:
+  host: "net1"
+  service_name: "nut_net1"
+  image_name: "instantlinux/nut-upsd:2.8.3-r4"
+  privileged: true
+  restart_policy: "unless-stopped"
+  network:
+    service_port: 3493
+    networks:
+      - name: "macvlan"
+        ip_address: "192.168.4.57"
+  dns:
+    enabled: false
+  auth:
+    enabled: false
+  devices:
+    usb: true
+  mounts:
+    - "/home/raspi/nut:/etc/nut/local"
+  env:
+    - "TZ=America/Chicago"
