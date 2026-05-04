@@ -2,7 +2,7 @@ media-servers:
   env:
     - "TZ=America/Chicago"
     - "NVIDIA_DRIVER_CAPABILITIES=all"
-    - "NVIDIA_VISIBLE_DEVICES=GPU-465cc8f0-4775-edd3-5402-87cca1022307"
+    - "NVIDIA_VISIBLE_DEVICES=GPU-ef847c5d-60ad-ce45-ec8c-a0bac5799bbd"
   mounts:
     - "/etc/localtime:/etc/localtime:ro"
     - "/mnt/user/Media:/media"
