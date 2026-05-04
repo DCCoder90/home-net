@@ -1,0 +1,91 @@
+# Schema for stack configuration files (config/stacks/*.yaml).
+#
+# Each file defines one or more top-level keys (stack names) whose values are
+# StackConfig objects. All stacks across all files in config/stacks/ are merged
+# into a single configuration at deploy time.
+#
+# Service-level fields are defined in docs/schema/service.yaml. The services
+# map here uses the same ServiceConfig, with two additions noted below:
+#   - host can be set at the stack level and overridden per-service
+#   - env/mounts/volumes are merged (stack-level + service-level)
+#
+# Example file structure:
+#   my-stack:
+#     host: "tower"
+#     env:
+#       - "TZ=America/Chicago"
+#     services:
+#       my-service:
+#         service_name: "my-service"
+#         image_name: "myrepo/my-service:latest"
+#         ...
+
+StackConfig:
+  host:
+    type: string
+    required: false
+    default: "tower"
+    description: >
+      Server to deploy all services in this stack to. Must match a key in
+      config/servers.yaml. Can be overridden per-service. Defaults to "tower".
+
+  env:
+    type: list(string)
+    required: false
+    description: >
+      Global environment variables applied to every service in this stack as
+      KEY=VALUE strings. Merged with service-level env at deploy time. Use
+      ${SECRET_NAME} to reference a generated secret by name.
+
+  mounts:
+    type: list(string)
+    required: false
+    description: >
+      Global bind mounts applied to every service in this stack in the format
+      host_path:container_path[:ro]. Merged with service-level mounts at deploy
+      time.
+
+  volumes:
+    type: list(string)
+    required: false
+    description: >
+      Global Docker volume mount strings applied to every service in this stack.
+      Merged with service-level volumes at deploy time.
+
+  generated_secrets:
+    type: list(string)
+    required: false
+    description: >
+      Names of secrets to auto-generate as stable random values on first deploy.
+      Each is stored in Infisical under /generated and automatically injected
+      into every service in the stack as KEY=value. Reference inside another env
+      var using ${SECRET_NAME} syntax (e.g. "DB_PASS=${DB_PASSWORD}"). Values
+      persist across runs, making them safe for stateful services like databases.
+
+  networks:
+    type: map(string -> NetworkDef)
+    required: false
+    description: >
+      Custom Docker networks to create for this stack. These are separate from
+      br0 and br1. Reference them by name in service network.networks entries.
+
+  services:
+    type: map(string -> ServiceConfig)
+    required: true
+    description: >
+      Map of service keys to service definitions. Each value conforms to
+      ServiceConfig as defined in docs/schema/service.yaml. Stack-level host,
+      env, mounts, and volumes are merged into each service at deploy time.
+
+
+NetworkDef:
+  internal:
+    type: bool
+    required: false
+    default: false
+    description: When true, the network is marked as internal (no external routing).
+  driver:
+    type: string
+    required: false
+    default: "bridge"
+    description: Docker network driver (e.g. "bridge", "overlay").
