@@ -187,7 +187,7 @@ func registerContainer(
 	args := &dockerprovider.ContainerArgs{
 		Name:             pulumi.String(svc.Def.ServiceName),
 		Image:            img.RepoDigest,
-		Restart:          pulumi.String("unless-stopped"),
+		Restart:          pulumi.String(restartPolicy(svc.Def.RestartPolicy)),
 		Envs:             allEnvs,
 		Volumes:          volumes,
 		NetworksAdvanced: networksAdvanced,
@@ -323,4 +323,11 @@ func networkEntries(sn *config.ServiceNetwork) []config.NetworkEntry {
 		return nil
 	}
 	return sn.Networks
+}
+
+func restartPolicy(policy string) string {
+	if policy == "" {
+		return "unless-stopped"
+	}
+	return policy
 }
