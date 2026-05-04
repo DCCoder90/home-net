@@ -1,4 +1,5 @@
 kavita:
+  restart_policy: "on-failure"
   dns:
     enabled: true
     domain_name: "books.mallett.family"

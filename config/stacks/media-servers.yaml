@@ -10,6 +10,7 @@ media-servers:
   networks:
   services:
     jellyfin:
+      restart_policy: "on-failure"
       dns:
           enabled: true
           domain_name: "media.mallett.family"
@@ -47,6 +48,7 @@ media-servers:
         - "/mnt/user/appdata/jellyfin:/config"
         - "/mnt/user/Cache/transcodes:/transcode"
     tautulli:
+      restart_policy: "on-failure"
       service_name: "tautulli"
       image_name: "linuxserver/tautulli:2.15.1"
       description: "A python based monitoring and tracking tool for Plex Media Server."

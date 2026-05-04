@@ -1,4 +1,5 @@
 wikijs:
+  restart_policy: "on-failure"
   service_name: "wikijs"
   host: "tower"
   image_name: "lscr.io/linuxserver/wikijs:latest"

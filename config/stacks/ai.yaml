@@ -43,6 +43,7 @@
           - "TEMPORAL_ADDRESS=192.168.5.62:7233"
           - "TEMPORAL_NAMESPACE=default"
       ai_chat:
+        restart_policy: "on-failure"
         dns:
           enabled: true
           domain_name: "chat.mallett.family"
@@ -73,6 +74,7 @@
           - "MYSQL_PORT=3306"
           - "MYSQL_DATABASE=ai_chat"
       ai_chat_worker:
+        restart_policy: "on-failure"
         dns:
           enabled: false
         network:
@@ -101,6 +103,7 @@
           - "TEMPORAL_ADDRESS=192.168.5.62:7233"
           - "TEMPORAL_NAMESPACE=default"
       ollama:
+        restart_policy: "on-failure"
         dns:
           enabled: false
         network:

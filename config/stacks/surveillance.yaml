@@ -5,6 +5,7 @@ surveillance:
     - "/etc/localtime:/etc/localtime:ro"
   services:
     frigate:
+      restart_policy: "on-failure"
       service_name: "frigate"
       image_name: "ghcr.io/blakeblackshear/frigate:stable"
       host: "tower"
@@ -36,6 +37,7 @@ surveillance:
         - "/mnt/user/frigate/media:/media/frigate"
         - "/mnt/user/NVR:/media/frigate/recordings"
     scrypted:
+      restart_policy: "on-failure"
       service_name: "scrypted"
       image_name: "ghcr.io/koush/scrypted:latest"
       host: "tower"

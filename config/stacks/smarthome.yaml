@@ -5,6 +5,7 @@ smarthome:
     - "/etc/localtime:/etc/localtime:ro"
   services:
     homeassistant:
+      restart_policy: "on-failure"
       service_name: "homeassistant"
       host: "tower"
       image_name: "ghcr.io/home-assistant/home-assistant:stable"
@@ -21,6 +22,7 @@ smarthome:
         enabled: true
         domain_name: "assist.mallett.family"
     mosquitto:
+      restart_policy: "on-failure"
       service_name: "mosquitto"
       host: "tower"
       image_name: "eclipse-mosquitto:2"

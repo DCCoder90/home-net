@@ -13,6 +13,7 @@ paperless:
       internal: true
   services:
     paperless:
+      restart_policy: "on-failure"
       service_name: "paperless"
       image_name: "ghcr.io/paperless-ngx/paperless-ngx:latest"
       dns:
@@ -65,6 +66,7 @@ paperless:
           - name: "paperless_internal"
     
     db:
+      restart_policy: "on-failure"
       service_name: "paperless_db"
       image_name: "postgres:16"
       dns:
