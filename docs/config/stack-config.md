@@ -36,7 +36,6 @@ your_stack_name:
     my_custom_network:
       internal: true
       driver: "bridge"
-      options: {} # Optional: Driver options for the network
   # Required: A map of services to be deployed within this stack
   services:
     service_one_key: # Unique key for the service within this stack

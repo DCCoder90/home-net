@@ -1,5 +1,4 @@
 monitoring:
-  zone_name: "dcapi.app"
   env:
     - "TZ=America/Chicago"
   mounts:
