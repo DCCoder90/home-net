@@ -1,0 +1,38 @@
+name: Validate Config
+
+on:
+  push:
+    paths:
+      - 'config/**'
+      - 'docs/schema/**'
+      - 'pulumi/pkg/config/**'
+      - 'pulumi/cmd/validate/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'config/**'
+      - 'docs/schema/**'
+      - 'pulumi/pkg/config/**'
+      - 'pulumi/cmd/validate/**'
+
+jobs:
+  validate:
+    name: Validate config files
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: pulumi/go.mod
+          cache-dependency-path: pulumi/go.sum
+
+      - name: Validate configs
+        working-directory: pulumi
+        run: go run ./cmd/validate/ --config-dir ../config
