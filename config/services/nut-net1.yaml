@@ -1,5 +1,6 @@
 nut:
   host: "net1"
+  service_name: "nut_net1"
   image_name: "instantlinux/nut-upsd:2.8.3-r4"
   privileged: true
   restart_policy: "unless-stopped"
