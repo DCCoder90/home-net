@@ -1,5 +1,4 @@
 monitoring:
-  zone_name: "dcapi.app"
   env:
     - "TZ=America/Chicago"
   mounts:
@@ -74,6 +73,7 @@ monitoring:
         - "/mnt/user/appdata/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards"
         - "/mnt/user/appdata/grafana/dashboards:/var/lib/grafana/dashboards"
     cadvisor:
+      restart_policy: "on-failure"
       service_name: "cadvisor"
       image_name: "gcr.io/cadvisor/cadvisor:v0.52.1"
       description: "Analyzes resource usage and performance characteristics of running containers."
@@ -96,6 +96,7 @@ monitoring:
         - "/dev/disk/:/dev/disk:ro"
       commands: ["--housekeeping_interval=30s"]
     technitium-exporter:
+      restart_policy: "on-failure"
       service_name: "technitium-exporter"
       image_name: "ghcr.io/brioche-works/technitium-dns-prometheus-exporter:master"
       description: "Prometheus exporter for Technitium DNS Server metrics."
@@ -116,6 +117,7 @@ monitoring:
         - "TECHNITIUM_API_DNS_BASE_URL=http://192.168.4.53:5380/"
         - "TECHNITIUM_API_DNS_LABEL=technitium"
     technitium-exporter-extended:
+      restart_policy: "on-failure"
       service_name: "technitium-exporter-extended"
       image_name: "ghcr.io/guycalledseven/technitium-dns-prometheus-exporter:latest"
       description: "Extended Prometheus exporter for Technitium DNS with top domains, clients, and DHCP metrics."

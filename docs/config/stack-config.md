@@ -36,7 +36,6 @@ your_stack_name:
     my_custom_network:
       internal: true
       driver: "bridge"
-      options: {} # Optional: Driver options for the network
   # Required: A map of services to be deployed within this stack
   services:
     service_one_key: # Unique key for the service within this stack
@@ -48,6 +47,9 @@ your_stack_name:
       image_name: "myrepo/my-service:latest"
       # Optional: Docker network mode (e.g., "host", "bridge")
       network_mode: "bridge"
+      # Optional: Docker restart policy. Default: "unless-stopped"
+      # Valid values: no, always, on-failure, unless-stopped
+      restart_policy: "unless-stopped"
       # Optional: Description of the service
       description: "A brief description of what this service does."
       # Optional: URL to an icon for the service (e.g., for Unraid UI)
@@ -161,6 +163,7 @@ your_stack_name:
     *   **`service_name`**: The name of the Docker container and the base for Authentik application names.
     *   **`image_name`**: The Docker image to pull (e.g., `linuxserver/sonarr:4.0.16`).
     *   **`network_mode`**: The Docker network mode to set (e.g., `"host"` for services like Plex that need host networking).
+    *   **`restart_policy`**: Docker restart policy for the container. Valid values: `no`, `always`, `on-failure`, `unless-stopped`. Defaults to `unless-stopped`.
     *   **`privileged`**: If `true`, runs the container in privileged mode (`--privileged`). Grants full host device access and disables most security isolation — use only when capabilities or device passthrough are insufficient.
     *   **`devices`**: Controls device passthrough into the container.
         *   **`devices.gpu`**: If `true`, passes `/dev/dri` into the container (used for hardware transcoding in media servers).

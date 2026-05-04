@@ -1,4 +1,5 @@
 deluge-vpn:
+  restart_policy: "on-failure"
   dns:
     enabled: false
   network:

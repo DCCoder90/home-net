@@ -79,7 +79,8 @@ type ServiceConfig struct {
 	Description  string            `yaml:"description,omitempty"`
 	Icon         string            `yaml:"icon,omitempty"`
 	Commands     []string          `yaml:"commands,omitempty"`
-	NetworkMode  string            `yaml:"network_mode,omitempty"`
+	NetworkMode   string            `yaml:"network_mode,omitempty"`
+	RestartPolicy string            `yaml:"restart_policy,omitempty"`
 	Privileged   bool              `yaml:"privileged,omitempty"`
 	ShmSize      int               `yaml:"shm_size,omitempty"` // /dev/shm size in MB
 	Capabilities *Capabilities     `yaml:"capabilities,omitempty"`
